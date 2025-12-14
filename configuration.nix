@@ -295,7 +295,7 @@ in
     usbutils
     lm_sensors
     nvtopPackages.full
-    glxinfo            # OpenGL info (glxinfo, eglinfo)
+    mesa-demos         # OpenGL info (glxinfo, eglinfo)
     vulkan-tools       # vulkaninfo
 
     # VM/Gaming
