@@ -118,7 +118,7 @@
           category = "nixos";
           help = "Rebuild and switch (fast, 8 jobs, 2 cores/job for 9800X3D)";
           command = ''
-            sudo nixos-rebuild switch --flake ".#${vars.hostname}" --fast -j 8 --cores 2 "$@"
+            sudo nixos-rebuild switch --flake ".#${vars.hostname}" --no-reexec -j 8 --cores 2 "$@"
           '';
         }
         {
@@ -126,7 +126,7 @@
           category = "nixos";
           help = "Rebuild for next boot (doesn't switch now)";
           command = ''
-            sudo nixos-rebuild boot --flake ".#${vars.hostname}" --fast -j 8 --cores 2 "$@"
+            sudo nixos-rebuild boot --flake ".#${vars.hostname}" --no-reexec -j 8 --cores 2 "$@"
           '';
         }
         {
@@ -134,7 +134,7 @@
           category = "nixos";
           help = "Test rebuild (doesn't add to boot menu)";
           command = ''
-            sudo nixos-rebuild test --flake ".#${vars.hostname}" --fast -j 8 --cores 2 "$@"
+            sudo nixos-rebuild test --flake ".#${vars.hostname}" --no-reexec -j 8 --cores 2 "$@"
           '';
         }
         {

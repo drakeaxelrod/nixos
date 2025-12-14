@@ -42,9 +42,8 @@ in
   boot.kernelModules = [ "kvm-amd" "kvmfr" "vfio_pci" "vfio" "vfio_iommu_type1" ];
   boot.blacklistedKernelModules = [ "nouveau" ];
 
-  # Firmware (AMD GPU, WiFi, etc.)
+  # Firmware (AMD GPU, WiFi, etc.) - includes linux-firmware for AMD
   hardware.enableRedistributableFirmware = true;
-  hardware.firmware = [ pkgs.linux-firmware ];  # Explicit firmware for AMD
 
   # ==========================================================================
   # Networking
