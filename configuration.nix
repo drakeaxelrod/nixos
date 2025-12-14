@@ -375,6 +375,9 @@ in
 
     # Don't try to load nvidia driver
     services.xserver.videoDrivers = lib.mkForce [ "modesetting" ];
+
+    # Disable nvidia-container-toolkit (no nvidia driver in VFIO mode)
+    hardware.nvidia-container-toolkit.enable = lib.mkForce false;
   };
 
   # ==========================================================================
