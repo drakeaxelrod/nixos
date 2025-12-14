@@ -46,7 +46,7 @@
       name = "br0";
       # Physical interface to bridge (update after install with: ip link)
       # Common: enp6s0 (ethernet), wlp5s0 (wifi - bridging wifi is complex)
-      interface = "enp6s0";
+      interface = "eth0";
     };
 
     # Trusted interfaces (no firewall restrictions)
@@ -69,6 +69,8 @@
       # Uncomment and update after first boot:
       # "10de:2782"  # RTX 5070 Ti GPU
       # "10de:22bc"  # RTX 5070 Ti Audio
+      "01:00.0"  # GPU
+      "01:00.1"  # Audio
     ];
   };
 

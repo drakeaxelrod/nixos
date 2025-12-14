@@ -80,8 +80,19 @@ in
   services.displayManager.gdm.enable = true;
   services.desktopManager.gnome.enable = true;
 
-  # Graphics
-  hardware.graphics.enable = true;
+  # Graphics - AMD iGPU (9800X3D RDNA 2 integrated)
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;  # For 32-bit apps/games
+  };
+
+  # AMD GPU driver (amdgpu kernel module + early KMS)
+  hardware.amdgpu = {
+    initrd.enable = true;  # Load amdgpu early for smooth boot
+  };
+
+  # Ensure amdgpu loads before nvidia for proper display
+  boot.initrd.kernelModules = [ "amdgpu" ];
 
   # Remove GNOME bloat
   environment.gnome.excludePackages = with pkgs; [
