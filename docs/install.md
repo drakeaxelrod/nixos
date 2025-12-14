@@ -50,29 +50,28 @@ cd /tmp/nixos
 
 # Verify files exist
 ls -la
-# Should see: flake.nix, disko.nix, configuration.nix, vars.nix, home/
+# Should see: flake.nix, disko.nix, configuration.nix, vars.nix, home/, scripts/
 ```
 
-### Step 3: Run Disko (Partitioning + Encryption)
+### Step 3: Run Disko (Recommended)
 
-This single command does everything:
-- Partitions both NVMe drives (1GB EFI + LUKS)
-- Creates LUKS2 containers (you'll be prompted for password TWICE - use SAME password!)
-- Creates Btrfs RAID 1 across both encrypted devices
-- Creates all 10 subvolumes with correct mount options
-- Mounts everything to /mnt
+Disko declaratively handles partitioning, LUKS encryption, and Btrfs RAID 1 setup:
 
 ```bash
-cd /tmp/nixos
+# Run disko to partition and format drives
+# You'll be prompted for LUKS passphrase - USE THE SAME PASSWORD FOR BOTH DRIVES!
+sudo nix --experimental-features "nix-command flakes" run github:nix-community/disko -- \
+  --mode disko /tmp/nixos/disko.nix
 
-# Run disko - DESTRUCTIVE! Wipes both drives!
-nix --experimental-features "nix-command flakes" run github:nix-community/disko -- \
-  --mode disko \
-  ./disko.nix
-
-# You'll be prompted for LUKS password twice (once per drive)
-# USE THE SAME PASSWORD FOR BOTH!
+# Disko will:
+# 1. Partition both drives (1GB EFI + rest for LUKS)
+# 2. Create LUKS2 containers (prompts for password twice)
+# 3. Create Btrfs RAID 1 across both encrypted devices
+# 4. Create all 10 subvolumes with correct mount options
+# 5. Mount everything to /mnt
 ```
+
+> **Note:** If disko fails, see [Fallback: Manual Script](#fallback-manual-script) below.
 
 ### Step 4: Verify Disk Setup
 
@@ -90,27 +89,15 @@ btrfs subvolume list /mnt
 # Should see: @rootfs, @nix, @home, @work, @persist, @libvirt, @log, @cache, @tmp, @snapshots
 ```
 
-### Step 5: Create Required Directories
+### Step 5: Copy Config and Install
 
 ```bash
-# Snapshot directories for btrbk
-mkdir -p /mnt/.snapshots/{home,work,rootfs,libvirt}
-
-# Work directory structure
-mkdir -p /mnt/work/{clients,templates,tools}
-
-# Set ownership (will be fixed after install, but helps)
-chmod 755 /mnt/work
-```
-
-### Step 6: Install NixOS
-
-```bash
-cd /tmp/nixos
-
-# Copy flake to target system
+# Copy NixOS config to target
 mkdir -p /mnt/etc/nixos
-cp -r ./* /mnt/etc/nixos/
+cp -r /tmp/nixos/* /mnt/etc/nixos/
+
+# Generate hardware config (without filesystems - disko handles those)
+nixos-generate-config --root /mnt --no-filesystems
 
 # Install NixOS
 nixos-install --flake /mnt/etc/nixos#toaster --no-root-passwd
@@ -119,13 +106,31 @@ nixos-install --flake /mnt/etc/nixos#toaster --no-root-passwd
 # --no-root-passwd: We use sudo via draxel user instead
 ```
 
-### Step 7: Reboot
+### Step 6: Reboot
 
 ```bash
 reboot
 ```
 
 Remove USB when prompted. System will boot to LUKS password prompt.
+
+---
+
+## Fallback: Manual Script
+
+If disko fails, use the manual install script instead:
+
+```bash
+cd /tmp/nixos
+
+# Run the install script (handles LUKS + Btrfs RAID 1 + subvolumes)
+bash scripts/install.sh
+
+# Follow prompts, then install:
+nixos-install --flake /mnt/etc/nixos#toaster --no-root-passwd
+```
+
+The script performs the same operations as disko but step-by-step with manual confirmation.
 
 ---
 
@@ -362,7 +367,22 @@ virsh shutdown windows-gaming
 
 ## Troubleshooting
 
-### Boot fails after disko
+### Disko fails during installation
+
+If disko fails with LUKS/RAID errors:
+
+```bash
+# Clean up any partial state
+cryptsetup close cryptroot0 2>/dev/null || true
+cryptsetup close cryptroot1 2>/dev/null || true
+wipefs -a /dev/nvme0n1
+wipefs -a /dev/nvme1n1
+
+# Use the manual script instead
+bash scripts/install.sh
+```
+
+### Boot fails after install
 
 ```bash
 # Boot from USB again, unlock and mount manually:
@@ -370,7 +390,9 @@ cryptsetup open /dev/nvme0n1p2 cryptroot0
 cryptsetup open /dev/nvme1n1p2 cryptroot1
 mount -o subvol=@rootfs /dev/mapper/cryptroot0 /mnt
 mount -o subvol=@nix /dev/mapper/cryptroot0 /mnt/nix
-# ... mount other subvolumes
+mount -o subvol=@home /dev/mapper/cryptroot0 /mnt/home
+mount -o subvol=@persist /dev/mapper/cryptroot0 /mnt/persist
+mount /dev/nvme0n1p1 /mnt/boot/efi
 nixos-install --flake /mnt/etc/nixos#toaster
 ```
 
@@ -429,6 +451,8 @@ sudo btrfs device stats /
 ├── home/
 │   └── draxel.nix      # Home-manager config
 ├── modules/            # Future: split configs
+├── scripts/
+│   └── install.sh      # Manual install script (fallback)
 ├── secrets/
 │   └── secrets.yaml.example
 └── docs/
