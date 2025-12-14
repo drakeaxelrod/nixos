@@ -92,7 +92,7 @@ in
       mv = "mv -i";
     };
 
-    initExtra = ''
+    initContent = ''
       # Keybindings
       bindkey -e  # Emacs keybindings
       bindkey '^[[A' history-search-backward
@@ -176,23 +176,22 @@ in
 
   programs.git = {
     enable = true;
-    userName = vars.user.name;
     # userEmail = "your@email.com";  # Set your email
 
-    extraConfig = {
+    settings = {
+      user.name = vars.user.name;
       init.defaultBranch = "main";
       pull.rebase = true;
       push.autoSetupRemote = true;
-    };
-
-    aliases = {
-      st = "status";
-      co = "checkout";
-      br = "branch";
-      ci = "commit";
-      unstage = "reset HEAD --";
-      last = "log -1 HEAD";
-      lg = "log --oneline --graph --decorate";
+      alias = {
+        st = "status";
+        co = "checkout";
+        br = "branch";
+        ci = "commit";
+        unstage = "reset HEAD --";
+        last = "log -1 HEAD";
+        lg = "log --oneline --graph --decorate";
+      };
     };
   };
 

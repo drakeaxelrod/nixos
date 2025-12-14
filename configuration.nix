@@ -77,8 +77,8 @@ in
 
   # GNOME + GDM with Wayland (uses AMD iGPU for host display)
   services.xserver.enable = true;
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+  services.displayManager.gdm.enable = true;
+  services.desktopManager.gnome.enable = true;
 
   # Graphics
   hardware.graphics.enable = true;
@@ -202,14 +202,12 @@ in
           snapshot_preserve = "24h 7d 4w";
 
           volume."/" = {
-            subvolume = {
-              home = {
-                snapshot_dir = "/.snapshots/home";
-              };
-              work = {
-                snapshot_dir = "/.snapshots/work";
-                snapshot_preserve = "48h 14d 8w";  # Longer for client work
-              };
+            subvolume."/home" = {
+              snapshot_dir = "/.snapshots/home";
+            };
+            subvolume."/work" = {
+              snapshot_dir = "/.snapshots/work";
+              snapshot_preserve = "48h 14d 8w";  # Longer for client work
             };
           };
         };
@@ -224,7 +222,7 @@ in
           snapshot_preserve = "4w";
 
           volume."/" = {
-            subvolume."" = {
+            subvolume."/@rootfs" = {
               snapshot_dir = "/.snapshots/rootfs";
             };
           };
