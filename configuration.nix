@@ -349,13 +349,17 @@ in
     system.nixos.tags = [ "with-vfio" ];
 
     # Add vfio-pci.ids to bind GPU early
-    boot.kernelParams = lib.mkForce [
-      "amd_iommu=on"
-      "iommu=pt"
-      "mem_encrypt=on"
-    ] ++ lib.optionals (vars.gpu.vfioIds != []) [
-      "vfio-pci.ids=${lib.concatStringsSep "," vars.gpu.vfioIds}"
-    ];
+    boot.kernelParams = lib.mkForce (
+      [
+        "amd_iommu=on"
+        "iommu=pt"
+        "mem_encrypt=on"
+        "amdgpu.dc=1"
+        "amdgpu.dcdebugmask=0x10"
+      ] ++ lib.optionals (vars.gpu.vfioIds != []) [
+        "vfio-pci.ids=${lib.concatStringsSep "," vars.gpu.vfioIds}"
+      ]
+    );
 
     # Load vfio-pci in initrd to grab GPU before nvidia
     boot.initrd.kernelModules = [ "amdgpu" "vfio_pci" "vfio" "vfio_iommu_type1" ];
