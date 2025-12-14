@@ -1,0 +1,21 @@
+# Nix build artifacts
+result
+result-*
+
+# Secrets (encrypted files are OK, but not unencrypted)
+secrets/*.yaml
+!secrets/*.yaml.example
+
+# Editor
+.direnv/
+.envrc
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
