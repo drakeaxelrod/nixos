@@ -22,8 +22,9 @@ in
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
   boot.loader.systemd-boot.configurationLimit = 10;
 
-  # Use latest kernel for best RDNA 3 iGPU support (9800X3D)
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # Use 6.12 LTS kernel - good AMD iGPU support + NVIDIA driver compatibility
+  # (6.18 is too new for NVIDIA drivers)
+  boot.kernelPackages = pkgs.linuxPackages_6_12;
 
   # Kernel parameters (both modes)
   boot.kernelParams = [
