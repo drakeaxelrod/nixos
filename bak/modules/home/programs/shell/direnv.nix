@@ -1,0 +1,16 @@
+# direnv - auto-load .envrc files
+{ config, pkgs, lib, ... }:
+
+{
+  programs.direnv = {
+    enable = true;
+    enableZshIntegration = true;
+    nix-direnv.enable = true;
+    config = {
+      global = {
+        warn_timeout = "1m";
+        hide_env_diff = true;
+      };
+    };
+  };
+}

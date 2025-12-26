@@ -1,0 +1,37 @@
+# SOPS configuration for sops-nix
+# https://github.com/Mic92/sops-nix
+#
+# Setup:
+# 1. Generate your age identity (private key) if you haven't yet:
+#      nix shell nixpkgs#age -c age-keygen -o ~/.config/sops/age/keys.txt
+# 2. Copy the public key from the identity into this file below.
+# 3. Create your secrets: e.g., secrets/secrets.yaml
+# 4. SOPS will automatically encrypt secrets when saving.
+
+keys:
+  # The single age key for this machine/user.
+  # - &draxel: YAML anchor to reference this key elsewhere in this file
+  # - The string below is the public part of the age identity
+  - &draxel age1fqdgajfphfp26a5rygfwws38a9eanvs6wvht70qshlwss5tgcv2qvpr22x
+
+creation_rules:
+  # All secrets that match the regex below will be encrypted
+  # and accessible using the keys listed under key_groups.
+  # Path is relative to .sops.yaml location
+  - path_regex: ^secrets/.*\.(yml|yaml|json|env|ini)$
+    key_groups:
+      - age:
+          # Reference the age key defined above
+          - *draxel
+# Notes:
+# - Only the public key goes into this file; the private key stays on your machine.
+# - Private key location in configuration.nix:
+#       sops.age.keyFile = "/home/draxel/.config/sops/age/keys.txt";
+# - Backup your private key securely; losing it means losing access to all secrets.
+# - For single-machine setups, one key is enough. If you add more machines later,
+#   generate additional age identities and add their public keys here.
+# - The following keys are securely stored in Bitwarden under "Draxel SOPS-Nix":
+#     1. SSH key (private and public)
+#     2. Age key (private and public)
+# - This ensures that if you reinstall or need to set up a new machine,
+#   you can restore all necessary secrets from Bitwarden.
