@@ -3,7 +3,7 @@
 
 {
   imports = [
-    ./boot.nix
+    ./boot      # Bootloader selection (systemd/limine/grub)
     ./nix.nix
     ./locale.nix
     ./users.nix

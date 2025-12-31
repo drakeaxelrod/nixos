@@ -1,0 +1,388 @@
+# Libvirt domain generation library
+#
+# Provides types, builders, and XML generators for declarative VM management.
+# Designed to integrate with NixOS module system.
+#
+{ lib }:
+
+rec {
+  # ===========================================================================
+  # Type Definitions (for use in module options)
+  # ===========================================================================
+
+  types = {
+    # PCI address type (validates format)
+    pciAddress = lib.types.strMatching "^[0-9a-fA-F]{4}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}\\.[0-9a-fA-F]$" // {
+      description = "PCI address (e.g., 0000:01:00.0)";
+    };
+
+    # Disk type enum
+    diskBus = lib.types.enum [ "virtio" "sata" "scsi" "ide" ];
+
+    # Network type enum
+    # - nat: Uses libvirt's default network (virbr0), VMs isolated but can access internet
+    # - bridge: Uses a host bridge (br0), VMs get IPs from your router
+    # - macvtap: Direct NIC attachment, no bridge needed, no rebuild for interface changes
+    # - user: SLIRP networking, slowest but no config needed
+    networkType = lib.types.enum [ "nat" "bridge" "macvtap" "user" ];
+
+    # OS type enum
+    osType = lib.types.enum [ "windows" "linux" ];
+
+    # Graphics type enum
+    graphicsType = lib.types.enum [ "spice" "vnc" "none" ];
+  };
+
+  # ===========================================================================
+  # PCI Helpers
+  # ===========================================================================
+
+  pci = {
+    # Parse "0000:01:00.0" into XML-ready components
+    parse = addr:
+      let
+        parts = lib.splitString ":" (lib.removePrefix "0000:" addr);
+        bus = builtins.head parts;
+        devFn = lib.splitString "." (builtins.elemAt parts 1);
+      in {
+        domain = "0x0000";
+        bus = "0x${bus}";
+        slot = "0x${builtins.head devFn}";
+        function = "0x${builtins.elemAt devFn 1}";
+      };
+  };
+
+  # ===========================================================================
+  # XML Builders
+  # ===========================================================================
+
+  xml = {
+    # CPU configuration
+    cpu = {
+      gaming = { cores, threads ? 2, sockets ? 1 }: ''
+        <cpu mode='host-passthrough' check='none' migratable='off'>
+          <topology sockets='${toString sockets}' dies='1' cores='${toString cores}' threads='${toString threads}'/>
+          <cache mode='passthrough'/>
+          <feature policy='require' name='topoext'/>
+          <feature policy='disable' name='hypervisor'/>
+        </cpu>'';
+
+      server = { cores, threads ? 1, sockets ? 1 }: ''
+        <cpu mode='host-passthrough' check='none' migratable='off'>
+          <topology sockets='${toString sockets}' dies='1' cores='${toString cores}' threads='${toString threads}'/>
+          <cache mode='passthrough'/>
+          <feature policy='require' name='topoext'/>
+        </cpu>'';
+    };
+
+    # CPU pinning
+    cputune = { vcpus, startCpu, emulatorCpus ? "0-3" }:
+      let pins = lib.genList (i: "<vcpupin vcpu='${toString i}' cpuset='${toString (startCpu + i)}'/>") vcpus;
+      in ''
+        <cputune>
+          ${lib.concatStringsSep "\n    " pins}
+          <emulatorpin cpuset='${emulatorCpus}'/>
+        </cputune>'';
+
+    # Memory configuration
+    memory = {
+      standard = size: ''
+        <memory unit='MiB'>${toString size}</memory>
+        <currentMemory unit='MiB'>${toString size}</currentMemory>'';
+
+      hugepages = size: ''
+        <memory unit='MiB'>${toString size}</memory>
+        <currentMemory unit='MiB'>${toString size}</currentMemory>
+        <memoryBacking>
+          <hugepages>
+            <page size='1048576' unit='KiB'/>
+          </hugepages>
+        </memoryBacking>'';
+    };
+
+    # OS/firmware configuration
+    os = {
+      uefi = name: ''
+        <os>
+          <type arch='x86_64' machine='pc-q35-8.2'>hvm</type>
+          <loader readonly='yes' type='pflash'>/run/libvirt/nix-ovmf/OVMF_CODE.fd</loader>
+          <nvram>/var/lib/libvirt/qemu/nvram/${name}_VARS.fd</nvram>
+          <boot dev='hd'/>
+        </os>'';
+
+      uefiSecureBoot = name: ''
+        <os>
+          <type arch='x86_64' machine='pc-q35-8.2'>hvm</type>
+          <loader readonly='yes' secure='yes' type='pflash'>/run/libvirt/nix-ovmf/OVMF_CODE.ms.fd</loader>
+          <nvram template='/run/libvirt/nix-ovmf/OVMF_VARS.ms.fd'>/var/lib/libvirt/qemu/nvram/${name}_VARS.fd</nvram>
+          <boot dev='hd'/>
+          <bootmenu enable='yes'/>
+        </os>'';
+    };
+
+    # Feature sets
+    features = {
+      windows = ''
+        <features>
+          <acpi/>
+          <apic/>
+          <hyperv mode='custom'>
+            <relaxed state='on'/>
+            <vapic state='on'/>
+            <spinlocks state='on' retries='8191'/>
+            <vpindex state='on'/>
+            <runtime state='on'/>
+            <synic state='on'/>
+            <stimer state='on'/>
+            <frequencies state='on'/>
+          </hyperv>
+          <kvm><hidden state='on'/></kvm>
+          <vmport state='off'/>
+          <smm state='on'/>
+          <ioapic driver='kvm'/>
+        </features>'';
+
+      linux = ''
+        <features>
+          <acpi/>
+          <apic/>
+          <vmport state='off'/>
+        </features>'';
+    };
+
+    # Clock configuration
+    clock = {
+      windows = ''
+        <clock offset='localtime'>
+          <timer name='rtc' tickpolicy='catchup'/>
+          <timer name='pit' tickpolicy='delay'/>
+          <timer name='hpet' present='no'/>
+          <timer name='hypervclock' present='yes'/>
+          <timer name='tsc' present='yes' mode='native'/>
+        </clock>'';
+
+      linux = ''
+        <clock offset='utc'>
+          <timer name='rtc' tickpolicy='catchup'/>
+          <timer name='pit' tickpolicy='delay'/>
+          <timer name='hpet' present='no'/>
+        </clock>'';
+    };
+
+    # Disk devices
+    disk = {
+      qcow2 = { path, bus ? "virtio", dev ? "vda" }: ''
+        <disk type='file' device='disk'>
+          <driver name='qemu' type='qcow2' cache='none' io='native' discard='unmap'/>
+          <source file='${path}'/>
+          <target dev='${dev}' bus='${bus}'/>
+        </disk>'';
+
+      cdrom = { path, dev }: ''
+        <disk type='file' device='cdrom'>
+          <driver name='qemu' type='raw'/>
+          <source file='${path}'/>
+          <target dev='${dev}' bus='sata'/>
+          <readonly/>
+        </disk>'';
+    };
+
+    # GPU passthrough
+    gpu = {
+      nvidia = { gpuAddr, audioAddr, guestBus ? "0x06" }:
+        let
+          gpu = pci.parse gpuAddr;
+          audio = pci.parse audioAddr;
+        in ''
+          <hostdev mode='subsystem' type='pci' managed='yes'>
+            <source><address domain='${gpu.domain}' bus='${gpu.bus}' slot='${gpu.slot}' function='${gpu.function}'/></source>
+            <address type='pci' domain='0x0000' bus='${guestBus}' slot='0x00' function='0x0' multifunction='on'/>
+          </hostdev>
+          <hostdev mode='subsystem' type='pci' managed='yes'>
+            <source><address domain='${audio.domain}' bus='${audio.bus}' slot='${audio.slot}' function='${audio.function}'/></source>
+            <address type='pci' domain='0x0000' bus='${guestBus}' slot='0x00' function='0x1'/>
+          </hostdev>'';
+    };
+
+    # Network interfaces
+    network = {
+      # NAT - Uses libvirt's default network, works out of the box
+      nat = ''
+        <interface type='network'>
+          <source network='default'/>
+          <model type='virtio'/>
+        </interface>'';
+
+      # Bridge - Uses a pre-configured host bridge
+      bridge = name: ''
+        <interface type='bridge'>
+          <source bridge='${name}'/>
+          <model type='virtio'/>
+        </interface>'';
+
+      # Macvtap - Direct NIC attachment, no bridge needed
+      # mode: bridge (default), vepa, private, passthrough
+      # bridge mode allows VM-to-VM and VM-to-network but NOT VM-to-host
+      macvtap = { interface, mode ? "bridge" }: ''
+        <interface type='direct'>
+          <source dev='${interface}' mode='${mode}'/>
+          <model type='virtio'/>
+        </interface>'';
+
+      # User - SLIRP networking, slowest but simplest
+      user = ''
+        <interface type='user'>
+          <model type='virtio'/>
+        </interface>'';
+    };
+
+    # Shared memory
+    shmem.lookingGlass = size: ''
+      <shmem name='looking-glass'>
+        <model type='ivshmem-plain'/>
+        <size unit='M'>${toString size}</size>
+      </shmem>'';
+
+    # Graphics
+    graphics = {
+      spice = ''
+        <graphics type='spice' autoport='yes'>
+          <listen type='address' address='127.0.0.1'/>
+          <gl enable='no'/>
+        </graphics>'';
+
+      vnc = ''
+        <graphics type='vnc' port='-1' autoport='yes'>
+          <listen type='address' address='127.0.0.1'/>
+        </graphics>'';
+    };
+
+    # Common devices
+    devices = {
+      tpm2 = ''
+        <tpm model='tpm-tis'>
+          <backend type='emulator' version='2.0'/>
+        </tpm>'';
+
+      usb3 = ''
+        <controller type='usb' model='qemu-xhci' ports='15'/>'';
+
+      console = ''
+        <serial type='pty'><target port='0'/></serial>
+        <console type='pty'><target type='serial' port='0'/></console>'';
+    };
+  };
+
+  # ===========================================================================
+  # Domain Builder (assembles complete XML)
+  # ===========================================================================
+
+  mkDomain = {
+    name,
+    vcpus,
+    memory,
+    cpu,
+    cputune ? "",
+    os,
+    features,
+    clock,
+    devices,
+  }: ''
+    <domain type='kvm'>
+      <name>${name}</name>
+      ${memory}
+      <vcpu placement='static'>${toString vcpus}</vcpu>
+      ${cpu}
+      ${cputune}
+      ${os}
+      ${features}
+      ${clock}
+      <on_poweroff>destroy</on_poweroff>
+      <on_reboot>restart</on_reboot>
+      <on_crash>destroy</on_crash>
+      <pm>
+        <suspend-to-mem enabled='no'/>
+        <suspend-to-disk enabled='no'/>
+      </pm>
+      <devices>
+        <emulator>/run/libvirt/nix-emulators/qemu-system-x86_64</emulator>
+        ${devices}
+        <memballoon model='none'/>
+      </devices>
+    </domain>'';
+
+  # ===========================================================================
+  # High-level VM builders (from config attrset)
+  # ===========================================================================
+
+  builders = {
+    # Build Windows gaming VM from module config
+    windowsGaming = cfg: mkDomain {
+      inherit (cfg) name vcpus;
+
+      memory = if cfg.hugepages.enable
+        then xml.memory.hugepages cfg.memory
+        else xml.memory.standard cfg.memory;
+
+      cpu = xml.cpu.gaming {
+        cores = cfg.cpu.cores;
+        threads = cfg.cpu.threads;
+      };
+
+      cputune = lib.optionalString cfg.cpu.pinning.enable (xml.cputune {
+        inherit (cfg) vcpus;
+        startCpu = cfg.cpu.pinning.startCpu;
+        emulatorCpus = cfg.cpu.pinning.emulatorCpus;
+      });
+
+      os = xml.os.uefiSecureBoot cfg.name;
+      features = xml.features.windows;
+      clock = xml.clock.windows;
+
+      devices = lib.concatStringsSep "\n    " (lib.filter (x: x != "") [
+        (xml.disk.qcow2 { path = cfg.storage.disk; })
+        (lib.optionalString (cfg.storage.windowsIso != null)
+          (xml.disk.cdrom { path = cfg.storage.windowsIso; dev = "sda"; }))
+        (lib.optionalString (cfg.storage.virtioIso != null)
+          (xml.disk.cdrom { path = cfg.storage.virtioIso; dev = "sdb"; }))
+        xml.devices.tpm2
+        (lib.optionalString cfg.gpu.enable
+          (xml.gpu.nvidia { gpuAddr = cfg.gpu.address; audioAddr = cfg.gpu.audioAddress; }))
+        (lib.optionalString cfg.gpu.enable
+          (xml.shmem.lookingGlass cfg.lookingGlass.size))
+        (mkNetworkXml cfg.network)
+        (if cfg.graphics == "spice" then xml.graphics.spice
+          else if cfg.graphics == "vnc" then xml.graphics.vnc
+          else "")
+        xml.devices.usb3
+        xml.devices.console
+      ]);
+    };
+
+    # Build Linux server VM from module config
+    linuxServer = cfg: mkDomain {
+      inherit (cfg) name vcpus;
+      memory = xml.memory.standard cfg.memory;
+      cpu = xml.cpu.server { cores = cfg.vcpus; };
+      os = xml.os.uefi cfg.name;
+      features = xml.features.linux;
+      clock = xml.clock.linux;
+      devices = lib.concatStringsSep "\n    " [
+        (xml.disk.qcow2 { path = cfg.storage.disk; })
+        (mkNetworkXml cfg.network)
+        xml.graphics.vnc
+        xml.devices.console
+      ];
+    };
+  };
+
+  # Helper to generate network XML from config
+  mkNetworkXml = netCfg:
+    if netCfg.type == "nat" then xml.network.nat
+    else if netCfg.type == "bridge" then xml.network.bridge netCfg.bridge
+    else if netCfg.type == "macvtap" then xml.network.macvtap {
+      interface = netCfg.interface;
+      mode = netCfg.macvtapMode;
+    }
+    else xml.network.user;
+}

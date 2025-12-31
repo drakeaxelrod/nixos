@@ -14,6 +14,9 @@
   home.homeDirectory = "/home/draxel";
   home.stateVersion = "25.11";
 
+  # Use XDG config directory for zsh (new default in 26.05)
+  programs.zsh.dotDir = "${config.xdg.configHome}/zsh";
+
   # Let home-manager manage itself
   programs.home-manager.enable = true;
 

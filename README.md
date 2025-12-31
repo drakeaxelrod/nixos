@@ -13,11 +13,12 @@ Modular NixOS configuration for a VFIO-optimized gaming/pentesting workstation.
 
 ## Features
 
-- VFIO GPU passthrough (primary mode - GPU always isolated)
-- Declarative Windows 11 VM with Looking Glass
-- Impermanence (ephemeral root filesystem)
-- SOPS secrets management
-- Btrfs snapshots with btrbk
+- **VFIO GPU passthrough** with dual-boot support (host GPU / VM passthrough)
+- **Declarative VMs** - NixOS-native libvirt VM definitions
+- **Looking Glass** + Scream for low-latency VM display/audio
+- **Impermanence** - ephemeral root filesystem
+- **SOPS** secrets management
+- **Btrfs** snapshots with btrbk
 
 ---
 
@@ -60,9 +61,8 @@ On your **local machine**:
 nix-shell -p nixos-anywhere
 
 # Run the installation directly from GitHub
-# Replace YOUR_USERNAME with your GitHub username
 nixos-anywhere \
-  --flake github:YOUR_USERNAME/nixos-config#toaster \
+  --flake github:DrakeAxelrod/nixos#toaster \
   --disk-encryption-keys /tmp/cryptkey <(echo -n "YOUR_LUKS_PASSPHRASE") \
   nixos@192.168.1.100
 ```
@@ -71,7 +71,7 @@ nixos-anywhere \
 
 ```bash
 nixos-anywhere \
-  --flake github:YOUR_USERNAME/nixos-config#toaster \
+  --flake github:DrakeAxelrod/nixos#toaster \
   --disk-encryption-keys /tmp/cryptkey <(echo -n "YOUR_LUKS_PASSPHRASE") \
   --ssh-option "IdentityFile=/path/to/your/key" \
   nixos@192.168.1.100
@@ -107,23 +107,36 @@ ip link
 # Example: enp6s0
 
 # Clone config for local editing
-sudo git clone https://github.com/YOUR_USERNAME/nixos-config.git /etc/nixos
-cd /etc/nixos
+git clone https://github.com/DrakeAxelrod/nixos.git ~/.config/nixos
+cd ~/.config/nixos
 
 # Update hosts/toaster/default.nix with real values:
-sudo vim hosts/toaster/default.nix
+vim hosts/toaster/default.nix
 ```
 
-Update these lines:
+Update the VM configuration with your GPU values:
 ```nix
-modules.vfio.gpuPciIds = [ "10de:2782" "10de:22bc" ];  # Your actual IDs
-modules.vfio.gpuPciAddresses = [ "0000:01:00.0" "0000:01:00.1" ];
+# In virtualisation.vms.win11.gpu:
+gpu = {
+  enable = true;
+  pciId = "10de:2782";           # From lspci -nn
+  audioPciId = "10de:22bc";
+  address = "0000:01:00.0";       # From lspci -D
+  audioAddress = "0000:01:00.1";
+};
+
+# Enable dual-boot
+modules.vfio.dualBoot.enable = true;
+
+# Optional: bridge networking
 modules.networking.bridge.interface = "enp6s0";  # Your actual interface
 ```
 
+See [docs/gpu-passthrough.md](docs/gpu-passthrough.md) for full setup guide.
+
 Rebuild:
 ```bash
-sudo nixos-rebuild switch --flake /etc/nixos#toaster
+sudo nixos-rebuild switch --flake ~/.config/nixos#toaster
 ```
 
 ---
@@ -143,13 +156,13 @@ sudo -i
 
 ```bash
 # Run disko directly from GitHub flake
-nix run github:YOUR_USERNAME/nixos-config#disko -- \
+nix run github:DrakeAxelrod/nixos#disko -- \
   --mode disko \
-  github:YOUR_USERNAME/nixos-config#nixosConfigurations.toaster.config.disko.devices
+  github:DrakeAxelrod/nixos#nixosConfigurations.toaster.config.disko.devices
 
 # Or simpler - fetch and run the disko config
 nix-shell -p git
-git clone https://github.com/YOUR_USERNAME/nixos-config.git /tmp/nixos
+git clone https://github.com/DrakeAxelrod/nixos.git /tmp/nixos
 nix run github:nix-community/disko -- --mode disko /tmp/nixos/hosts/toaster/disko.nix
 ```
 
@@ -159,7 +172,7 @@ Enter LUKS passphrase when prompted (same for both disks).
 
 ```bash
 # Install directly from GitHub flake
-nixos-install --flake github:YOUR_USERNAME/nixos-config#toaster --no-root-passwd
+nixos-install --flake github:DrakeAxelrod/nixos#toaster --no-root-passwd
 ```
 
 ### Step 4: Reboot
@@ -187,11 +200,11 @@ sudo btrfs subvolume snapshot -r /mnt/@rootfs /mnt/@rootfs-blank
 sudo umount /mnt
 
 # Enable in config
-sudo vim /etc/nixos/hosts/toaster/default.nix
+vim ~/.config/nixos/hosts/toaster/default.nix
 # Uncomment: modules.impermanence.enable = true;
 
 # Rebuild
-sudo nixos-rebuild switch --flake /etc/nixos#toaster
+sudo nixos-rebuild switch --flake ~/.config/nixos#toaster
 ```
 
 ### Setup SOPS Secrets
@@ -240,19 +253,24 @@ looking-glass-client -f /dev/shm/looking-glass
 ## Development Commands
 
 ```bash
-cd /etc/nixos
+cd ~/.config/nixos
 nix develop
 
-# Commands:
-rebuild            # Rebuild and switch
-rebuild-boot       # Rebuild for next boot
-rebuild-test       # Test without boot entry
-rebuild-dry        # Dry run
-update             # Update flake inputs
-diff               # Show system diff
-gc                 # Garbage collect
-fmt                # Format nix files
-check              # Check flake
+# Commands (unified nx tool):
+nx                 # Show help
+nx switch          # Rebuild and switch (toaster)
+nx switch laptop   # Rebuild and switch (laptop)
+nx boot            # Rebuild for next boot
+nx test            # Test without boot entry
+nx dry             # Dry run
+nx build           # Build without activating
+nx update          # Update flake inputs
+nx diff            # Show system diff
+nx gc              # Garbage collect
+nx fmt             # Format nix files
+nx check           # Check flake
+
+# Other commands:
 sops-edit          # Edit secrets
 discover-hardware  # Show GPU/network info
 ```
@@ -264,13 +282,15 @@ discover-hardware  # Show GPU/network info
 ### Rebuild from GitHub (after changes pushed)
 
 ```bash
-sudo nixos-rebuild switch --flake github:YOUR_USERNAME/nixos-config#toaster
+sudo nixos-rebuild switch --flake github:DrakeAxelrod/nixos#toaster
 ```
 
 ### Rebuild from Local
 
 ```bash
-sudo nixos-rebuild switch --flake /etc/nixos#toaster
+sudo nixos-rebuild switch --flake ~/.config/nixos#toaster
+# Or using devshell:
+nx switch
 ```
 
 ### Check IOMMU Groups
@@ -289,23 +309,29 @@ done | sort -V
 ```
 nixos/
 ├── flake.nix                 # Main entry point
+├── docs/                     # Documentation
+│   └── gpu-passthrough.md    # VFIO/VM setup guide
+├── lib/                      # Custom library functions
+│   ├── default.nix           # mkHost helper
+│   └── libvirt.nix           # Declarative VM XML generation
 ├── hosts/toaster/            # Host-specific config
 │   ├── default.nix           # Main host config
 │   ├── hardware.nix          # Hardware docs
 │   └── disko.nix             # Disk partitioning
+├── users/                    # Self-contained user modules
+│   └── draxel/               # NixOS user + Home Manager
+│       ├── default.nix       # User module entry point
+│       └── home/             # Home Manager config
 ├── modules/                  # Reusable modules
 │   ├── core/                 # Boot, nix, locale, users
 │   ├── hardware/             # CPU, GPU, storage
-│   ├── vfio/                 # GPU passthrough
+│   ├── vfio/                 # GPU passthrough + dual-boot
 │   ├── virtualization/       # libvirt, docker
+│   ├── vms/                  # Declarative VM definitions
 │   ├── desktop/              # GNOME, Wayland
 │   ├── networking/           # Bridge, Tailscale
 │   ├── services/             # SSH, btrbk
 │   ├── security/             # SOPS
 │   └── impermanence/         # Ephemeral root
-├── vms/                      # VM definitions
-│   └── windows11.nix
-├── home/                     # Home Manager configs
-│   └── users/draxel/
 └── secrets/                  # Encrypted secrets
 ```

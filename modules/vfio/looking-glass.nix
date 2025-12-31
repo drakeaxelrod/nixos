@@ -1,16 +1,27 @@
 # Looking Glass - low-latency VM display
+#
+# Usage:
+#   modules.vfio.lookingGlass = {
+#     enable = true;
+#     users = [ "draxel" ];  # Users who can use Looking Glass
+#   };
+#
 { config, lib, pkgs, ... }:
 
 let
   cfg = config.modules.vfio;
-  userCfg = config.modules.users;
+  lgCfg = cfg.lookingGlass;
+  firstUser = if lgCfg.users != [] then lib.head lgCfg.users else "root";
 in
 {
   options.modules.vfio.lookingGlass = {
-    enable = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
-      description = "Enable Looking Glass for low-latency VM display";
+    enable = lib.mkEnableOption "Looking Glass for low-latency VM display";
+
+    users = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [];
+      example = [ "draxel" ];
+      description = "Users who can access Looking Glass";
     };
 
     shmSize = lib.mkOption {
@@ -20,27 +31,28 @@ in
     };
   };
 
-  config = lib.mkIf (cfg.enable && cfg.lookingGlass.enable) {
+  config = lib.mkIf (cfg.enable && lgCfg.enable && lgCfg.users != []) {
     # KVMFR kernel module
     boot.extraModulePackages = with config.boot.kernelPackages; [ kvmfr ];
     boot.kernelModules = [ "kvmfr" ];
 
-    # Configure KVMFR shared memory size
     boot.extraModprobeConfig = ''
-      options kvmfr static_size_mb=${toString cfg.lookingGlass.shmSize}
+      options kvmfr static_size_mb=${toString lgCfg.shmSize}
     '';
 
-    # Shared memory device
+    # Shared memory - owned by first user, group access for others
     systemd.tmpfiles.rules = [
-      "f /dev/shm/looking-glass 0660 ${userCfg.primaryUser} libvirtd -"
+      "f /dev/shm/looking-glass 0660 ${firstUser} libvirtd -"
     ];
 
-    # udev rules for KVMFR device
+    # udev rules - group-based access
     services.udev.extraRules = ''
-      SUBSYSTEM=="kvmfr", OWNER="${userCfg.primaryUser}", GROUP="libvirtd", MODE="0660"
+      SUBSYSTEM=="kvmfr", GROUP="libvirtd", MODE="0660"
     '';
 
-    # Looking Glass client
+    # Add all users to libvirtd group for access
+    users.groups.libvirtd.members = lgCfg.users;
+
     environment.systemPackages = [ pkgs.looking-glass-client ];
   };
 }
