@@ -3,7 +3,7 @@
 # A minimal, clean NixOS configuration for general use.
 # Perfect for testing, development, or as a base to customize.
 
-{ config, pkgs, lib, inputs, meta, ... }:
+{ config, pkgs, lib, inputs, meta, modules, ... }:
 
 let
   # Helper to get specific users from meta.users
@@ -16,6 +16,21 @@ in
 {
   imports = [
     ./disko.nix
+
+    # Import-based pattern: explicitly import only needed modules
+
+    # Desktop environment
+    modules.nixos.desktop.display.gdm
+    modules.nixos.desktop.managers.gnome
+
+    # Hardware
+    modules.nixos.hardware.audio
+
+    # Services
+    modules.nixos.services.openssh
+
+    # Security
+    modules.nixos.security.base
   ];
 
   # ==========================================================================
@@ -29,7 +44,7 @@ in
   # Bootloader
   # ==========================================================================
 
-  modules.core.boot = {
+  modules.system.boot = {
     loader = "systemd";
     maxGenerations = 10;
     timeout = 3;
@@ -39,50 +54,61 @@ in
   # Hardware
   # ==========================================================================
 
-  # Enable based on your hardware
-  # modules.hardware.amd.enable = true;      # AMD CPU + GPU
-  # modules.hardware.nvidia.enable = true;   # NVIDIA GPU
+  # Hardware modules imported above - configure here
+  # Import additional hardware modules as needed:
+  # modules.nixos.hardware.amd
+  # modules.nixos.hardware.nvidia
+  # modules.nixos.hardware.bluetooth
   modules.hardware.audio.enable = true;
-  # modules.hardware.bluetooth.enable = true;
 
   # ==========================================================================
   # Desktop Environment
   # ==========================================================================
 
+  # Desktop modules imported above - configure here
   modules.desktop.gnome.enable = true;
-  modules.desktop.wayland.enable = true;
+  modules.desktop.gdm.enable = true;
 
   # ==========================================================================
   # Networking
   # ==========================================================================
 
-  # modules.networking.tailscale.enable = true;
+  # Import additional networking modules as needed:
+  # modules.nixos.networking.tailscale
 
   # ==========================================================================
   # Services
   # ==========================================================================
 
+  # Service modules imported above - configure here
+  # Import additional services as needed:
+  # modules.nixos.services.printing
   modules.services.openssh.enable = true;
-  # modules.services.printing.enable = true;
 
   # ==========================================================================
   # Security
   # ==========================================================================
 
+  # Security modules imported above - configure here
   modules.security.base.enable = true;
 
   # ==========================================================================
   # Virtualization (optional)
   # ==========================================================================
 
+  # Import virtualization modules as needed:
+  # modules.nixos.virtualization.docker
+  # modules.nixos.virtualization.libvirt
+
+  # Then configure:
   # modules.virtualization.docker = {
   #   enable = true;
-  #   users = [ users.draxel ];  # Derived from meta.users
+  #   users = [ users.draxel ];
   # };
 
   # modules.virtualization.libvirt = {
   #   enable = true;
-  #   users = [ users.draxel ];  # Derived from meta.users
+  #   users = [ users.draxel ];
   # };
 
   # ==========================================================================

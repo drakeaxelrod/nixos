@@ -7,7 +7,7 @@
 #   - NixOS           → Host GPU mode (NVIDIA on host for gaming/CUDA)
 #   - NixOS [vfio]    → VFIO mode (GPU isolated for Windows VM)
 #
-{ config, lib, pkgs, inputs, meta, ... }:
+{ config, lib, pkgs, inputs, meta, modules, ... }:
 
 let
   # Helper to get specific users from meta.users
@@ -20,6 +20,39 @@ in
 {
   imports = [
     ./disko.nix
+
+    # Import-based pattern: explicitly import only needed modules
+
+    # Desktop environment
+    modules.nixos.desktop.display.gdm
+    modules.nixos.desktop.managers.gnome
+
+    # Hardware
+    modules.nixos.hardware.amd
+    modules.nixos.hardware.nvidia
+    modules.nixos.hardware.audio
+
+    # Networking
+    modules.nixos.networking.tailscale
+
+    # Services
+    modules.nixos.services.openssh
+    modules.nixos.services.btrbk
+
+    # Virtualization
+    modules.nixos.virtualization.libvirt
+    modules.nixos.virtualization.docker
+
+    # VFIO - granular imports
+    modules.nixos.vfio.dualBoot      # Provides dualBoot option + auto-imports core
+    modules.nixos.vfio.lookingGlass
+    modules.nixos.vfio.scream
+
+    # VMs
+    modules.nixos.vms
+
+    # Security
+    modules.nixos.security.sops
   ];
 
   # ==========================================================================
@@ -33,7 +66,7 @@ in
   # Bootloader - Limine for clean boot menu
   # ==========================================================================
 
-  modules.core.boot = {
+  modules.system.boot = {
     loader = "limine";     # Modern, stylish bootloader
     maxGenerations = 10;    # Keep boot menu clean
     timeout = 5;           # 5 second timeout
@@ -43,8 +76,24 @@ in
   # Hardware Features
   # ==========================================================================
 
-  # AMD CPU and GPU (includes nixos-hardware modules)
+  # AMD CPU and iGPU (Radeon 780M)
   modules.hardware.amd.enable = true;
+
+  # NVIDIA RTX 5070 Ti (discrete GPU)
+  modules.hardware.nvidia = {
+    enable = true;
+    enableWayland = true;
+    enableSuspendSupport = true;
+    powerManagement.enable = true;
+
+    # PRIME configuration for hybrid graphics (AMD iGPU + NVIDIA dGPU)
+    prime = {
+      enable = true;
+      mode = "offload";  # On-demand NVIDIA rendering
+      amdBusId = "PCI:13:0:0";    # AMD 780M iGPU (0d:00.0)
+      nvidiaBusId = "PCI:1:0:0";  # NVIDIA RTX 5070 Ti (01:00.0)
+    };
+  };
 
   # Audio
   modules.hardware.audio.enable = true;
@@ -87,9 +136,19 @@ in
   # ==========================================================================
   # Desktop Environment
   # ==========================================================================
+  # Desktop modules are now imported above (import-based pattern)
+  # Configuration is done here through options
 
+  # Enable GNOME desktop
   modules.desktop.gnome.enable = true;
-  modules.desktop.wayland.enable = true;
+
+  # Enable GDM with Wayland
+  modules.desktop.gdm = {
+    enable = true;
+    wayland = true;
+  };
+
+  # Enable Wayland utilities
 
   # ==========================================================================
   # Networking
@@ -142,50 +201,50 @@ in
   #   - modules.vfio.gpuPciAddresses
   #   - modules.vfio.lookingGlass.shmSize
   #
-  # VFIO must be explicitly enabled (see specialisation above).
+  # VFIO must be explicitly enabled (see dual-boot mode above).
   # The VM is always defined, but GPU passthrough only works in VFIO boot.
 
-  # virtualisation.vms.win11 = {
-  #   type = "windows-gaming";
-  #   memory = 32768;           # 32GB RAM
-  #   vcpus = 12;               # Total vCPUs (cores * threads)
-  #
-  #   cpu = {
-  #     cores = 6;              # 6 physical cores
-  #     threads = 2;            # 2 threads per core
-  #     pinning = {
-  #       enable = true;        # Pin vCPUs to host CPUs
-  #       startCpu = 4;         # Reserve CPUs 0-3 for host
-  #     };
-  #   };
-  #
-  #   hugepages = {
-  #     enable = true;          # Use 1GB hugepages
-  #     count = 32;             # 32 x 1GB = 32GB
-  #   };
-  #
-  #   gpu = {
-  #     enable = true;
-  #     # PLACEHOLDER: Run lspci -nn | grep -i nvidia for IDs
-  #     pciId = "10de:XXXX";           # GPU vendor:device (for VFIO kernel binding)
-  #     audioPciId = "10de:XXXX";      # Audio vendor:device
-  #     # PLACEHOLDER: Run lspci -D | grep -i nvidia for addresses
-  #     address = "0000:01:00.0";       # GPU address (for libvirt XML)
-  #     audioAddress = "0000:01:00.1";  # Audio address
-  #   };
-  #
-  #   storage = {
-  #     disk = "/var/lib/libvirt/images/win11.qcow2";
-  #     # Uncomment for fresh install:
-  #     # windowsIso = /var/lib/libvirt/images/Win11.iso;
-  #     # virtioIso = /var/lib/libvirt/images/virtio-win.iso;
-  #   };
-  #
-  #   network.type = "nat";     # or "bridge" with network.bridge = "br0"
-  #   graphics = "spice";       # "spice", "vnc", or "none"
-  #   lookingGlass.size = 128;  # KVMFR shared memory for 4K
-  #   autostart = false;
-  # };
+  virtualisation.vms.win11 = {
+    type = "windows-gaming";
+    memory = 32768;           # 32GB RAM
+    vcpus = 12;               # Total vCPUs (cores * threads)
+
+    cpu = {
+      cores = 6;              # 6 physical cores
+      threads = 2;            # 2 threads per core
+      pinning = {
+        enable = true;        # Pin vCPUs to host CPUs
+        startCpu = 4;         # Reserve CPUs 0-3 for host
+      };
+    };
+
+    hugepages = {
+      enable = true;          # Use 1GB hugepages
+      count = 32;             # 32 x 1GB = 32GB
+    };
+
+    gpu = {
+      enable = true;
+      # NVIDIA RTX 5070 Ti (GB203)
+      pciId = "10de:2c05";           # GPU vendor:device (for VFIO kernel binding)
+      audioPciId = "10de:22e9";      # Audio vendor:device
+      # PCI addresses from lspci -D
+      address = "0000:01:00.0";       # GPU address (for libvirt XML)
+      audioAddress = "0000:01:00.1";  # Audio address
+    };
+
+    storage = {
+      disk = "/var/lib/libvirt/images/win11.qcow2";
+      # Uncomment for fresh install:
+      # windowsIso = /var/lib/libvirt/images/Win11.iso;
+      # virtioIso = /var/lib/libvirt/images/virtio-win.iso;
+    };
+
+    network.type = "nat";     # or "bridge" with network.bridge = "br0"
+    graphics = "spice";       # "spice", "vnc", or "none"
+    lookingGlass.size = 128;  # KVMFR shared memory for 4K
+    autostart = false;
+  };
 
   # ==========================================================================
   # Users

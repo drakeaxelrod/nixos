@@ -1,5 +1,5 @@
 # draxel's Home Manager configuration
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, inputs, modules, ... }:
 
 let
   # NixOS flake operations script - shared with devshell
@@ -7,55 +7,64 @@ let
 in
 {
   imports = [
-    ./core
-    ./shell
-    ./dev
-    ./editors
-    ./desktop
-    ./apps
     # Zen Browser - modern Firefox-based browser with vertical tabs
-    inputs.zen-browser.homeModules.default
+    # Plasma Manager - KDE Plasma configuration
+
+    # Desktop environment (GNOME) - includes fonts, GTK, Qt
+    modules.home.desktop.gnome
+    # modules.home.desktop.plasma  # Or use Plasma instead
+
+    # Shell configurations
+    modules.home.shell.bat
+    modules.home.shell.direnv
+    modules.home.shell.fzf
+    modules.home.shell.lsd
+    modules.home.shell.starship
+    modules.home.shell.zoxide
+    modules.home.shell.zsh
+
+    # Development tools
+    modules.home.dev.git
+    modules.home.dev.lazygit
+    modules.home.dev.tools
+
+    # Editors
+    modules.home.editors.claudeCode
+    modules.home.editors.neovim
+    modules.home.editors.vscode
+
+    # Applications
+    modules.home.apps.moonlight
+    modules.home.apps.steam
+    modules.home.apps.stremio
+    modules.home.apps.zenBrowser
   ];
 
   home.username = "draxel";
   home.homeDirectory = "/home/draxel";
   home.stateVersion = "25.11";
 
-  # Zen Browser
-  programs.zen-browser.enable = true;
+  # Link wallpapers from nixos config to Pictures directory
+  # Example: Makes assets/wallpapers available at ~/Pictures/wallpapers
+  home.file."Pictures/wallpapers" = {
+    source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/assets/wallpapers";
+    recursive = true;
+  };
+
 
   # User packages
   home.packages = with pkgs; [
     # Custom scripts
     nx
 
-    # CLI tools (these are configured in shell/)
-    # eza, bat, fzf, zoxide are configured via programs.*
-
-    # Git tools (configured in dev/git.nix and dev/lazygit.nix)
-    # git, lazygit, gh are configured via programs.*
-
-    # Development (main dev tools are in dev/tools.nix)
+    # Development
     nix-direnv  # Nix-specific direnv integration
 
-    # Security/Pentest (uncomment as needed)
-    # nmap
-    # burpsuite  # Unfree
-    # ghidra
-
-    # Media (uncomment as needed)
-    # vlc
-    # spotify
-
-    # Communication (uncomment as needed)
+    # Communication
     discord
-    # slack
 
     # Audio
     pavucontrol  # Audio control
-
-    # Web browsers
-    # firefox
   ];
 
   # Use XDG config directory for zsh (new default in 26.05)

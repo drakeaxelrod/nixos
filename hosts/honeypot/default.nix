@@ -4,7 +4,7 @@
 # Includes comprehensive pentesting tools, Metasploit, Wireshark,
 # and proper permissions for security testing.
 
-{ config, pkgs, lib, inputs, meta, ... }:
+{ config, pkgs, lib, inputs, meta, modules, ... }:
 
 let
   # Helper to get specific users from meta.users
@@ -17,6 +17,27 @@ in
 {
   imports = [
     ./disko.nix
+
+    # Import-based pattern: explicitly import only needed modules
+
+    # Desktop environment
+    modules.nixos.desktop.display.gdm
+    modules.nixos.desktop.managers.gnome
+
+    # Hardware
+    modules.nixos.hardware.audio
+    modules.nixos.hardware.bluetooth
+
+    # Services
+    modules.nixos.services.openssh
+    modules.nixos.services.printing
+
+    # Virtualization
+    modules.nixos.virtualization.libvirt
+    modules.nixos.virtualization.docker
+
+    # Security
+    modules.nixos.security.base
   ];
 
   # ==========================================================================
@@ -30,21 +51,20 @@ in
   # Bootloader
   # ==========================================================================
 
-  modules.core.boot = {
+  modules.system.boot = {
     loader = "systemd";
     maxGenerations = 10;
     timeout = 3;
   };
 
   # Use latest kernel for best hardware support
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = lib.mkForce pkgs.linuxPackages_latest;
 
   # ==========================================================================
   # Hardware
   # ==========================================================================
 
-  # modules.hardware.amd.enable = true;      # Enable based on hardware
-  # modules.hardware.nvidia.enable = true;
+  # Hardware modules imported above - configure here
   modules.hardware.audio.enable = true;
   modules.hardware.bluetooth.enable = true;
 
@@ -52,8 +72,9 @@ in
   # Desktop Environment
   # ==========================================================================
 
+  # Desktop modules imported above - configure here
   modules.desktop.gnome.enable = true;
-  modules.desktop.wayland.enable = true;
+  modules.desktop.gdm.enable = true;
 
   # ==========================================================================
   # Networking
@@ -70,6 +91,7 @@ in
   # Services
   # ==========================================================================
 
+  # Service modules imported above - configure here
   modules.services.openssh.enable = true;
   modules.services.printing.enable = true;
 
@@ -87,6 +109,7 @@ in
   # Security (pentest-specific)
   # ==========================================================================
 
+  # Security modules imported above - configure here
   modules.security.base.enable = true;
 
   # Allow packet capture without root
