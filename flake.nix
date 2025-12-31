@@ -177,6 +177,12 @@
 
         # Formatter
         formatter = pkgs.nixpkgs-fmt;
+
+        # Apps
+        apps.disko = {
+          type = "app";
+          program = "${inputs.disko.packages.${system}.disko}/bin/disko";
+        };
       };
     };
 }
