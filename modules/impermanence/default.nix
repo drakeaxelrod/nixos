@@ -1,12 +1,11 @@
 # Impermanence - ephemeral root filesystem with smart defaults
 #
-# Automatically persists data for enabled services.
-# Just enable and specify users - it figures out the rest.
+# Automatically persists SYSTEM data for enabled services in /persist.
+# User data in /home and /work are separate persistent Btrfs subvolumes.
 #
 # Usage:
 #   modules.impermanence = {
 #     enable = true;
-#     users = [ "draxel" ];
 #   };
 #
 { config, lib, pkgs, ... }:
@@ -15,6 +14,8 @@ let
   cfg = config.modules.impermanence;
 
   # Auto-detect what needs persisting based on enabled services
+  # NOTE: /home, /work, /var/lib/libvirt, /var/log are persistent Btrfs subvolumes
+  # Only system dirs that live in ephemeral /rootfs need persistence to /persist
   autoSystemDirs = lib.flatten [
     # Always needed
     [ "/var/lib/nixos" ]
@@ -23,8 +24,8 @@ let
     (lib.optional config.networking.networkmanager.enable "/etc/NetworkManager/system-connections")
     (lib.optional config.services.tailscale.enable "/var/lib/tailscale")
 
-    # Virtualization
-    (lib.optional config.virtualisation.libvirtd.enable "/var/lib/libvirt")
+    # Virtualization - handled by separate @libvirt subvolume in disko
+    # (lib.optional config.virtualisation.libvirtd.enable "/var/lib/libvirt")
     (lib.optional config.virtualisation.docker.enable "/var/lib/docker")
 
     # Services
@@ -39,35 +40,11 @@ let
   ];
 
   autoSystemFiles = [
-    "/etc/machine-id"
+    # Note: /etc/machine-id is managed by systemd and NixOS's /etc management
+    # Persisting it causes conflicts - systemd-machine-id-commit handles persistence
+    # "/etc/machine-id"
     "/etc/adjtime"
   ];
-
-  # Default user directories - common dotfiles and data
-  defaultUserDirs = [
-    "Downloads" "Documents" "Pictures" "Videos" "Projects"
-    ".gnupg" ".ssh" ".local/share/keyrings"
-    ".config/nixos"
-  ];
-
-  # Auto-detect user directories based on enabled features
-  autoUserDirs = lib.flatten [
-    defaultUserDirs
-
-    # Browser
-    (lib.optional config.programs.firefox.enable ".mozilla")
-
-    # Gaming
-    (lib.optionals (config.programs.steam.enable or false) [
-      ".steam"
-      { directory = ".local/share/Steam"; method = "symlink"; }
-    ])
-
-    # Apps (check if packages are in system or user packages)
-    (lib.optional (builtins.elem pkgs.discord (config.environment.systemPackages or [])) ".config/discord")
-  ];
-
-  defaultUserFiles = [ ".zsh_history" ".bash_history" ];
 in
 {
   options.modules.impermanence = {
@@ -79,15 +56,7 @@ in
       description = "Path to persistent storage";
     };
 
-    # Users to persist (simple list - uses smart defaults)
-    users = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
-      default = [];
-      example = [ "draxel" ];
-      description = "Users to set up persistence for (uses smart defaults)";
-    };
-
-    # Extension points for additional persistence
+    # Extension points for additional system persistence
     extraDirectories = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [];
@@ -99,12 +68,6 @@ in
       default = [];
       description = "Additional system files to persist";
     };
-
-    extraUserDirectories = lib.mkOption {
-      type = lib.types.listOf (lib.types.either lib.types.str lib.types.attrs);
-      default = [];
-      description = "Additional directories to persist for all users";
-    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -113,21 +76,33 @@ in
     environment.persistence.${cfg.persistPath} = {
       hideMounts = true;
 
-      # Smart system persistence
+      # System-level persistence only (/home is a separate persistent subvolume)
       directories = lib.unique (autoSystemDirs ++ cfg.extraDirectories);
       files = lib.unique (autoSystemFiles ++ cfg.extraFiles);
-
-      # Smart user persistence
-      users = lib.genAttrs cfg.users (_: {
-        directories = lib.unique (autoUserDirs ++ cfg.extraUserDirectories);
-        files = defaultUserFiles;
-      });
     };
 
     # Wipe root on boot (requires @rootfs-blank snapshot)
     boot.initrd.postDeviceCommands = lib.mkAfter ''
       mkdir -p /mnt
       mount -o subvol=/ /dev/mapper/cryptroot1 /mnt
+
+      # Safety check: Ensure critical subvolumes exist before wiping
+      # This prevents data loss if disko setup failed
+      CRITICAL_DIRS="/mnt/@persist /mnt/@home /mnt/@work /mnt/@nix"
+      MISSING_DIRS=""
+      for dir in $CRITICAL_DIRS; do
+        if [ ! -d "$dir" ]; then
+          MISSING_DIRS="$MISSING_DIRS $dir"
+        fi
+      done
+
+      if [ -n "$MISSING_DIRS" ]; then
+        echo "WARNING: Critical Btrfs subvolumes missing:$MISSING_DIRS"
+        echo "Skipping rootfs wipe to prevent data loss!"
+        echo "Please ensure all subvolumes are created before rebooting."
+        umount /mnt
+        exit 0
+      fi
 
       if [ -d /mnt/@rootfs ]; then
         btrfs subvolume list -o /mnt/@rootfs 2>/dev/null | cut -d' ' -f9 | while read subvol; do

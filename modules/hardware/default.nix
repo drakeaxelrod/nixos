@@ -6,5 +6,6 @@
     ./amd-cpu.nix
     ./amd-gpu.nix
     ./storage.nix
+    ./audio.nix
   ];
 }

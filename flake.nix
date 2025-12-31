@@ -37,6 +37,17 @@
       url = "github:numtide/devshell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    
+    # Browser
+    zen-browser = {
+      url = "github:0xc000022070/zen-browser-flake";
+      inputs = {
+        # IMPORTANT: we're using "libgbm" and is only available in unstable so ensure
+        # to have it up-to-date or simply don't specify nixpkgs input
+        nixpkgs.follows = "nixpkgs";
+        home-manager.follows = "home-manager";
+      };
+    };
   };
 
   outputs = inputs@{ flake-parts, nixpkgs, ... }:
@@ -77,7 +88,7 @@
       in {
         # Development shell
         devShells.default = inputs.devshell.legacyPackages.${system}.mkShell {
-          name = "nixos-config";
+          name = "MyNixOS";
 
           packages = with pkgs; [
             nil           # Nix LSP
@@ -92,58 +103,7 @@
               name = "nx";
               category = "nixos";
               help = "NixOS operations: nx <action> [host]";
-              command = ''
-                action="''${1:-}"
-                host="''${2:-toaster}"
-                shift 2 2>/dev/null || shift 1 2>/dev/null || true
-
-                case "$action" in
-                  switch|boot|test)
-                    sudo nixos-rebuild "$action" --flake ".#$host" -j 8 --cores 2 "$@"
-                    ;;
-                  dry)
-                    nixos-rebuild dry-build --flake ".#$host" "$@"
-                    ;;
-                  build)
-                    nixos-rebuild build --flake ".#$host" "$@"
-                    ;;
-                  update)
-                    nix flake update "$@"
-                    ;;
-                  diff)
-                    nixos-rebuild build --flake ".#$host" && nvd diff /run/current-system result
-                    ;;
-                  gc)
-                    sudo nix-collect-garbage -d && nix-collect-garbage -d
-                    ;;
-                  fmt)
-                    find . -name '*.nix' -exec nixpkgs-fmt {} +
-                    ;;
-                  check)
-                    nix flake check "$@"
-                    ;;
-                  *)
-                    echo "nx - NixOS flake operations"
-                    echo ""
-                    echo "Usage: nx <action> [host] [extra-args...]"
-                    echo ""
-                    echo "Actions:"
-                    echo "  switch  - Switch to new configuration"
-                    echo "  boot    - Rebuild for next boot"
-                    echo "  test    - Test without adding to boot menu"
-                    echo "  dry     - Dry run - show what would be built"
-                    echo "  build   - Build without activating"
-                    echo "  update  - Update flake inputs"
-                    echo "  diff    - Show diff between current and new"
-                    echo "  gc      - Garbage collect old generations"
-                    echo "  fmt     - Format nix files"
-                    echo "  check   - Check flake for errors"
-                    echo ""
-                    echo "Host defaults to 'toaster' if not specified."
-                    [ -n "$action" ] && exit 1 || exit 0
-                    ;;
-                esac
-              '';
+              command = builtins.readFile ./scripts/nx.sh;
             }
             {
               name = "sops-edit";

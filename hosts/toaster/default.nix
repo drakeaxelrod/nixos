@@ -40,6 +40,12 @@
   modules.hardware.amd-gpu.enable = true;
 
   # ==========================================================================
+  # audio
+  # ==========================================================================
+  
+  modules.hardware.audio.enable = true;
+
+  # ==========================================================================
   # GPU Mode (Dual-Boot)
   # ==========================================================================
   # Creates boot entries for switching GPU modes:
@@ -98,17 +104,15 @@
   # ==========================================================================
 
   modules.services.openssh.enable = true;
-  # modules.services.btrbk.enable = true;
+  modules.services.btrbk.enable = true;
 
   # ==========================================================================
   # Impermanence (Ephemeral Root)
   # ==========================================================================
 
   # Disabled by default - enable after creating @rootfs-blank snapshot
-  # modules.impermanence = {
-  #   enable = true;
-  #   users = [ "draxel" ];  # Users to persist home directories for
-  # };
+  # NOTE: /home is a persistent Btrfs subvolume - only /rootfs is wiped on boot
+  modules.impermanence.enable = true;
 
   # ==========================================================================
   # SOPS Secrets
