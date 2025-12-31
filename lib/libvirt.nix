@@ -1,388 +1,368 @@
-# Libvirt domain generation library
+# Libvirt domain XML generation library
 #
-# Provides types, builders, and XML generators for declarative VM management.
-# Designed to integrate with NixOS module system.
+# Provides a single function `generateDomainXML` that takes a VM config
+# and generates libvirt domain XML.
 #
 { lib }:
 
 rec {
   # ===========================================================================
-  # Type Definitions (for use in module options)
+  # Helper Functions
   # ===========================================================================
 
-  types = {
-    # PCI address type (validates format)
-    pciAddress = lib.types.strMatching "^[0-9a-fA-F]{4}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}\\.[0-9a-fA-F]$" // {
-      description = "PCI address (e.g., 0000:01:00.0)";
+  # Generate XML tag with optional attributes and content
+  mkTag = tag: attrs: content:
+    let
+      attrStr = lib.concatStringsSep " " (
+        lib.mapAttrsToList (k: v: ''${k}="${toString v}"'') (lib.filterAttrs (_: v: v != null) attrs)
+      );
+      attrSpace = if attrStr != "" then " " else "";
+    in
+    if content == ""
+    then "<${tag}${attrSpace}${attrStr}/>"
+    else "<${tag}${attrSpace}${attrStr}>${content}</${tag}>";
+
+  # Parse PCI address from "0000:01:00.0" to components
+  parsePciAddress = addr:
+    let
+      parts = lib.splitString ":" addr;
+      domain = builtins.head parts;
+      bus = builtins.elemAt parts 1;
+      slotFunc = lib.splitString "." (builtins.elemAt parts 2);
+      slot = builtins.head slotFunc;
+      function = builtins.elemAt slotFunc 1;
+    in {
+      domain = "0x${domain}";
+      bus = "0x${bus}";
+      slot = "0x${slot}";
+      function = "0x${function}";
     };
 
-    # Disk type enum
-    diskBus = lib.types.enum [ "virtio" "sata" "scsi" "ide" ];
-
-    # Network type enum
-    # - nat: Uses libvirt's default network (virbr0), VMs isolated but can access internet
-    # - bridge: Uses a host bridge (br0), VMs get IPs from your router
-    # - macvtap: Direct NIC attachment, no bridge needed, no rebuild for interface changes
-    # - user: SLIRP networking, slowest but no config needed
-    networkType = lib.types.enum [ "nat" "bridge" "macvtap" "user" ];
-
-    # OS type enum
-    osType = lib.types.enum [ "windows" "linux" ];
-
-    # Graphics type enum
-    graphicsType = lib.types.enum [ "spice" "vnc" "none" ];
-  };
-
   # ===========================================================================
-  # PCI Helpers
+  # XML Generators
   # ===========================================================================
 
-  pci = {
-    # Parse "0000:01:00.0" into XML-ready components
-    parse = addr:
+  # Generate memory XML
+  genMemory = cfg:
+    if cfg.memory.hugepages.enable
+    then ''
+      <memory unit="${cfg.memory.unit}">${toString cfg.memory.amount}</memory>
+      <currentMemory unit="${cfg.memory.unit}">${toString cfg.memory.amount}</currentMemory>
+      <memoryBacking>
+        <hugepages>
+          <page size="${toString cfg.memory.hugepages.size}" unit="GiB"/>
+        </hugepages>
+      </memoryBacking>
+    ''
+    else ''
+      <memory unit="${cfg.memory.unit}">${toString cfg.memory.amount}</memory>
+      <currentMemory unit="${cfg.memory.unit}">${toString cfg.memory.amount}</currentMemory>
+    '';
+
+  # Generate vCPU XML
+  genVcpu = cfg:
+    mkTag "vcpu" { placement = cfg.vcpu.placement; } (toString cfg.vcpu.count);
+
+  # Generate CPU XML
+  genCpu = cfg:
+    let
+      topologyXml = if cfg.cpu.topology != null
+        then mkTag "topology" {
+          sockets = cfg.cpu.topology.sockets;
+          dies = cfg.cpu.topology.dies;
+          cores = cfg.cpu.topology.cores;
+          threads = cfg.cpu.topology.threads;
+        } ""
+        else "";
+
+      featuresXml = lib.concatMapStringsSep "\n    " (feature:
+        mkTag "feature" { policy = feature.policy; name = feature.name; } ""
+      ) cfg.cpu.feature;
+
+      cpuContent = if (topologyXml != "" || featuresXml != "")
+        then ''
+          ${topologyXml}
+          ${featuresXml}''
+        else "";
+    in
+    if cpuContent != ""
+      then "<cpu mode=\"${cfg.cpu.mode}\">\n    ${cpuContent}\n  </cpu>"
+      else mkTag "cpu" { mode = cfg.cpu.mode; } "";
+
+  # Generate CPU tuning XML
+  genCputune = cfg:
+    if cfg.cputune == null then ""
+    else
       let
-        parts = lib.splitString ":" (lib.removePrefix "0000:" addr);
-        bus = builtins.head parts;
-        devFn = lib.splitString "." (builtins.elemAt parts 1);
-      in {
-        domain = "0x0000";
-        bus = "0x${bus}";
-        slot = "0x${builtins.head devFn}";
-        function = "0x${builtins.elemAt devFn 1}";
-      };
-  };
+        vcpupinXml = lib.concatMapStringsSep "\n    " (pin:
+          mkTag "vcpupin" { vcpu = pin.vcpu; cpuset = pin.cpuset; } ""
+        ) cfg.cputune.vcpupin;
 
-  # ===========================================================================
-  # XML Builders
-  # ===========================================================================
-
-  xml = {
-    # CPU configuration
-    cpu = {
-      gaming = { cores, threads ? 2, sockets ? 1 }: ''
-        <cpu mode='host-passthrough' check='none' migratable='off'>
-          <topology sockets='${toString sockets}' dies='1' cores='${toString cores}' threads='${toString threads}'/>
-          <cache mode='passthrough'/>
-          <feature policy='require' name='topoext'/>
-          <feature policy='disable' name='hypervisor'/>
-        </cpu>'';
-
-      server = { cores, threads ? 1, sockets ? 1 }: ''
-        <cpu mode='host-passthrough' check='none' migratable='off'>
-          <topology sockets='${toString sockets}' dies='1' cores='${toString cores}' threads='${toString threads}'/>
-          <cache mode='passthrough'/>
-          <feature policy='require' name='topoext'/>
-        </cpu>'';
-    };
-
-    # CPU pinning
-    cputune = { vcpus, startCpu, emulatorCpus ? "0-3" }:
-      let pins = lib.genList (i: "<vcpupin vcpu='${toString i}' cpuset='${toString (startCpu + i)}'/>") vcpus;
-      in ''
+        emulatorpinXml = if cfg.cputune.emulatorpin != null
+          then mkTag "emulatorpin" { cpuset = cfg.cputune.emulatorpin.cpuset; } ""
+          else "";
+      in
+      ''
         <cputune>
-          ${lib.concatStringsSep "\n    " pins}
-          <emulatorpin cpuset='${emulatorCpus}'/>
-        </cputune>'';
+          ${vcpupinXml}
+          ${emulatorpinXml}
+        </cputune>
+      '';
 
-    # Memory configuration
-    memory = {
-      standard = size: ''
-        <memory unit='MiB'>${toString size}</memory>
-        <currentMemory unit='MiB'>${toString size}</currentMemory>'';
+  # Generate OS XML
+  genOs = cfg:
+    let
+      loaderXml = if cfg.os.loader != null
+        then mkTag "loader" {
+          readonly = if cfg.os.loader.readonly then "yes" else "no";
+          type = cfg.os.loader.type;
+          secure = if cfg.os.loader.secure then "yes" else "no";
+        } cfg.os.loader.path
+        else "";
 
-      hugepages = size: ''
-        <memory unit='MiB'>${toString size}</memory>
-        <currentMemory unit='MiB'>${toString size}</currentMemory>
-        <memoryBacking>
-          <hugepages>
-            <page size='1048576' unit='KiB'/>
-          </hugepages>
-        </memoryBacking>'';
-    };
+      nvramXml = if cfg.os.nvram != null
+        then mkTag "nvram" { template = cfg.os.nvram.template; } cfg.os.nvram.path
+        else "";
+    in
+    ''
+      <os>
+        <type arch="${cfg.os.arch}" machine="${cfg.os.machine}">${cfg.os.type}</type>
+        ${loaderXml}
+        ${nvramXml}
+        <boot dev="hd"/>
+      </os>
+    '';
 
-    # OS/firmware configuration
-    os = {
-      uefi = name: ''
-        <os>
-          <type arch='x86_64' machine='pc-q35-8.2'>hvm</type>
-          <loader readonly='yes' type='pflash'>/run/libvirt/nix-ovmf/OVMF_CODE.fd</loader>
-          <nvram>/var/lib/libvirt/qemu/nvram/${name}_VARS.fd</nvram>
-          <boot dev='hd'/>
-        </os>'';
+  # Generate features XML
+  genFeatures = cfg:
+    let
+      hypervXml = if cfg.features.hyperv != null
+        then lib.concatStringsSep "\n      " (
+          lib.mapAttrsToList (name: feat:
+            let
+              attrs = { state = feat.state; } //
+                      (if feat.retries != null then { retries = feat.retries; } else {}) //
+                      (if feat.value != null then { value = feat.value; } else {});
+            in
+            mkTag name attrs ""
+          ) cfg.features.hyperv
+        )
+        else "";
 
-      uefiSecureBoot = name: ''
-        <os>
-          <type arch='x86_64' machine='pc-q35-8.2'>hvm</type>
-          <loader readonly='yes' secure='yes' type='pflash'>/run/libvirt/nix-ovmf/OVMF_CODE.ms.fd</loader>
-          <nvram template='/run/libvirt/nix-ovmf/OVMF_VARS.ms.fd'>/var/lib/libvirt/qemu/nvram/${name}_VARS.fd</nvram>
-          <boot dev='hd'/>
-          <bootmenu enable='yes'/>
-        </os>'';
-    };
+      kvmXml = if cfg.features.kvm != null
+        then lib.concatStringsSep "\n      " (
+          lib.mapAttrsToList (name: feat:
+            mkTag name { state = feat.state; } ""
+          ) cfg.features.kvm
+        )
+        else "";
 
-    # Feature sets
-    features = {
-      windows = ''
-        <features>
-          <acpi/>
-          <apic/>
-          <hyperv mode='custom'>
-            <relaxed state='on'/>
-            <vapic state='on'/>
-            <spinlocks state='on' retries='8191'/>
-            <vpindex state='on'/>
-            <runtime state='on'/>
-            <synic state='on'/>
-            <stimer state='on'/>
-            <frequencies state='on'/>
+      vmportXml = if cfg.features.vmport != null
+        then mkTag "vmport" { state = cfg.features.vmport.state; } ""
+        else "";
+
+      ioapicXml = if cfg.features.ioapic != null
+        then mkTag "ioapic" { driver = cfg.features.ioapic.driver; } ""
+        else "";
+    in
+    ''
+      <features>
+        ${lib.optionalString cfg.features.acpi "<acpi/>"}
+        ${lib.optionalString cfg.features.apic "<apic/>"}
+        ${lib.optionalString cfg.features.pae "<pae/>"}
+        ${lib.optionalString (cfg.features.hyperv != null) ''
+          <hyperv mode="custom">
+            ${hypervXml}
           </hyperv>
-          <kvm><hidden state='on'/></kvm>
-          <vmport state='off'/>
-          <smm state='on'/>
-          <ioapic driver='kvm'/>
-        </features>'';
+        ''}
+        ${lib.optionalString (cfg.features.kvm != null) ''
+          <kvm>
+            ${kvmXml}
+          </kvm>
+        ''}
+        ${vmportXml}
+        ${ioapicXml}
+      </features>
+    '';
 
-      linux = ''
-        <features>
-          <acpi/>
-          <apic/>
-          <vmport state='off'/>
-        </features>'';
-    };
+  # Generate clock XML
+  genClock = cfg:
+    let
+      timersXml = lib.concatStringsSep "\n      " (
+        lib.mapAttrsToList (name: timer:
+          let
+            attrs = {} //
+                    (if timer.present != null then { present = if timer.present then "yes" else "no"; } else {}) //
+                    (if timer.tickpolicy != null then { tickpolicy = timer.tickpolicy; } else {});
+          in
+          mkTag name attrs ""
+        ) cfg.clock.timers
+      );
+    in
+    ''
+      <clock offset="${cfg.clock.offset}">
+        ${timersXml}
+      </clock>
+    '';
 
-    # Clock configuration
-    clock = {
-      windows = ''
-        <clock offset='localtime'>
-          <timer name='rtc' tickpolicy='catchup'/>
-          <timer name='pit' tickpolicy='delay'/>
-          <timer name='hpet' present='no'/>
-          <timer name='hypervclock' present='yes'/>
-          <timer name='tsc' present='yes' mode='native'/>
-        </clock>'';
+  # Generate disk XML
+  genDisk = disk:
+    let
+      driverAttrs = { name = disk.driver.name; } //
+                    (if disk.driver.type != null then { type = disk.driver.type; } else {}) //
+                    (if disk.driver.cache != null then { cache = disk.driver.cache; } else {}) //
+                    (if disk.driver.io != null then { io = disk.driver.io; } else {}) //
+                    (if disk.driver.discard != null then { discard = disk.driver.discard; } else {});
 
-      linux = ''
-        <clock offset='utc'>
-          <timer name='rtc' tickpolicy='catchup'/>
-          <timer name='pit' tickpolicy='delay'/>
-          <timer name='hpet' present='no'/>
-        </clock>'';
-    };
+      sourceXml = if disk.source.file != null
+        then mkTag "source" { file = disk.source.file; } ""
+        else if disk.source.dev != null
+        then mkTag "source" { dev = disk.source.dev; } ""
+        else "";
 
-    # Disk devices
-    disk = {
-      qcow2 = { path, bus ? "virtio", dev ? "vda" }: ''
-        <disk type='file' device='disk'>
-          <driver name='qemu' type='qcow2' cache='none' io='native' discard='unmap'/>
-          <source file='${path}'/>
-          <target dev='${dev}' bus='${bus}'/>
-        </disk>'';
+      bootXml = if disk.boot != null
+        then mkTag "boot" { order = disk.boot.order; } ""
+        else "";
+    in
+    ''
+      <disk type="${disk.type}" device="${disk.device}">
+        ${mkTag "driver" driverAttrs ""}
+        ${sourceXml}
+        ${mkTag "target" { dev = disk.target.dev; bus = disk.target.bus; } ""}
+        ${lib.optionalString disk.readonly "<readonly/>"}
+        ${bootXml}
+      </disk>
+    '';
 
-      cdrom = { path, dev }: ''
-        <disk type='file' device='cdrom'>
-          <driver name='qemu' type='raw'/>
-          <source file='${path}'/>
-          <target dev='${dev}' bus='sata'/>
-          <readonly/>
-        </disk>'';
-    };
+  # Generate hostdev XML (PCI passthrough)
+  genHostdev = hostdev:
+    let
+      addressXml = if hostdev.source.address != null
+        then mkTag "address" {
+          domain = hostdev.source.address.domain;
+          bus = hostdev.source.address.bus;
+          slot = hostdev.source.address.slot;
+          function = hostdev.source.address.function;
+        } ""
+        else "";
+    in
+    ''
+      <hostdev mode="${hostdev.mode}" type="${hostdev.type}" managed="${if hostdev.managed then "yes" else "no"}">
+        <source>
+          ${addressXml}
+        </source>
+      </hostdev>
+    '';
 
-    # GPU passthrough
-    gpu = {
-      nvidia = { gpuAddr, audioAddr, guestBus ? "0x06" }:
-        let
-          gpu = pci.parse gpuAddr;
-          audio = pci.parse audioAddr;
-        in ''
-          <hostdev mode='subsystem' type='pci' managed='yes'>
-            <source><address domain='${gpu.domain}' bus='${gpu.bus}' slot='${gpu.slot}' function='${gpu.function}'/></source>
-            <address type='pci' domain='0x0000' bus='${guestBus}' slot='0x00' function='0x0' multifunction='on'/>
-          </hostdev>
-          <hostdev mode='subsystem' type='pci' managed='yes'>
-            <source><address domain='${audio.domain}' bus='${audio.bus}' slot='${audio.slot}' function='${audio.function}'/></source>
-            <address type='pci' domain='0x0000' bus='${guestBus}' slot='0x00' function='0x1'/>
-          </hostdev>'';
-    };
+  # Generate shmem XML
+  genShmem = shmem:
+    ''
+      <shmem name="${shmem.name}">
+        <model type="${shmem.model.type}"/>
+        <size unit="${shmem.size.unit}">${toString shmem.size.amount}</size>
+      </shmem>
+    '';
 
-    # Network interfaces
-    network = {
-      # NAT - Uses libvirt's default network, works out of the box
-      nat = ''
-        <interface type='network'>
-          <source network='default'/>
-          <model type='virtio'/>
-        </interface>'';
+  # Generate interface XML
+  genInterface = iface:
+    let
+      sourceAttrs = {} //
+                    (if iface.source.network != null then { network = iface.source.network; } else {}) //
+                    (if iface.source.bridge != null then { bridge = iface.source.bridge; } else {}) //
+                    (if iface.source.dev != null then { dev = iface.source.dev; } else {}) //
+                    (if iface.source.mode != null then { mode = iface.source.mode; } else {});
+    in
+    ''
+      <interface type="${iface.type}">
+        ${mkTag "source" sourceAttrs ""}
+        <model type="${iface.model.type}"/>
+      </interface>
+    '';
 
-      # Bridge - Uses a pre-configured host bridge
-      bridge = name: ''
-        <interface type='bridge'>
-          <source bridge='${name}'/>
-          <model type='virtio'/>
-        </interface>'';
+  # Generate graphics XML
+  genGraphics = graphics:
+    let
+      listenXml = if graphics.listen != null
+        then mkTag "listen" { type = graphics.listen.type; address = graphics.listen.address; } ""
+        else "";
 
-      # Macvtap - Direct NIC attachment, no bridge needed
-      # mode: bridge (default), vepa, private, passthrough
-      # bridge mode allows VM-to-VM and VM-to-network but NOT VM-to-host
-      macvtap = { interface, mode ? "bridge" }: ''
-        <interface type='direct'>
-          <source dev='${interface}' mode='${mode}'/>
-          <model type='virtio'/>
-        </interface>'';
+      imageXml = if graphics.image != null
+        then mkTag "image" { compression = graphics.image.compression; } ""
+        else "";
+    in
+    ''
+      <graphics type="${graphics.type}">
+        ${listenXml}
+        ${imageXml}
+      </graphics>
+    '';
 
-      # User - SLIRP networking, slowest but simplest
-      user = ''
-        <interface type='user'>
-          <model type='virtio'/>
-        </interface>'';
-    };
+  # Generate TPM XML
+  genTpm = tpm:
+    ''
+      <tpm model="${tpm.model}">
+        <backend type="${tpm.backend.type}" version="${tpm.backend.version}"/>
+      </tpm>
+    '';
 
-    # Shared memory
-    shmem.lookingGlass = size: ''
-      <shmem name='looking-glass'>
-        <model type='ivshmem-plain'/>
-        <size unit='M'>${toString size}</size>
-      </shmem>'';
-
-    # Graphics
-    graphics = {
-      spice = ''
-        <graphics type='spice' autoport='yes'>
-          <listen type='address' address='127.0.0.1'/>
-          <gl enable='no'/>
-        </graphics>'';
-
-      vnc = ''
-        <graphics type='vnc' port='-1' autoport='yes'>
-          <listen type='address' address='127.0.0.1'/>
-        </graphics>'';
-    };
-
-    # Common devices
-    devices = {
-      tpm2 = ''
-        <tpm model='tpm-tis'>
-          <backend type='emulator' version='2.0'/>
-        </tpm>'';
-
-      usb3 = ''
-        <controller type='usb' model='qemu-xhci' ports='15'/>'';
-
-      console = ''
-        <serial type='pty'><target port='0'/></serial>
-        <console type='pty'><target type='serial' port='0'/></console>'';
-    };
-  };
-
-  # ===========================================================================
-  # Domain Builder (assembles complete XML)
-  # ===========================================================================
-
-  mkDomain = {
-    name,
-    vcpus,
-    memory,
-    cpu,
-    cputune ? "",
-    os,
-    features,
-    clock,
-    devices,
-  }: ''
-    <domain type='kvm'>
-      <name>${name}</name>
-      ${memory}
-      <vcpu placement='static'>${toString vcpus}</vcpu>
-      ${cpu}
-      ${cputune}
-      ${os}
-      ${features}
-      ${clock}
-      <on_poweroff>destroy</on_poweroff>
-      <on_reboot>restart</on_reboot>
-      <on_crash>destroy</on_crash>
-      <pm>
-        <suspend-to-mem enabled='no'/>
-        <suspend-to-disk enabled='no'/>
-      </pm>
+  # Generate devices XML
+  genDevices = cfg:
+    let
+      disksXml = lib.concatMapStringsSep "\n    " genDisk cfg.devices.disks;
+      hostdevsXml = lib.concatMapStringsSep "\n    " genHostdev cfg.devices.hostdevs;
+      shmemXml = lib.concatMapStringsSep "\n    " genShmem cfg.devices.shmem;
+      interfacesXml = lib.concatMapStringsSep "\n    " genInterface cfg.devices.interfaces;
+      graphicsXml = lib.concatMapStringsSep "\n    " genGraphics cfg.devices.graphics;
+      tpmXml = if cfg.devices.tpm != null then genTpm cfg.devices.tpm else "";
+    in
+    ''
       <devices>
         <emulator>/run/libvirt/nix-emulators/qemu-system-x86_64</emulator>
-        ${devices}
-        <memballoon model='none'/>
+        ${disksXml}
+        ${hostdevsXml}
+        ${shmemXml}
+        ${interfacesXml}
+        ${graphicsXml}
+        ${tpmXml}
+        <console type="pty">
+          <target type="serial" port="0"/>
+        </console>
+        <channel type="unix">
+          <target type="virtio" name="org.qemu.guest_agent.0"/>
+        </channel>
       </devices>
-    </domain>'';
+    '';
 
   # ===========================================================================
-  # High-level VM builders (from config attrset)
+  # Main XML Generator
   # ===========================================================================
 
-  builders = {
-    # Build Windows gaming VM from module config
-    windowsGaming = cfg: mkDomain {
-      inherit (cfg) name vcpus;
-
-      memory = if cfg.hugepages.enable
-        then xml.memory.hugepages cfg.memory
-        else xml.memory.standard cfg.memory;
-
-      cpu = xml.cpu.gaming {
-        cores = cfg.cpu.cores;
-        threads = cfg.cpu.threads;
-      };
-
-      cputune = lib.optionalString cfg.cpu.pinning.enable (xml.cputune {
-        inherit (cfg) vcpus;
-        startCpu = cfg.cpu.pinning.startCpu;
-        emulatorCpus = cfg.cpu.pinning.emulatorCpus;
-      });
-
-      os = xml.os.uefiSecureBoot cfg.name;
-      features = xml.features.windows;
-      clock = xml.clock.windows;
-
-      devices = lib.concatStringsSep "\n    " (lib.filter (x: x != "") [
-        (xml.disk.qcow2 { path = cfg.storage.disk; })
-        (lib.optionalString (cfg.storage.windowsIso != null)
-          (xml.disk.cdrom { path = cfg.storage.windowsIso; dev = "sda"; }))
-        (lib.optionalString (cfg.storage.virtioIso != null)
-          (xml.disk.cdrom { path = cfg.storage.virtioIso; dev = "sdb"; }))
-        xml.devices.tpm2
-        (lib.optionalString cfg.gpu.enable
-          (xml.gpu.nvidia { gpuAddr = cfg.gpu.address; audioAddr = cfg.gpu.audioAddress; }))
-        (lib.optionalString cfg.gpu.enable
-          (xml.shmem.lookingGlass cfg.lookingGlass.size))
-        (mkNetworkXml cfg.network)
-        (if cfg.graphics == "spice" then xml.graphics.spice
-          else if cfg.graphics == "vnc" then xml.graphics.vnc
-          else "")
-        xml.devices.usb3
-        xml.devices.console
-      ]);
-    };
-
-    # Build Linux server VM from module config
-    linuxServer = cfg: mkDomain {
-      inherit (cfg) name vcpus;
-      memory = xml.memory.standard cfg.memory;
-      cpu = xml.cpu.server { cores = cfg.vcpus; };
-      os = xml.os.uefi cfg.name;
-      features = xml.features.linux;
-      clock = xml.clock.linux;
-      devices = lib.concatStringsSep "\n    " [
-        (xml.disk.qcow2 { path = cfg.storage.disk; })
-        (mkNetworkXml cfg.network)
-        xml.graphics.vnc
-        xml.devices.console
-      ];
-    };
-  };
-
-  # Helper to generate network XML from config
-  mkNetworkXml = netCfg:
-    if netCfg.type == "nat" then xml.network.nat
-    else if netCfg.type == "bridge" then xml.network.bridge netCfg.bridge
-    else if netCfg.type == "macvtap" then xml.network.macvtap {
-      interface = netCfg.interface;
-      mode = netCfg.macvtapMode;
-    }
-    else xml.network.user;
+  generateDomainXML = cfg:
+    ''
+      <domain type="kvm">
+        <name>${cfg.name}</name>
+        ${lib.optionalString (cfg.title != "") "<title>${cfg.title}</title>"}
+        ${lib.optionalString (cfg.description != "") "<description>${cfg.description}</description>"}
+        <metadata>
+          <libosinfo:libosinfo xmlns:libosinfo="http://libosinfo.org/xmlns/libvirt/domain/1.0">
+            <libosinfo:os id="http://microsoft.com/win/11"/>
+          </libosinfo:libosinfo>
+        </metadata>
+        ${genMemory cfg}
+        ${genVcpu cfg}
+        ${genCpu cfg}
+        ${genCputune cfg}
+        ${genOs cfg}
+        ${genFeatures cfg}
+        ${genClock cfg}
+        <on_poweroff>destroy</on_poweroff>
+        <on_reboot>restart</on_reboot>
+        <on_crash>destroy</on_crash>
+        <pm>
+          <suspend-to-mem enabled="no"/>
+          <suspend-to-disk enabled="no"/>
+        </pm>
+        ${genDevices cfg}
+      </domain>
+    '';
 }

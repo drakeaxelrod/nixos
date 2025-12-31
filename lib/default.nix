@@ -65,6 +65,7 @@
           boot = "${inputs.self}/modules/nixos/system/boot";  # Bootloader selection (aggregator)
           locale = "${inputs.self}/modules/nixos/system/locale.nix";
           nix = "${inputs.self}/modules/nixos/system/nix.nix";
+          packages = "${inputs.self}/modules/nixos/system/packages.nix";
           users = "${inputs.self}/modules/nixos/system/users.nix";
         };
         # Desktop modules

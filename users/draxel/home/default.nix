@@ -80,6 +80,11 @@ in
 
     # Audio
     pavucontrol  # Audio control
+
+    # Virtualization
+    virt-manager        # VM management GUI
+    virt-viewer         # VM viewer
+    # Note: looking-glass-client and scream are installed via VFIO modules
   ];
 
   # Use XDG config directory for zsh (new default in 26.05)

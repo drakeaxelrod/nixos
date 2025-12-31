@@ -115,7 +115,26 @@
             sops          # Secrets management
             age           # Encryption
             nvd           # Nix version diff
+            jq            # JSON processor (required by nx script)
+
+            # Shell tools for better dev experience
+            starship      # Prompt
+            bat           # Better cat
+            lsd           # Better ls
+            ripgrep       # Better grep
+            fd            # Better find
+            fzf           # Fuzzy finder
+            zsh           # Include zsh for auto-launch
           ];
+
+          # Auto-launch zsh on devshell entry
+          bash = {
+            extra = ''
+              if [[ $SHLVL -eq 1 ]] && command -v zsh &> /dev/null; then
+                exec zsh
+              fi
+            '';
+          };
 
           commands = [
             {

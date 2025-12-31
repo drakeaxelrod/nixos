@@ -30,6 +30,7 @@
       document-font-name = "Inter 11";
       monospace-font-name = "Lilex Nerd Font Propo 10";
       cursor-theme = lib.mkForce "Bibata-Modern-Classic";  # Override GTK default
+      overlay-scrolling = false;  # Disable overlay scrollbars globally
     };
 
     # Window management
@@ -54,15 +55,20 @@
       switch-to-workspace-4 = [ "<Super>4" ];
     };
 
-    # Shell
+    # Shell - Favorite apps in dock
+    # To find desktop entry names (after nx switch):
+    #   ls ~/.nix-profile/share/applications/
+    #   ls /run/current-system/sw/share/applications/
+    # Common names: discord.desktop, steam.desktop, code.desktop, etc.
     "org/gnome/shell" = {
       favorite-apps = [
-        "org.gnome.Nautilus.desktop"
-        "brave-browser.desktop"
-        "org.gnome.Terminal.desktop"
-        "code.desktop"
-        "virt-manager.desktop"
         "org.gnome.Settings.desktop"
+        "org.gnome.Nautilus.desktop"
+        "virt-manager.desktop"
+        "code.desktop"
+        "discord.desktop"
+        "zen-browser.desktop"
+        "org.gnome.Terminal.desktop"
       ];
       disable-user-extensions = false;
     };
@@ -187,6 +193,7 @@
       highlight-background-color = "#3e4451";
       audible-bell = false;
       scrollback-unlimited = true;
+      show-scrollbar = false;
     };
   };
 
@@ -206,5 +213,21 @@
     size = 24;
     gtk.enable = true;
     x11.enable = true;
+  };
+
+  # Default applications
+  # To find desktop file names for apps:
+  #   ls ~/.nix-profile/share/applications/
+  #   ls /run/current-system/sw/share/applications/
+  # Or search all: find ~/.nix-profile /run/current-system/sw -name "*.desktop" | grep <app-name>
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      "text/html" = "zen-browser.desktop";
+      "x-scheme-handler/http" = "zen-browser.desktop";
+      "x-scheme-handler/https" = "zen-browser.desktop";
+      "x-scheme-handler/about" = "zen-browser.desktop";
+      "x-scheme-handler/unknown" = "zen-browser.desktop";
+    };
   };
 }
