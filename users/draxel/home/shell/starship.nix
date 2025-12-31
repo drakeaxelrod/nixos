@@ -4,7 +4,7 @@
 {
   programs.starship = {
     enable = true;
-    enableZshIntegration = false;  # We init manually in zsh for proper ordering
+    enableZshIntegration = true;
 
     settings = {
       add_newline = false;

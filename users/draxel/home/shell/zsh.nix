@@ -40,11 +40,11 @@
       lt3 = "lsd --tree --depth=3";
 
       # NixOS
-      rebuild = "sudo nixos-rebuild switch --flake /etc/nixos";
-      rebuild-boot = "sudo nixos-rebuild boot --flake /etc/nixos";
-      rebuild-test = "sudo nixos-rebuild test --flake /etc/nixos";
-      update = "nix flake update /etc/nixos";
-      gc = "sudo nix-collect-garbage -d && nix-collect-garbage -d";
+      #rebuild = "sudo nixos-rebuild switch --flake /etc/nixos";
+      #rebuild-boot = "sudo nixos-rebuild boot --flake /etc/nixos";
+      #rebuild-test = "sudo nixos-rebuild test --flake /etc/nixos";
+      #update = "nix flake update /etc/nixos";
+      #gc = "sudo nix-collect-garbage -d && nix-collect-garbage -d";
 
       # Git (additional to git plugin)
       gs = "git status";
