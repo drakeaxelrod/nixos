@@ -133,13 +133,20 @@
     };
 
     modules = [
-      # Allow unfree packages and insecure packages
+      # Allow unfree packages
       {
         nixpkgs.config = {
           allowUnfree = true;
-          permittedInsecurePackages = [
-            "qtwebengine-5.15.19"  # Required by some packages, unmaintained upstream
-          ];
+
+          # Allow specific insecure packages when needed
+          # NOTE: Only add packages here if absolutely necessary
+          # See: https://github.com/NixOS/nixpkgs/issues/437992
+          # permittedInsecurePackages = [
+          #   # Stremio requires orphaned qtwebengine-5.15.19
+          #   # Disabled by default - use https://web.stremio.com instead
+          #   # Uncomment if you need the desktop app:
+          #   # "qtwebengine-5.15.19"
+          # ];
         };
       }
 

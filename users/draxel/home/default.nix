@@ -50,7 +50,8 @@ in
     # Applications
     modules.home.apps.moonlight
     modules.home.apps.steam
-    modules.home.apps.stremio
+    # modules.home.apps.stremio  # Disabled: requires orphaned qtwebengine-5.15.19 (see nixpkgs#437992)
+                                  # Use web version instead: https://web.stremio.com
     modules.home.apps.zenBrowser
   ];
 

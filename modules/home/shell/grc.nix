@@ -7,7 +7,7 @@
   ];
 
   # ZSH integration - automatically colorize supported commands
-  programs.zsh.initExtra = lib.mkAfter ''
+  programs.zsh.initContent = lib.mkAfter ''
     # GRC colorization
     if command -v grc &> /dev/null; then
       # Common commands that benefit from colorization
