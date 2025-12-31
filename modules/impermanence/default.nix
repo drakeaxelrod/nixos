@@ -17,12 +17,22 @@ let
   # NOTE: /home, /work, /var/lib/libvirt, /var/log are persistent Btrfs subvolumes
   # Only system dirs that live in ephemeral /rootfs need persistence to /persist
   autoSystemDirs = lib.flatten [
-    # Always needed
-    [ "/var/lib/nixos" ]
+    # Always needed - core system state
+    "/var/lib/nixos"
+    "/var/lib/systemd"           # systemd state (timers, random-seed, backlight, rfkill, etc.)
+    "/var/lib/AccountsService"   # user account metadata (avatars, language, autologin)
 
     # Network
     (lib.optional config.networking.networkmanager.enable "/etc/NetworkManager/system-connections")
     (lib.optional config.services.tailscale.enable "/var/lib/tailscale")
+
+    # Display Manager / Desktop (GNOME enables many of these implicitly)
+    (lib.optional (config.services.displayManager.gdm.enable or false) "/var/lib/gdm")
+    (lib.optional (config.services.desktopManager.gnome.enable or false) "/var/lib/colord")
+    (lib.optional (config.services.desktopManager.gnome.enable or false) "/var/lib/geoclue")
+    (lib.optional (config.services.upower.enable or false) "/var/lib/upower")
+    (lib.optional (config.services.fprintd.enable or false) "/var/lib/fprint")
+    (lib.optional (config.services.gnome.gnome-keyring.enable or false) "/var/lib/gnome")
 
     # Virtualization - handled by separate @libvirt subvolume in disko
     # (lib.optional config.virtualisation.libvirtd.enable "/var/lib/libvirt")
@@ -34,16 +44,11 @@ let
 
     # Security
     (lib.optional (config.sops.secrets or {} != {}) "/var/lib/sops-nix")
-
-    # System
-    [ "/var/lib/systemd/coredump" ]
   ];
 
   autoSystemFiles = [
-    # Note: /etc/machine-id is managed by systemd and NixOS's /etc management
-    # Persisting it causes conflicts - systemd-machine-id-commit handles persistence
-    # "/etc/machine-id"
-    "/etc/adjtime"
+    "/etc/machine-id"  # Required by systemd, dbus, journald, and most services
+    "/etc/adjtime"     # Hardware clock adjustment
   ];
 in
 {
