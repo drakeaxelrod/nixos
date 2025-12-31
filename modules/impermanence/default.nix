@@ -132,6 +132,24 @@ in
       mkdir -p /mnt
       mount -o subvol=/ /dev/mapper/cryptroot1 /mnt
 
+      # Safety check: Ensure critical persist directories exist before wiping
+      # This prevents data loss if persist wasn't properly set up
+      CRITICAL_DIRS="/mnt/@persist/home /mnt/@persist/var/lib/nixos /mnt/@persist/etc/ssh"
+      MISSING_DIRS=""
+      for dir in $CRITICAL_DIRS; do
+        if [ ! -d "$dir" ]; then
+          MISSING_DIRS="$MISSING_DIRS $dir"
+        fi
+      done
+
+      if [ -n "$MISSING_DIRS" ]; then
+        echo "WARNING: Critical persist directories missing:$MISSING_DIRS"
+        echo "Skipping rootfs wipe to prevent data loss!"
+        echo "Please ensure persist is properly set up before rebooting."
+        umount /mnt
+        exit 0
+      fi
+
       if [ -d /mnt/@rootfs ]; then
         btrfs subvolume list -o /mnt/@rootfs 2>/dev/null | cut -d' ' -f9 | while read subvol; do
           btrfs subvolume delete "/mnt/$subvol" 2>/dev/null || true
