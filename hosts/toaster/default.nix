@@ -9,14 +9,14 @@
     ./hardware.nix
     ./disko.nix
 
-    # Feature modules
-    ../../modules/desktop
-    ../../modules/vfio
-    ../../modules/virtualization
-    ../../modules/impermanence
+    # Feature modules - uncomment after basic install works
+    # ../../modules/desktop
+    # ../../modules/vfio
+    # ../../modules/virtualization
+    # ../../modules/impermanence
 
     # Declarative VMs
-    ../../vms/windows11.nix
+    # ../../vms/windows11.nix
   ];
 
   # ==========================================================================
@@ -37,64 +37,64 @@
   # VFIO Configuration (GPU Passthrough)
   # ==========================================================================
 
-  modules.vfio = {
-    enable = true;
-    primaryMode = true;  # GPU always isolated for VM passthrough
-
-    # PLACEHOLDER - Update after first boot!
-    # Run: lspci -nn | grep -i nvidia
-    gpuPciIds = [
-      "10de:XXXX"  # RTX 5070 Ti GPU
-      "10de:XXXX"  # RTX 5070 Ti Audio
-    ];
-
-    # PLACEHOLDER - Update after first boot!
-    # Run: lspci -D | grep -i nvidia
-    gpuPciAddresses = [
-      "0000:01:00.0"  # GPU
-      "0000:01:00.1"  # Audio
-    ];
-
-    lookingGlass = {
-      enable = true;
-      shmSize = 128;  # 128MB for 4K
-    };
-
-    scream.enable = true;
-  };
+  # modules.vfio = {
+  #   enable = true;
+  #   primaryMode = true;  # GPU always isolated for VM passthrough
+  #
+  #   # PLACEHOLDER - Update after first boot!
+  #   # Run: lspci -nn | grep -i nvidia
+  #   gpuPciIds = [
+  #     "10de:XXXX"  # RTX 5070 Ti GPU
+  #     "10de:XXXX"  # RTX 5070 Ti Audio
+  #   ];
+  #
+  #   # PLACEHOLDER - Update after first boot!
+  #   # Run: lspci -D | grep -i nvidia
+  #   gpuPciAddresses = [
+  #     "0000:01:00.0"  # GPU
+  #     "0000:01:00.1"  # Audio
+  #   ];
+  #
+  #   lookingGlass = {
+  #     enable = true;
+  #     shmSize = 128;  # 128MB for 4K
+  #   };
+  #
+  #   scream.enable = true;
+  # };
 
   # ==========================================================================
   # Virtualization
   # ==========================================================================
 
-  modules.virtualization.libvirt.enable = true;
-  modules.virtualization.docker.enable = true;
+  # modules.virtualization.libvirt.enable = true;
+  # modules.virtualization.docker.enable = true;
 
   # ==========================================================================
   # Desktop Environment
   # ==========================================================================
 
-  modules.desktop.gnome.enable = true;
-  modules.desktop.wayland.enable = true;
+  # modules.desktop.gnome.enable = true;
+  # modules.desktop.wayland.enable = true;
 
   # ==========================================================================
   # Networking
   # ==========================================================================
 
-  modules.networking.bridge = {
-    enable = true;
-    name = "br0";
-    interface = "eth0";  # PLACEHOLDER - Update with: ip link
-  };
+  # modules.networking.bridge = {
+  #   enable = true;
+  #   name = "br0";
+  #   interface = "eth0";  # PLACEHOLDER - Update with: ip link
+  # };
 
-  modules.networking.tailscale.enable = true;
+  # modules.networking.tailscale.enable = true;
 
   # ==========================================================================
   # Services
   # ==========================================================================
 
   modules.services.openssh.enable = true;
-  modules.services.btrbk.enable = true;
+  # modules.services.btrbk.enable = true;
 
   # ==========================================================================
   # Impermanence (Ephemeral Root)
@@ -114,15 +114,15 @@
   # Windows 11 VM
   # ==========================================================================
 
-  modules.vms.windows11 = {
-    enable = true;
-    name = "win11";
-    memory = 32768;      # 32GB
-    vcpus = 12;          # 12 threads
-    cores = 6;           # 6 physical cores
-    hugepages = true;
-    hugepagesCount = 32; # 32GB hugepages
-  };
+  # modules.vms.windows11 = {
+  #   enable = true;
+  #   name = "win11";
+  #   memory = 32768;      # 32GB
+  #   vcpus = 12;          # 12 threads
+  #   cores = 6;           # 6 physical cores
+  #   hugepages = true;
+  #   hugepagesCount = 32; # 32GB hugepages
+  # };
 
   # ==========================================================================
   # User Configuration
@@ -133,7 +133,7 @@
     users.draxel = {
       description = "draxel";
       shell = pkgs.zsh;
-      extraGroups = [ "wheel" "networkmanager" "libvirtd" "docker" "input" "kvm" ];
+      extraGroups = [ "wheel" "networkmanager" ];
       initialPassword = "changeme";
     };
   };

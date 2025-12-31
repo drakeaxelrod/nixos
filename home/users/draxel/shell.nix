@@ -25,9 +25,10 @@
       cat = "bat";
       vim = "nvim";
 
-      # NixOS
-      rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#toaster";
-      update = "nix flake update /etc/nixos";
+      # NixOS (config at ~/.config/nixos)
+      nixcfg = "~/.config/nixos";
+      rebuild = "sudo nixos-rebuild switch --flake $nixcfg#$(hostname)";
+      update = "nix flake update $nixcfg";
       gc = "sudo nix-collect-garbage -d";
 
       # Git

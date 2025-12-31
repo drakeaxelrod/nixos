@@ -1,7 +1,4 @@
-# Home Manager users - returns attrset of user configs
-{ config, pkgs, inputs, ... }:
-
+# Home Manager users - maps usernames to their configurations
 {
-  # Import user configurations
   draxel = import ./users/draxel;
 }

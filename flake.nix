@@ -54,59 +54,20 @@
   let
     system = "x86_64-linux";
 
+    # Extend nixpkgs.lib with custom functions from ./lib
+    lib = nixpkgs.lib.extend (final: prev: import ./lib { lib = final; inherit inputs; });
+
     pkgs = import nixpkgs {
       inherit system;
       config.allowUnfree = true;
     };
-
-    # Helper to create host configurations
-    mkHost = hostname: nixpkgs.lib.nixosSystem {
-      inherit system;
-
-      specialArgs = { inherit inputs; };
-
-      modules = [
-        # Allow unfree packages
-        { nixpkgs.config.allowUnfree = true; }
-
-        # Disko disk management
-        disko.nixosModules.disko
-
-        # SOPS secrets management
-        sops-nix.nixosModules.sops
-
-        # Impermanence
-        impermanence.nixosModules.impermanence
-
-        # Core modules (always loaded)
-        ./modules/core
-        ./modules/hardware
-        ./modules/networking
-        ./modules/services
-        ./modules/security
-
-        # Host-specific configuration
-        ./hosts/${hostname}
-
-        # Home Manager as NixOS module
-        home-manager.nixosModules.home-manager
-        {
-          home-manager = {
-            useGlobalPkgs = true;
-            useUserPackages = true;
-            extraSpecialArgs = { inherit inputs; };
-            users = import ./home;
-          };
-        }
-      ];
-    };
   in {
     # NixOS configurations
     nixosConfigurations = {
-      toaster = mkHost "toaster";
+      toaster = lib.mkHost { hostname = "toaster"; };
       # Add more hosts here:
-      # server = mkHost "server";
-      # laptop = mkHost "laptop";
+      # server = lib.mkHost { hostname = "server"; };
+      # laptop = lib.mkHost { hostname = "laptop"; };
     };
 
     # Development shell with useful commands
@@ -123,76 +84,66 @@
 
       commands = [
         {
-          name = "rebuild";
+          name = "nx";
           category = "nixos";
-          help = "Rebuild and switch to new configuration";
+          help = "NixOS operations: nx <action> [host] (actions: switch|boot|test|dry|build|update|diff|gc|fmt|check)";
           command = ''
-            sudo nixos-rebuild switch --flake ".#toaster" --no-reexec -j 8 --cores 2 "$@"
-          '';
-        }
-        {
-          name = "rebuild-boot";
-          category = "nixos";
-          help = "Rebuild for next boot";
-          command = ''
-            sudo nixos-rebuild boot --flake ".#toaster" --no-reexec -j 8 --cores 2 "$@"
-          '';
-        }
-        {
-          name = "rebuild-test";
-          category = "nixos";
-          help = "Test rebuild without adding to boot menu";
-          command = ''
-            sudo nixos-rebuild test --flake ".#toaster" --no-reexec -j 8 --cores 2 "$@"
-          '';
-        }
-        {
-          name = "rebuild-dry";
-          category = "nixos";
-          help = "Dry run - show what would be built";
-          command = ''
-            nixos-rebuild dry-build --flake ".#toaster" "$@"
-          '';
-        }
-        {
-          name = "update";
-          category = "nixos";
-          help = "Update flake inputs";
-          command = ''
-            nix flake update "$@"
-          '';
-        }
-        {
-          name = "diff";
-          category = "nixos";
-          help = "Show diff between current and new system";
-          command = ''
-            nixos-rebuild build --flake ".#toaster" && \
-            nvd diff /run/current-system result
-          '';
-        }
-        {
-          name = "gc";
-          category = "nixos";
-          help = "Garbage collect old generations";
-          command = ''
-            sudo nix-collect-garbage -d && nix-collect-garbage -d
-          '';
-        }
-        {
-          name = "fmt";
-          category = "dev";
-          help = "Format all nix files";
-          command = ''
-            find . -name '*.nix' -exec nixpkgs-fmt {} +
-          '';
-        }
-        {
-          name = "check";
-          category = "dev";
-          help = "Check flake for errors";
-          command = ''
-            nix flake check "$@"
+            action="''${1:-}"
+            host="''${2:-toaster}"
+            shift 2 2>/dev/null || shift 1 2>/dev/null || true
+
+            case "$action" in
+              switch|boot|test)
+                sudo nixos-rebuild "$action" --flake ".#$host" -j 8 --cores 2 "$@"
+                ;;
+              dry)
+                nixos-rebuild dry-build --flake ".#$host" "$@"
+                ;;
+              build)
+                nixos-rebuild build --flake ".#$host" "$@"
+                ;;
+              update)
+                nix flake update "$@"
+                ;;
+              diff)
+                nixos-rebuild build --flake ".#$host" && nvd diff /run/current-system result
+                ;;
+              gc)
+                sudo nix-collect-garbage -d && nix-collect-garbage -d
+                ;;
+              fmt)
+                find . -name '*.nix' -exec nixpkgs-fmt {} +
+                ;;
+              check)
+                nix flake check "$@"
+                ;;
+              *)
+                echo "nx - NixOS flake operations"
+                echo ""
+                echo "Usage: nx <action> [host] [extra-args...]"
+                echo ""
+                echo "Actions:"
+                echo "  switch  - Switch to new configuration"
+                echo "  boot    - Rebuild for next boot"
+                echo "  test    - Test without adding to boot menu"
+                echo "  dry     - Dry run - show what would be built"
+                echo "  build   - Build without activating"
+                echo "  update  - Update flake inputs"
+                echo "  diff    - Show diff between current and new"
+                echo "  gc      - Garbage collect old generations"
+                echo "  fmt     - Format nix files"
+                echo "  check   - Check flake for errors"
+                echo ""
+                echo "Host defaults to 'toaster' if not specified."
+                echo ""
+                echo "Examples:"
+                echo "  nx switch           # switch toaster"
+                echo "  nx switch laptop    # switch laptop"
+                echo "  nx boot             # rebuild for next boot"
+                echo "  nx dry server       # dry-run server"
+                [ -n "$action" ] && exit 1 || exit 0
+                ;;
+            esac
           '';
         }
         {

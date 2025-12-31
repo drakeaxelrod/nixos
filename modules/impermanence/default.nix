@@ -25,7 +25,6 @@ in
 
       # System directories to persist
       directories = [
-        "/etc/nixos"
         "/etc/NetworkManager/system-connections"
         "/etc/ssh"
         "/var/lib/bluetooth"
@@ -55,6 +54,7 @@ in
           ".ssh"
           ".local/share/keyrings"
           ".config/sops"
+          ".config/nixos"
           ".mozilla"
           ".config/discord"
           ".steam"
