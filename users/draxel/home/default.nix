@@ -3,11 +3,13 @@
 
 {
   imports = [
-    ./shell.nix
+    ./shell
     ./git.nix
     ./neovim.nix
-    ./gnome.nix
+    ./desktop
     ./packages.nix
+    ./vscode.nix
+    ./claude-code.nix
   ];
 
   home.username = "draxel";

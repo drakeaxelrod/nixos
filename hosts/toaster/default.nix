@@ -98,7 +98,7 @@
   # ==========================================================================
 
   modules.services.openssh.enable = true;
-  # modules.services.btrbk.enable = true;
+  modules.services.btrbk.enable = true;
 
   # ==========================================================================
   # Impermanence (Ephemeral Root)

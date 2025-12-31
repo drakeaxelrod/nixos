@@ -7,7 +7,8 @@
     # userEmail = "your@email.com";  # Set via SOPS or manually
 
     settings = {
-      user.name = "draxel";
+      user.name = "Drake Axelrod";
+      user.email = "drakeaxelrod@gmail.com";
       init.defaultBranch = "main";
       pull.rebase = true;
       push.autoSetupRemote = true;

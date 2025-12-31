@@ -37,6 +37,17 @@
       url = "github:numtide/devshell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    
+    # Browser
+    zen-browser = {
+      url = "github:0xc000022070/zen-browser-flake";
+      inputs = {
+        # IMPORTANT: we're using "libgbm" and is only available in unstable so ensure
+        # to have it up-to-date or simply don't specify nixpkgs input
+        nixpkgs.follows = "nixpkgs";
+        home-manager.follows = "home-manager";
+      };
+    };
   };
 
   outputs = inputs@{ flake-parts, nixpkgs, ... }:
@@ -77,7 +88,7 @@
       in {
         # Development shell
         devShells.default = inputs.devshell.legacyPackages.${system}.mkShell {
-          name = "nixos-config";
+          name = "MyNixOS";
 
           packages = with pkgs; [
             nil           # Nix LSP
