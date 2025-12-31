@@ -30,6 +30,7 @@
       resize-with-right-button = true;
     };
 
+
     "org/gnome/desktop/wm/keybindings" = {
       close = [ "<Super>q" ];
       maximize = [ "<Super>Up" ];
