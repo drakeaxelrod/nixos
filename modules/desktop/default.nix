@@ -4,6 +4,7 @@
 {
   imports = [
     ./gnome.nix
+    ./steam.nix
     ./wayland.nix
   ];
 }

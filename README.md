@@ -1,251 +1,195 @@
-# NixOS Configuration - Toaster
+# NixOS Configuration
 
-Modular NixOS configuration for a VFIO-optimized gaming/pentesting workstation.
-
-## Hardware
-
-- **CPU:** AMD Ryzen 7 7800X3D
-- **GPU:** NVIDIA RTX 5070 Ti (passed to Windows VM)
-- **iGPU:** AMD Radeon 780M (host display)
-- **Motherboard:** ASUS ROG Strix B850-I
-- **RAM:** 64GB DDR5
-- **Storage:** 2x 2TB NVMe M.2 (Btrfs RAID1 + LUKS2)
+Modular NixOS configuration with support for multiple hosts (workstations, pentesting machines, etc).
 
 ## Features
 
-- **VFIO GPU passthrough** with dual-boot support (host GPU / VM passthrough)
+- **Modular architecture** - Composable host and user configurations
+- **Multiple hosts** - nixos (default), toaster (gaming/VFIO), honeypot (pentesting)
+- **SOPS secrets** - Hierarchical secrets per host/user with password manager backup
+- **VFIO GPU passthrough** - Dual-boot support (host GPU / VM passthrough)
 - **Declarative VMs** - NixOS-native libvirt VM definitions
-- **Looking Glass** + Scream for low-latency VM display/audio
-- **Impermanence** - ephemeral root filesystem
-- **SOPS** secrets management
+- **Impermanence** - Optional ephemeral root filesystem
 - **Btrfs** snapshots with btrbk
+
+## Hosts
+
+- **nixos** - Default minimal configuration
+- **toaster** - Gaming/VFIO workstation (AMD 7800X3D, NVIDIA RTX 5070 Ti, AMD 780M iGPU)
+- **honeypot** - Penetration testing machine with 100+ security tools
 
 ---
 
-## Remote Installation (From GitHub Flake)
-
-Install directly from the GitHub flake using `nixos-anywhere`. No need to clone the repo on the target machine.
+## Installation
 
 ### Prerequisites
 
-- Target machine booted from [NixOS minimal ISO](https://nixos.org/download)
-- Both machines on the same network
-- `nixos-anywhere` on your local machine
+- Boot from [NixOS minimal ISO](https://nixos.org/download)
+- Network connection
+- Age keys stored in password manager (see [SOPS Setup](#sops-secrets-setup))
 
-### Step 1: Boot Target Machine from NixOS ISO
-
-1. Download the NixOS minimal ISO
-2. Flash to USB: `dd if=nixos-minimal.iso of=/dev/sdX bs=4M status=progress`
-3. Boot target machine from USB
-
-### Step 2: Enable SSH on Target
-
-On the **target machine** console:
+### Quick Install
 
 ```bash
-# Set password for nixos user
-passwd
-# Enter: install
+# On target machine - connect to network
+nmcli device wifi connect "SSID" password "PASSWORD"
 
-# Get IP address
-ip addr show
-# Note the IP (e.g., 192.168.1.100)
-```
-
-### Step 3: Install with nixos-anywhere
-
-On your **local machine**:
-
-```bash
-# Install nixos-anywhere if you don't have it
-nix-shell -p nixos-anywhere
-
-# Run the installation directly from GitHub
-nixos-anywhere \
-  --flake github:DrakeAxelrod/nixos#toaster \
-  --disk-encryption-keys /tmp/cryptkey <(echo -n "YOUR_LUKS_PASSPHRASE") \
-  nixos@192.168.1.100
-```
-
-**Or with SSH key:**
-
-```bash
-nixos-anywhere \
-  --flake github:DrakeAxelrod/nixos#toaster \
-  --disk-encryption-keys /tmp/cryptkey <(echo -n "YOUR_LUKS_PASSPHRASE") \
-  --ssh-option "IdentityFile=/path/to/your/key" \
-  nixos@192.168.1.100
-```
-
-This will:
-1. SSH into the target
-2. Run disko to partition disks with LUKS encryption
-3. Install NixOS from your GitHub flake
-4. Reboot automatically
-
-### Step 4: First Boot
-
-1. Enter LUKS passphrase at boot prompt
-2. Login as `draxel` with password `changeme`
-3. Change your password: `passwd`
-
-### Step 5: Update Hardware-Specific Values
-
-After first boot, discover and update hardware values:
-
-```bash
-# SSH into the new system
-ssh draxel@192.168.1.100
-
-# Discover GPU PCI IDs
-lspci -nn | grep -i nvidia
-# Example: 01:00.0 VGA [0300]: NVIDIA [10de:2782]
-# Example: 01:00.1 Audio [0403]: NVIDIA [10de:22bc]
-
-# Discover network interface
-ip link
-# Example: enp6s0
-
-# Clone config for local editing
-git clone https://github.com/DrakeAxelrod/nixos.git ~/.config/nixos
-cd ~/.config/nixos
-
-# Update hosts/toaster/default.nix with real values:
-vim hosts/toaster/default.nix
-```
-
-Update the VM configuration with your GPU values:
-```nix
-# In virtualisation.vms.win11.gpu:
-gpu = {
-  enable = true;
-  pciId = "10de:2782";           # From lspci -nn
-  audioPciId = "10de:22bc";
-  address = "0000:01:00.0";       # From lspci -D
-  audioAddress = "0000:01:00.1";
-};
-
-# Enable dual-boot
-modules.vfio.dualBoot.enable = true;
-
-# Optional: bridge networking
-modules.networking.bridge.interface = "enp6s0";  # Your actual interface
-```
-
-See [docs/gpu-passthrough.md](docs/gpu-passthrough.md) for full setup guide.
-
-Rebuild:
-```bash
-sudo nixos-rebuild switch --flake ~/.config/nixos#toaster
-```
-
----
-
-## Alternative: Manual Remote Installation
-
-If you prefer manual control or nixos-anywhere isn't working:
-
-### Step 1: SSH into Target
-
-```bash
-ssh nixos@192.168.1.100
-sudo -i
-```
-
-### Step 2: Partition with Disko (from GitHub)
-
-```bash
-# Run disko directly from GitHub flake
-nix run github:DrakeAxelrod/nixos#disko -- \
-  --mode disko \
-  github:DrakeAxelrod/nixos#nixosConfigurations.toaster.config.disko.devices
-
-# Or simpler - fetch and run the disko config
+# Clone repository
 nix-shell -p git
 git clone https://github.com/DrakeAxelrod/nixos.git /tmp/nixos
-nix run --extra-experimental-features "nix-command flakes" github:nix-community/disko -- --mode disko /tmp/nixos/hosts/toaster/disko.nix
-```
 
-Enter LUKS passphrase when prompted (same for both disks).
+# Partition disk with disko
+nix run --extra-experimental-features "nix-command flakes" \
+  github:nix-community/disko -- \
+  --mode disko /tmp/nixos/hosts/nixos/disko.nix
 
-### Step 3: Install NixOS (from GitHub)
+# Install NixOS
+nixos-install --extra-experimental-features "nix-command flakes" \
+  --flake github:DrakeAxelrod/nixos#nixos \
+  --no-root-passwd
 
-```bash
-# Install directly from GitHub flake
-nixos-install --flake github:DrakeAxelrod/nixos#toaster --no-root-passwd
-```
-
-### Step 4: Reboot
-
-```bash
 reboot
 ```
 
+Login with password `changeme` and change it immediately with `passwd`.
+
 ---
 
-## Post-Installation Setup
+## SOPS Secrets Setup
 
-### Enable Impermanence
+### Password Manager Storage
 
-After first successful boot, create the blank root snapshot:
+Store these in Bitwarden/Proton Pass for each machine:
+
+- **Host keys**: `<hostname>-age-key` (public), `<hostname>-ssh-host-key` (private backup)
+- **User keys**: `<username>-age-private-key`, `<username>-age-public-key`
+- **Git access**: `github-deploy-key` or `github-personal-token`
+
+### First-Time Setup
+
+#### 1. Generate Host Age Key
 
 ```bash
-# Mount btrfs root
+# After installation, get host's age key
+nix-shell -p ssh-to-age --run \
+  'cat /etc/ssh/ssh_host_ed25519_key.pub | ssh-to-age'
+
+# Store in password manager as "<hostname>-age-key"
+```
+
+#### 2. Generate User Age Key
+
+```bash
+# Generate new age key (or retrieve from password manager if migrating)
+nix-shell -p age --run 'age-keygen -o ~/.age-key.txt'
+
+# Shows: Public key: age1xxx...
+# Store BOTH public and private in password manager
+```
+
+#### 3. Update .sops.yaml
+
+Clone config and add your keys to [.sops.yaml](.sops.yaml):
+
+```bash
+git clone git@github.com:drakeaxelrod/nixos.git ~/.config/nixos
+cd ~/.config/nixos
+```
+
+Add age keys:
+
+```yaml
+keys:
+  - &draxel age1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  - &nixos age1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+creation_rules:
+  - path_regex: hosts/nixos/secrets\.yaml$
+    key_groups:
+      - age: [*draxel, *nixos]
+  - path_regex: users/draxel/secrets\.yaml$
+    key_groups:
+      - age: [*draxel]
+```
+
+#### 4. Create Secrets Files
+
+```bash
+# Copy example secrets
+cd hosts/nixos
+cp secrets.yaml.example secrets.yaml
+# Edit with real values
+nano secrets.yaml
+
+# Encrypt
+nix-shell -p sops --run 'sops -e -i secrets.yaml'
+
+# Repeat for user secrets
+cd ../../users/draxel
+cp secrets.yaml.example secrets.yaml
+nano secrets.yaml
+nix-shell -p sops --run 'sops -e -i secrets.yaml'
+```
+
+#### 5. Enable SOPS in Host Config
+
+```nix
+# In hosts/<hostname>/default.nix
+modules.security.sops.enable = true;
+```
+
+### Accessing Secrets
+
+Secrets are available at `/run/secrets/<secret-name>`:
+
+```nix
+# In NixOS configuration
+services.someService.passwordFile = config.sops.secrets.database_password.path;
+```
+
+### Migrating to New Hardware
+
+**Same hostname:**
+
+```bash
+# Update .sops.yaml with new host's age key
+# Re-encrypt with new key
+cd hosts/<hostname>
+nix-shell -p sops --run 'sops updatekeys secrets.yaml'
+```
+
+**New hostname:** Follow first-time setup, retrieve user age key from password manager.
+
+### Troubleshooting
+
+- **"Failed to decrypt"**: Check age key location, verify in `.sops.yaml`, check permissions (600)
+- **"No such file"**: Enable `modules.security.sops.enable`, verify secrets.yaml exists
+- **Edit secrets**: `nix-shell -p sops --run 'sops secrets.yaml'`
+
+---
+
+## Advanced Topics
+
+### GPU Passthrough (toaster host)
+
+See [docs/vfio-setup.md](docs/vfio-setup.md) for complete VFIO/GPU passthrough configuration.
+
+### Impermanence
+
+Enable ephemeral root filesystem:
+
+```bash
+# After first boot, create blank root snapshot
 sudo mount -o subvol=/ /dev/mapper/cryptroot1 /mnt
-
-# Create blank snapshot
 sudo btrfs subvolume snapshot -r /mnt/@rootfs /mnt/@rootfs-blank
-
-# Unmount
 sudo umount /mnt
 
-# Enable in config
-vim ~/.config/nixos/hosts/toaster/default.nix
-# Uncomment: modules.impermanence.enable = true;
+# Enable in host config
+# In hosts/<hostname>/default.nix:
+modules.impermanence.enable = true;
 
 # Rebuild
-sudo nixos-rebuild switch --flake ~/.config/nixos#toaster
-```
-
-### Setup SOPS Secrets
-
-```bash
-# Generate age key
-mkdir -p ~/.config/sops/age
-age-keygen -o ~/.config/sops/age/keys.txt
-
-# Show public key (add to .sops.yaml)
-age-keygen -y ~/.config/sops/age/keys.txt
-
-# Copy to persist directory
-sudo mkdir -p /persist/etc/sops/age
-sudo cp ~/.config/sops/age/keys.txt /persist/etc/sops/age/
-
-# Enable in config
-# Uncomment: modules.security.sops.enable = true;
-```
-
-### Setup Windows 11 VM
-
-```bash
-# Create images directory
-sudo mkdir -p /var/lib/libvirt/images
-
-# Download VirtIO drivers
-sudo wget -O /var/lib/libvirt/images/virtio-win.iso \
-  https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso
-
-# Download Windows 11 ISO from Microsoft and place at:
-# /var/lib/libvirt/images/Win11.iso
-
-# Create VM disk
-sudo qemu-img create -f qcow2 /var/lib/libvirt/images/win11.qcow2 256G
-
-# Start VM (auto-defined on boot)
-virsh start win11
-
-# Connect with Looking Glass (after installing host app in Windows)
-looking-glass-client -f /dev/shm/looking-glass
+nx switch
 ```
 
 ---
@@ -254,12 +198,12 @@ looking-glass-client -f /dev/shm/looking-glass
 
 ```bash
 cd ~/.config/nixos
-nix develop
+nix develop  # Enter dev shell
 
-# Commands (unified nx tool):
+# Unified nx tool (default host: nixos):
 nx                 # Show help
-nx switch          # Rebuild and switch (toaster)
-nx switch laptop   # Rebuild and switch (laptop)
+nx switch          # Rebuild and switch (default host)
+nx switch toaster  # Rebuild and switch (specific host)
 nx boot            # Rebuild for next boot
 nx test            # Test without boot entry
 nx dry             # Dry run
@@ -275,31 +219,16 @@ sops-edit          # Edit secrets
 discover-hardware  # Show GPU/network info
 ```
 
----
-
-## Quick Reference
-
-### Rebuild from GitHub (after changes pushed)
+### Rebuild without Dev Shell
 
 ```bash
-sudo nixos-rebuild switch --flake github:DrakeAxelrod/nixos#toaster
-```
+# From GitHub (after pushing changes)
+sudo nixos-rebuild switch --extra-experimental-features "nix-command flakes" \
+  --flake github:DrakeAxelrod/nixos#nixos
 
-### Rebuild from Local
-
-```bash
-sudo nixos-rebuild switch --flake ~/.config/nixos#toaster
-# Or using devshell:
-nx switch
-```
-
-### Check IOMMU Groups
-
-```bash
-for d in /sys/kernel/iommu_groups/*/devices/*; do
-  n=$(basename $(dirname $(dirname $d)))
-  echo "Group $n: $(lspci -nns $(basename $d))"
-done | sort -V
+# From local clone
+sudo nixos-rebuild switch --extra-experimental-features "nix-command flakes" \
+  --flake ~/.config/nixos#nixos
 ```
 
 ---
@@ -307,31 +236,45 @@ done | sort -V
 ## Directory Structure
 
 ```
-nixos/
-├── flake.nix                 # Main entry point
-├── docs/                     # Documentation
-│   └── gpu-passthrough.md    # VFIO/VM setup guide
-├── lib/                      # Custom library functions
-│   ├── default.nix           # mkHost helper
-│   └── libvirt.nix           # Declarative VM XML generation
-├── hosts/toaster/            # Host-specific config
-│   ├── default.nix           # Main host config
-│   ├── hardware.nix          # Hardware docs
-│   └── disko.nix             # Disk partitioning
-├── users/                    # Self-contained user modules
-│   └── draxel/               # NixOS user + Home Manager
-│       ├── default.nix       # User module entry point
-│       └── home/             # Home Manager config
-├── modules/                  # Reusable modules
-│   ├── core/                 # Boot, nix, locale, users
-│   ├── hardware/             # CPU, GPU, storage
-│   ├── vfio/                 # GPU passthrough + dual-boot
-│   ├── virtualization/       # libvirt, docker
-│   ├── vms/                  # Declarative VM definitions
-│   ├── desktop/              # GNOME, Wayland
-│   ├── networking/           # Bridge, Tailscale
-│   ├── services/             # SSH, btrbk
-│   ├── security/             # SOPS
-│   └── impermanence/         # Ephemeral root
-└── secrets/                  # Encrypted secrets
+.
+├── flake.nix                    # Flake entry point
+├── .sops.yaml                   # SOPS age key configuration
+├── docs/                        # Specialized documentation
+│   └── vfio-setup.md            # GPU passthrough guide
+├── lib/                         # Helper functions
+│   ├── default.nix              # mkHost
+│   └── libvirt.nix              # VM XML generation
+├── hosts/                       # Host configurations
+│   ├── nixos/
+│   │   ├── default.nix
+│   │   ├── disko.nix
+│   │   └── secrets.yaml.example
+│   ├── toaster/
+│   └── honeypot/
+├── users/                       # User configurations
+│   ├── draxel/
+│   │   ├── default.nix          # NixOS user
+│   │   ├── secrets.yaml.example
+│   │   └── home/                # Home Manager
+│   │       ├── dev/             # git, lazygit, dev tools
+│   │       ├── editors/         # neovim, vscode, claude-code
+│   │       ├── apps/            # moonlight, stremio, steam
+│   │       ├── shell/           # zsh, starship
+│   │       ├── desktop/         # GNOME, GTK themes
+│   │       └── core/            # packages, XDG
+│   └── bamse/
+│       └── home/pentest.nix     # 100+ security tools
+├── modules/                     # Reusable modules
+│   ├── core/                    # boot, nix, locale
+│   ├── hardware/                # amd, nvidia, audio, bluetooth
+│   ├── desktop/                 # gnome, wayland, steam
+│   ├── networking/              # base, bridge, tailscale
+│   ├── services/                # ssh, printing, btrbk
+│   ├── security/                # sops, base
+│   ├── virtualization/          # docker, libvirt
+│   ├── vfio/                    # GPU passthrough, dual-boot
+│   ├── vms/                     # Declarative VMs
+│   └── impermanence/            # Ephemeral root
+└── scripts/
+    └── nx.sh                    # Build/switch/update commands
 ```

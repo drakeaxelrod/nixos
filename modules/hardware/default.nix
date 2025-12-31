@@ -3,9 +3,10 @@
 
 {
   imports = [
-    ./amd-cpu.nix
-    ./amd-gpu.nix
-    ./storage.nix
+    ./amd.nix
+    ./nvidia.nix
     ./audio.nix
+    ./bluetooth.nix
+    ./storage.nix
   ];
 }

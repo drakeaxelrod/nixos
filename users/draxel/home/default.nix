@@ -1,16 +1,18 @@
 # draxel's Home Manager configuration
 { config, pkgs, inputs, ... }:
 
+let
+  # NixOS flake operations script - shared with devshell
+  nx = pkgs.writeShellScriptBin "nx" (builtins.readFile ../../../scripts/nx.sh);
+in
 {
   imports = [
     ./core
     ./shell
-    ./git.nix
-    ./neovim.nix
+    ./dev
+    ./editors
     ./desktop
-    ./packages.nix
-    ./vscode.nix
-    ./claude-code.nix
+    ./apps
     # Zen Browser - modern Firefox-based browser with vertical tabs
     inputs.zen-browser.homeModules.default
   ];
@@ -18,6 +20,43 @@
   home.username = "draxel";
   home.homeDirectory = "/home/draxel";
   home.stateVersion = "25.11";
+
+  # Zen Browser
+  programs.zen-browser.enable = true;
+
+  # User packages
+  home.packages = with pkgs; [
+    # Custom scripts
+    nx
+
+    # CLI tools (these are configured in shell/)
+    # eza, bat, fzf, zoxide are configured via programs.*
+
+    # Git tools (configured in dev/git.nix and dev/lazygit.nix)
+    # git, lazygit, gh are configured via programs.*
+
+    # Development (main dev tools are in dev/tools.nix)
+    nix-direnv  # Nix-specific direnv integration
+
+    # Security/Pentest (uncomment as needed)
+    # nmap
+    # burpsuite  # Unfree
+    # ghidra
+
+    # Media (uncomment as needed)
+    # vlc
+    # spotify
+
+    # Communication (uncomment as needed)
+    discord
+    # slack
+
+    # Audio
+    pavucontrol  # Audio control
+
+    # Web browsers
+    # firefox
+  ];
 
   # Use XDG config directory for zsh (new default in 26.05)
   programs.zsh.dotDir = "${config.xdg.configHome}/zsh";

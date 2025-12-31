@@ -9,6 +9,7 @@ in
     ./systemd.nix
     ./limine.nix
     ./grub.nix
+    ./plymouth.nix
   ];
 
   options.modules.core.boot = {

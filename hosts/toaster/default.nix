@@ -7,20 +7,27 @@
 #   - NixOS           → Host GPU mode (NVIDIA on host for gaming/CUDA)
 #   - NixOS [vfio]    → VFIO mode (GPU isolated for Windows VM)
 #
-{ config, lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, inputs, meta, ... }:
+
+let
+  # Helper to get specific users from meta.users
+  # Usage: users.draxel or users.all
+  users = lib.genAttrs meta.users (name: name) // {
+    all = meta.users;
+  };
+in
 
 {
   imports = [
-    ./hardware.nix
     ./disko.nix
   ];
 
   # ==========================================================================
   # System Identity
   # ==========================================================================
-
-  networking.hostName = "toaster";
-  system.stateVersion = "25.11";
+  # Derived from mkHost - no need to set here
+  # networking.hostName = meta.hostname;      # "toaster"
+  # system.stateVersion = meta.stateVersion;  # "25.11"
 
   # ==========================================================================
   # Bootloader - Limine for clean boot menu
@@ -28,7 +35,7 @@
 
   modules.core.boot = {
     loader = "limine";     # Modern, stylish bootloader
-    maxGenerations = 5;    # Keep boot menu clean
+    maxGenerations = 10;    # Keep boot menu clean
     timeout = 5;           # 5 second timeout
   };
 
@@ -36,13 +43,10 @@
   # Hardware Features
   # ==========================================================================
 
-  modules.hardware.amd-cpu.enable = true;
-  modules.hardware.amd-gpu.enable = true;
+  # AMD CPU and GPU (includes nixos-hardware modules)
+  modules.hardware.amd.enable = true;
 
-  # ==========================================================================
-  # audio
-  # ==========================================================================
-  
+  # Audio
   modules.hardware.audio.enable = true;
 
   # ==========================================================================
@@ -54,31 +58,31 @@
   #
   # PCI IDs are auto-derived from virtualisation.vms GPU settings.
 
-  # modules.vfio.dualBoot = {
-  #   enable = true;
-  #   defaultMode = "host";  # "host" or "vfio"
-  # };
+  modules.vfio.dualBoot = {
+    enable = true;
+    defaultMode = "host";  # "host" or "vfio"
+  };
   #
   # # Looking Glass & Scream (active in VFIO mode)
-  # modules.vfio.lookingGlass = {
-  #   enable = true;
-  #   users = [ "draxel" ];
-  # };
-  # modules.vfio.scream.enable = true;
+  modules.vfio.lookingGlass = {
+    enable = true;
+    users = [ users.draxel ];  # Derived from meta.users
+  };
+  modules.vfio.scream.enable = true;
 
   # ==========================================================================
   # Virtualization
   # ==========================================================================
 
-  # modules.virtualization.libvirt = {
-  #   enable = true;
-  #   users = [ "draxel" ];  # Auto-added to libvirtd group
-  # };
+  modules.virtualization.libvirt = {
+    enable = true;
+    users = [ users.draxel ];  # Auto-added to libvirtd group
+  };
 
-  # modules.virtualization.docker = {
-  #   enable = true;
-  #   users = [ "draxel" ];  # Auto-added to docker group
-  # };
+  modules.virtualization.docker = {
+    enable = true;
+    users = [ users.draxel ];  # Auto-added to docker group
+  };
 
   # ==========================================================================
   # Desktop Environment
@@ -97,7 +101,7 @@
   #   interface = "eth0";  # PLACEHOLDER - Update with: ip link
   # };
 
-  # modules.networking.tailscale.enable = true;
+  modules.networking.tailscale.enable = true;
 
   # ==========================================================================
   # Services
@@ -110,20 +114,23 @@
   # Impermanence (Ephemeral Root)
   # ==========================================================================
 
-  # Disabled - enable after system is stable and @rootfs-blank snapshot exists
+  # Disabled by default - enable after system is stable and @rootfs-blank snapshot exists
   # To enable:
-  #   1. Boot system normally
-  #   2. Create blank snapshot: sudo btrfs subvolume snapshot / /.snapshots/@rootfs-blank
-  #   3. Set modules.impermanence.enable = true
-  #   4. Rebuild
-  modules.impermanence.enable = false;
+  #   1. Boot system normally and ensure everything works
+  #   2. Create blank root snapshot:
+  #      sudo mount -o subvol=/ /dev/mapper/cryptroot1 /mnt
+  #      sudo btrfs subvolume snapshot -r /mnt/@rootfs /mnt/@rootfs-blank
+  #      sudo umount /mnt
+  #   3. Set modules.impermanence.enable = true below
+  #   4. Rebuild: nx switch
+  # modules.impermanence.enable = true;
 
   # ==========================================================================
   # SOPS Secrets
   # ==========================================================================
 
   # Disabled by default - enable after setting up age keys
-  # modules.security.sops.enable = true;
+  modules.security.sops.enable = true;
 
   # ==========================================================================
   # Declarative Virtual Machines

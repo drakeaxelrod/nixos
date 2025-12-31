@@ -5,6 +5,7 @@
 #
 {
   draxel = ./draxel;
+  bamse = ./bamse;
 
   # Add more users:
   # guest = ./guest;

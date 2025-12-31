@@ -10,7 +10,7 @@ set -euo pipefail
 
 readonly SCRIPT_NAME="nx"
 readonly FLAKE_DIR="${FLAKE_DIR:-$HOME/.config/nixos}"
-readonly DEFAULT_HOST="${NX_DEFAULT_HOST:-toaster}"
+readonly DEFAULT_HOST="${NX_DEFAULT_HOST:-nixos}"
 readonly DEFAULT_JOBS="${NX_JOBS:-8}"
 readonly DEFAULT_CORES="${NX_CORES:-2}"
 

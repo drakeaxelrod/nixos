@@ -1,29 +1,66 @@
-# SOPS configuration
+# SOPS configuration - Modular secrets management
 # https://github.com/Mic92/sops-nix
 #
-# Setup:
-# 1. Generate age key: age-keygen -o ~/.config/sops/age/keys.txt
-# 2. Add your public key below
-# 3. Create secrets: sops secrets/secrets.yaml
-# 4. Encrypt: sops encrypts automatically when saving
+# Directory structure:
+#   hosts/<hostname>/secrets.yaml    # Host-specific secrets
+#   users/<username>/secrets.yaml    # User-specific secrets
+#
+# Each host/user has their own secrets.yaml file in their directory.
+# See docs/bootstrap.md for complete setup instructions.
+#
+# Quick setup:
+# 1. Generate user age key: age-keygen -o ~/.age-key.txt
+# 2. Get host key: nix-shell -p ssh-to-age --run 'cat /etc/ssh/ssh_host_ed25519_key.pub | ssh-to-age'
+# 3. Store both keys in password manager (Bitwarden/Proton Pass)
+# 4. Add public keys below
+# 5. Copy secrets.yaml.example to secrets.yaml and edit
+# 6. Encrypt: sops -e -i secrets.yaml
 
 keys:
+  # ===========================================================================
   # User age keys (from ~/.config/sops/age/keys.txt)
+  # ===========================================================================
   - &draxel age1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  - &bamse age1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-  # Host keys (generate after install with: sudo cat /etc/ssh/ssh_host_ed25519_key | ssh-to-age)
+  # ===========================================================================
+  # Host SSH keys (generate after install: ssh-to-age < /etc/ssh/ssh_host_ed25519_key)
+  # ===========================================================================
+  - &nixos age1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
   - &toaster age1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  - &honeypot age1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 creation_rules:
-  # Secrets accessible by draxel user
-  - path_regex: secrets/user\.yaml$
+  # ===========================================================================
+  # Host-specific secrets: hosts/<hostname>/secrets.yaml
+  # ===========================================================================
+  - path_regex: hosts/nixos/secrets\.yaml$
     key_groups:
       - age:
-          - *draxel
+          - *draxel  # Admin can edit
+          - *nixos   # Host can decrypt
 
-  # Secrets accessible by host (system services)
-  - path_regex: secrets/.*\.yaml$
+  - path_regex: hosts/toaster/secrets\.yaml$
     key_groups:
       - age:
           - *draxel
           - *toaster
+
+  - path_regex: hosts/honeypot/secrets\.yaml$
+    key_groups:
+      - age:
+          - *bamse   # Pentest user can edit
+          - *honeypot
+
+  # ===========================================================================
+  # User-specific secrets: users/<username>/secrets.yaml
+  # ===========================================================================
+  - path_regex: users/draxel/secrets\.yaml$
+    key_groups:
+      - age:
+          - *draxel  # Only draxel can decrypt
+
+  - path_regex: users/bamse/secrets\.yaml$
+    key_groups:
+      - age:
+          - *bamse   # Only bamse can decrypt

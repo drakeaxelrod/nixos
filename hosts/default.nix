@@ -10,9 +10,22 @@ let
 in
 
 {
+  # Default simple NixOS configuration
+  nixos = lib.mkHost {
+    hostname = "nixos";
+    users = with users; [ draxel ];
+  };
+
+  # Gaming + Pentesting workstation with VFIO
   toaster = lib.mkHost {
     hostname = "toaster";
     users = with users; [ draxel ];
+  };
+
+  # Penetration testing machine
+  honeypot = lib.mkHost {
+    hostname = "honeypot";
+    users = with users; [ bamse ];
   };
 
   # Add more hosts:

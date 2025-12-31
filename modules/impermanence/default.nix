@@ -53,7 +53,11 @@ let
 in
 {
   options.modules.impermanence = {
-    enable = lib.mkEnableOption "Impermanence (ephemeral root)";
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Enable impermanence (ephemeral root filesystem)";
+    };
 
     persistPath = lib.mkOption {
       type = lib.types.str;

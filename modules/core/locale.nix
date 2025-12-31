@@ -24,7 +24,24 @@
 
   config = {
     time.timeZone = config.modules.core.locale.timezone;
-    i18n.defaultLocale = config.modules.core.locale.locale;
+
+    i18n = {
+      defaultLocale = config.modules.core.locale.locale;
+
+      # Extra locale settings for consistent formatting
+      extraLocaleSettings = {
+        LC_ADDRESS = config.modules.core.locale.locale;
+        LC_IDENTIFICATION = config.modules.core.locale.locale;
+        LC_MEASUREMENT = config.modules.core.locale.locale;
+        LC_MONETARY = config.modules.core.locale.locale;
+        LC_NAME = config.modules.core.locale.locale;
+        LC_NUMERIC = config.modules.core.locale.locale;
+        LC_PAPER = config.modules.core.locale.locale;
+        LC_TELEPHONE = config.modules.core.locale.locale;
+        LC_TIME = config.modules.core.locale.locale;
+      };
+    };
+
     console.keyMap = config.modules.core.locale.keymap;
   };
 }

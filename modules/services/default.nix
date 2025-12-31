@@ -5,6 +5,7 @@
   imports = [
     ./openssh.nix
     ./btrbk.nix
+    ./printing.nix
     ./packages.nix
   ];
 }
