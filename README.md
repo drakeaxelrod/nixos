@@ -163,7 +163,7 @@ nix run github:DrakeAxelrod/nixos#disko -- \
 # Or simpler - fetch and run the disko config
 nix-shell -p git
 git clone https://github.com/DrakeAxelrod/nixos.git /tmp/nixos
-nix run github:nix-community/disko -- --mode disko /tmp/nixos/hosts/toaster/disko.nix
+nix run --extra-experimental-features "nix-command flakes" github:nix-community/disko -- --mode disko /tmp/nixos/hosts/toaster/disko.nix
 ```
 
 Enter LUKS passphrase when prompted (same for both disks).
