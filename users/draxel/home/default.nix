@@ -3,6 +3,7 @@
 
 {
   imports = [
+    ./core
     ./shell
     ./git.nix
     ./neovim.nix
@@ -10,6 +11,8 @@
     ./packages.nix
     ./vscode.nix
     ./claude-code.nix
+    # Zen Browser - modern Firefox-based browser with vertical tabs
+    inputs.zen-browser.homeModules.default
   ];
 
   home.username = "draxel";
@@ -18,9 +21,6 @@
 
   # Use XDG config directory for zsh (new default in 26.05)
   programs.zsh.dotDir = "${config.xdg.configHome}/zsh";
-
-  # Let home-manager manage itself
-  programs.home-manager.enable = true;
 
   # XDG directories
   xdg = {
@@ -41,5 +41,21 @@
         XDG_WORK_DIR = "/work";
       };
     };
+
+    # MIME type associations
+    mimeApps = {
+      enable = true;
+      defaultApplications = {
+        "text/html" = "zen.desktop";
+        "x-scheme-handler/http" = "zen.desktop";
+        "x-scheme-handler/https" = "zen.desktop";
+        "application/pdf" = "org.gnome.Evince.desktop";
+        "image/png" = "org.gnome.eog.desktop";
+        "image/jpeg" = "org.gnome.eog.desktop";
+        "inode/directory" = "org.gnome.Nautilus.desktop";
+      };
+    };
+
+    configFile."mimeapps.list".force = true;
   };
 }

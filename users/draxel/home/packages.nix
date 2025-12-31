@@ -1,9 +1,16 @@
 # User-level packages
 { config, pkgs, ... }:
 
+let
+  # NixOS flake operations script - shared with devshell
+  nx = pkgs.writeShellScriptBin "nx" (builtins.readFile ../../../scripts/nx.sh);
+in
 {
-  #programs.zen-browser.enable = true;
+  programs.zen-browser.enable = true;
+
   home.packages = with pkgs; [
+    # Custom scripts
+    nx
     # CLI tools
     eza          # Modern ls
     bat          # Modern cat
@@ -16,6 +23,7 @@
     # Development
     direnv
     nix-direnv
+    nixfmt
 
     # Security/Pentest (uncomment as needed)
     # nmap
@@ -27,11 +35,14 @@
     # spotify
 
     # Communication (uncomment as needed)
-    # discord
+    discord
     # slack
+
+    # Audio
+    pavucontrol  # Audio control
 
     # web browser
     firefox
-    
+
   ];
 }

@@ -111,10 +111,8 @@
   # ==========================================================================
 
   # Disabled by default - enable after creating @rootfs-blank snapshot
-  modules.impermanence = {
-    enable = true;
-    users = [ "draxel" ];  # Users to persist home directories for
-  };
+  # NOTE: /home is a persistent Btrfs subvolume - only /rootfs is wiped on boot
+  modules.impermanence.enable = true;
 
   # ==========================================================================
   # SOPS Secrets
