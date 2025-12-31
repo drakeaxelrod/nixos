@@ -39,7 +39,9 @@ let
   ];
 
   autoSystemFiles = [
-    "/etc/machine-id"
+    # Note: /etc/machine-id is managed by systemd and NixOS's /etc management
+    # Persisting it causes conflicts - systemd-machine-id-commit handles persistence
+    # "/etc/machine-id"
     "/etc/adjtime"
   ];
 
@@ -63,8 +65,9 @@ let
       { directory = ".local/share/Steam"; method = "symlink"; }
     ])
 
-    # Apps (check if packages are in system or user packages)
-    (lib.optional (builtins.elem pkgs.discord (config.environment.systemPackages or [])) ".config/discord")
+    # Apps - Note: Checking systemPackages creates circular dependencies
+    # Users should add app config dirs to extraUserDirectories if needed
+    # (lib.optional (builtins.elem pkgs.discord (config.environment.systemPackages or [])) ".config/discord")
   ];
 
   defaultUserFiles = [ ".zsh_history" ".bash_history" ];

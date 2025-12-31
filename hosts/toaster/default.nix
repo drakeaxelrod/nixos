@@ -111,10 +111,10 @@
   # ==========================================================================
 
   # Disabled by default - enable after creating @rootfs-blank snapshot
-  # modules.impermanence = {
-  #   enable = true;
-  #   users = [ "draxel" ];  # Users to persist home directories for
-  # };
+  modules.impermanence = {
+    enable = true;
+    users = [ "draxel" ];  # Users to persist home directories for
+  };
 
   # ==========================================================================
   # SOPS Secrets
