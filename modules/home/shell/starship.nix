@@ -46,6 +46,58 @@
         format = "[@](bold yellow)[$hostname]($style) ";
       };
 
+      os = {
+        disabled = false;
+        symbols = {
+          Alpaquita = " ";
+          Alpine = " ";
+          AlmaLinux = " ";
+          Amazon = " ";
+          Android = " ";
+          AOSC = " ";
+          Arch = " ";
+          Artix = " ";
+          CachyOS = " ";
+          CentOS = " ";
+          Debian = " ";
+          DragonFly = " ";
+          Emscripten = " ";
+          EndeavourOS = " ";
+          Fedora = " ";
+          FreeBSD = " ";
+          Garuda = "󰛓 ";
+          Gentoo = " ";
+          HardenedBSD = "󰞌 ";
+          Illumos = "󰈸 ";
+          Kali = " ";
+          Linux = " ";
+          Mabox = " ";
+          Macos = " ";
+          Manjaro = " ";
+          Mariner = " ";
+          MidnightBSD = " ";
+          Mint = " ";
+          NetBSD = " ";
+          NixOS = " ";
+          Nobara = " ";
+          OpenBSD = "󰈺 ";
+          openSUSE = " ";
+          OracleLinux = "󰌷 ";
+          Pop = " ";
+          Raspbian = " ";
+          Redhat = " ";
+          RedHatEnterprise = " ";
+          RockyLinux = " ";
+          Redox = "󰀘 ";
+          Solus = "󰠳 ";
+          SUSE = " ";
+          Ubuntu = " ";
+          Unknown = " ";
+          Void = " ";
+          Windows = "󰍲 ";
+        };
+      };
+
       directory = {
         truncation_length = 5;
         truncate_to_repo = false;
@@ -57,13 +109,13 @@
       };
 
       git_branch = {
-        symbol = "";
+        symbol = " ";
         style = "bold purple";
         format = " [\\($symbol$branch\\)]($style)";
       };
 
       git_commit = {
-        tag_symbol = " ";
+        tag_symbol = "  ";
       };
 
       git_status = {
@@ -98,6 +150,7 @@
       fortran.symbol = " ";
       fossil_branch.symbol = " ";
       gcloud.symbol = " ";
+      golang.symbol = " ";
       gradle.symbol = " ";
       guix_shell.symbol = " ";
       haskell.symbol = " ";
@@ -110,21 +163,25 @@
       memory_usage.symbol = "󰍛 ";
       meson.symbol = "󰔷 ";
       nim.symbol = "󰆥 ";
+      nodejs.symbol = " ";
       ocaml.symbol = " ";
       package.symbol = "󰏗 ";
       perl.symbol = " ";
       php.symbol = " ";
       pijul_channel.symbol = " ";
+      pixi.symbol = "󰏗 ";
       python.symbol = " ";
       rlang.symbol = "󰟔 ";
       ruby.symbol = " ";
+      rust.symbol = "󱘗 ";
       scala.symbol = " ";
       status.symbol = " ";
       swift.symbol = " ";
+      xmake.symbol = " ";
       zig.symbol = " ";
 
       nix_shell = {
-        symbol = "";
+        symbol = " ";
         format = " [\\($symbol$state\\)]($style)";
         style = "bold blue";
       };
@@ -135,26 +192,8 @@
         style = "bold yellow";
       };
 
-      nodejs = {
-        symbol = "";
-        style = "bold green";
-        format = " [\\($symbol$version\\)]($style)";
-      };
-
-      rust = {
-        symbol = "󱘗";
-        style = "bold red";
-        format = " [\\($symbol$version\\)]($style)";
-      };
-
-      golang = {
-        symbol = "";
-        style = "bold cyan";
-        format = " [\\($symbol$version\\)]($style)";
-      };
-
       docker_context = {
-        symbol = "";
+        symbol = " ";
         style = "bold blue";
         format = " [\\($symbol$context\\)]($style)";
       };

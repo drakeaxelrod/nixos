@@ -78,6 +78,7 @@
           managers = {
             gnome = "${inputs.self}/modules/nixos/desktop/managers/gnome.nix";
             plasma = "${inputs.self}/modules/nixos/desktop/managers/plasma.nix";
+            hyprland = "${inputs.self}/modules/nixos/desktop/managers/hyprland.nix";
             # Gaming moved to separate section
           };
         };
@@ -184,14 +185,27 @@
               desktop = {
                 gnome = "${inputs.self}/modules/home/desktop/gnome";
                 plasma = "${inputs.self}/modules/home/desktop/plasma";
+                hyprland = "${inputs.self}/modules/home/desktop/hyprland";
               };
               # Shell configurations
               shell = {
                 bat = "${inputs.self}/modules/home/shell/bat.nix";
+                btop = "${inputs.self}/modules/home/shell/btop.nix";
+                delta = "${inputs.self}/modules/home/shell/delta.nix";
                 direnv = "${inputs.self}/modules/home/shell/direnv.nix";
+                dog = "${inputs.self}/modules/home/shell/dog.nix";
+                fastfetch = "${inputs.self}/modules/home/shell/fastfetch.nix";
+                fd = "${inputs.self}/modules/home/shell/fd.nix";
                 fzf = "${inputs.self}/modules/home/shell/fzf.nix";
+                gping = "${inputs.self}/modules/home/shell/gping.nix";
+                grc = "${inputs.self}/modules/home/shell/grc.nix";
+                jless = "${inputs.self}/modules/home/shell/jless.nix";
+                jq = "${inputs.self}/modules/home/shell/jq.nix";
                 lsd = "${inputs.self}/modules/home/shell/lsd.nix";
+                procs = "${inputs.self}/modules/home/shell/procs.nix";
+                ripgrep = "${inputs.self}/modules/home/shell/ripgrep.nix";
                 starship = "${inputs.self}/modules/home/shell/starship.nix";
+                xh = "${inputs.self}/modules/home/shell/xh.nix";
                 zoxide = "${inputs.self}/modules/home/shell/zoxide.nix";
                 zsh = "${inputs.self}/modules/home/shell/zsh.nix";
               };
@@ -199,12 +213,24 @@
               dev = {
                 git = "${inputs.self}/modules/home/dev/git.nix";
                 lazygit = "${inputs.self}/modules/home/dev/lazygit.nix";
-                tools = "${inputs.self}/modules/home/dev/tools.nix";
+                # Language-specific tools
+                rust = "${inputs.self}/modules/home/dev/rust.nix";
+                go = "${inputs.self}/modules/home/dev/go.nix";
+                nodejs = "${inputs.self}/modules/home/dev/nodejs.nix";
+                python = "${inputs.self}/modules/home/dev/python.nix";
+                java = "${inputs.self}/modules/home/dev/java.nix";
+                c = "${inputs.self}/modules/home/dev/c.nix";
+                lua = "${inputs.self}/modules/home/dev/lua.nix";
+                nix = "${inputs.self}/modules/home/dev/nix.nix";
+                # Utilities
+                database = "${inputs.self}/modules/home/dev/database.nix";
+                api = "${inputs.self}/modules/home/dev/api.nix";
+                build = "${inputs.self}/modules/home/dev/build.nix";
               };
               # Editors
               editors = {
                 claudeCode = "${inputs.self}/modules/home/editors/claude-code.nix";
-                neovim = "${inputs.self}/modules/home/editors/neovim.nix";
+                nixvim = "${inputs.self}/modules/home/editors/nixvim.nix";
                 vscode = "${inputs.self}/modules/home/editors/vscode.nix";
               };
               # Applications
