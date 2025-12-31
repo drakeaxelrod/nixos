@@ -110,9 +110,13 @@
   # Impermanence (Ephemeral Root)
   # ==========================================================================
 
-  # Disabled by default - enable after creating @rootfs-blank snapshot
-  # NOTE: /home is a persistent Btrfs subvolume - only /rootfs is wiped on boot
-  modules.impermanence.enable = true;
+  # Disabled - enable after system is stable and @rootfs-blank snapshot exists
+  # To enable:
+  #   1. Boot system normally
+  #   2. Create blank snapshot: sudo btrfs subvolume snapshot / /.snapshots/@rootfs-blank
+  #   3. Set modules.impermanence.enable = true
+  #   4. Rebuild
+  modules.impermanence.enable = false;
 
   # ==========================================================================
   # SOPS Secrets
