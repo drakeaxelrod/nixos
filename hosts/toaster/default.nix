@@ -27,8 +27,8 @@ in
     modules.nixos.system.packages
 
     # Desktop environment
-    modules.nixos.desktop.display.gdm
-    modules.nixos.desktop.managers.gnome
+    modules.nixos.desktop.display.sddm
+    modules.nixos.desktop.managers.plasma
 
     # Applications
     modules.nixos.apps.steam
@@ -74,9 +74,10 @@ in
   # ==========================================================================
 
   modules.system.boot = {
-    loader = "limine";     # Modern, stylish bootloader
-    maxGenerations = 10;    # Keep boot menu clean
-    timeout = 5;           # 5 second timeout
+    loader = "limine";          # Modern, stylish bootloader
+    kernelPackage = "linuxPackages_latest";  # Use latest stable kernel
+    maxGenerations = 10;        # Keep boot menu clean
+    timeout = 5;                # 5 second timeout
 
     # Plymouth for graphical LUKS password prompt
     plymouth = {
@@ -156,14 +157,11 @@ in
   # Desktop modules are now imported above (import-based pattern)
   # Configuration is done here through options
 
-  # Enable GNOME desktop
-  modules.desktop.gnome.enable = true;
+  # Enable Plasma desktop
+  modules.desktop.plasma.enable = true;
 
-  # Enable GDM with Wayland
-  modules.desktop.gdm = {
-    enable = true;
-    wayland = true;
-  };
+  # Enable SDDM with Wayland
+  modules.desktop.sddm.enable = true;
 
   # Enable Steam
   modules.desktop.steam.enable = true;

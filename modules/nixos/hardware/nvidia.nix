@@ -1,4 +1,53 @@
 # NVIDIA GPU configuration
+#
+# ==============================================================================
+# NVIDIA PRIME Hybrid Graphics Support
+# ==============================================================================
+#
+# This module provides NVIDIA GPU support with optional PRIME hybrid graphics
+# for laptops/desktops with both integrated GPU (iGPU) and discrete NVIDIA GPU (dGPU).
+#
+# USAGE EXAMPLES:
+#
+# 1. Discrete GPU only (no hybrid graphics):
+#    modules.hardware.nvidia.enable = true;
+#
+# 2. Hybrid graphics with on-demand NVIDIA (recommended for power saving):
+#    modules.hardware.nvidia = {
+#      enable = true;
+#      prime = {
+#        enable = true;
+#        mode = "offload";  # On-demand NVIDIA rendering
+#        amdBusId = "PCI:13:0:0";     # AMD iGPU (find with: lspci | grep VGA)
+#        nvidiaBusId = "PCI:1:0:0";   # NVIDIA dGPU
+#      };
+#    };
+#
+#    Then run apps with: nvidia-offload <application>
+#    Example: nvidia-offload steam
+#
+# 3. Hybrid graphics with always-on NVIDIA (maximum performance):
+#    Same as above but set mode = "sync";
+#
+# PRIME MODES:
+#   - "offload": iGPU is primary, use NVIDIA on-demand with nvidia-offload command
+#                Best for: Battery life, power saving, general desktop use
+#   - "sync":    Always use NVIDIA for all rendering (iGPU disabled)
+#                Best for: Maximum performance, desktop systems with AC power
+#   - "reverse-sync": NVIDIA renders, outputs through iGPU (experimental)
+#                Best for: External displays, specific hybrid setups
+#
+# FINDING PCI BUS IDs:
+#   Run: lspci | grep -E "VGA|3D"
+#   Example output:
+#     01:00.0 VGA compatible controller: NVIDIA Corporation ...
+#     0d:00.0 VGA compatible controller: Advanced Micro Devices ...
+#   Convert to PCI Bus ID format:
+#     01:00.0 → PCI:1:0:0   (remove leading zeros)
+#     0d:00.0 → PCI:13:0:0  (0d hex = 13 decimal)
+#
+# ==============================================================================
+
 { config, lib, pkgs, inputs, ... }:
 
 {
