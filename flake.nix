@@ -170,6 +170,69 @@
                 done 2>/dev/null | sort -V || echo "IOMMU not available"
               '';
             }
+            {
+              name = "find-desktop";
+              category = "desktop";
+              help = "Search for .desktop files: find-desktop <pattern>";
+              command = ''
+                pattern="''${1:-}"
+                if [[ -z "$pattern" ]]; then
+                  echo "Usage: find-desktop <pattern>"
+                  echo "Searches for .desktop files matching pattern"
+                  echo ""
+                  echo "Example: find-desktop firefox"
+                  exit 1
+                fi
+
+                # XDG Desktop Entry paths per freedesktop.org spec + NixOS paths
+                search_paths=(
+                  # User locations
+                  "$HOME/.local/share/applications"
+                  "$HOME/.local/share/flatpak/exports/share/applications"
+
+                  # System locations (freedesktop.org)
+                  "/usr/local/share/applications"
+                  "/usr/share/applications"
+
+                  # NixOS-specific locations
+                  "/run/current-system/sw/share/applications"
+                  "$HOME/.nix-profile/share/applications"
+                  "/etc/profiles/per-user/$USER/share/applications"
+                )
+
+                # Add XDG_DATA_DIRS locations
+                IFS=':' read -ra xdg_dirs <<< "''${XDG_DATA_DIRS:-}"
+                for dir in "''${xdg_dirs[@]}"; do
+                  search_paths+=("$dir/applications")
+                done
+
+                echo "Searching for: $pattern"
+                echo "=========================================="
+
+                found=0
+                for path in "''${search_paths[@]}"; do
+                  if [[ -d "$path" ]]; then
+                    matches=$(find "$path" -maxdepth 1 -name "*.desktop" -iname "*$pattern*" 2>/dev/null)
+                    if [[ -n "$matches" ]]; then
+                      echo ""
+                      echo "📁 $path"
+                      echo "$matches" | while read -r file; do
+                        name=$(basename "$file")
+                        # Extract Name= from desktop file
+                        display_name=$(grep -m1 "^Name=" "$file" 2>/dev/null | cut -d= -f2-)
+                        echo "  → $name"
+                        [[ -n "$display_name" ]] && echo "    Name: $display_name"
+                      done
+                      found=1
+                    fi
+                  fi
+                done
+
+                if [[ $found -eq 0 ]]; then
+                  echo "No .desktop files found matching: $pattern"
+                fi
+              '';
+            }
           ];
         };
 

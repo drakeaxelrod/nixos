@@ -33,12 +33,16 @@
     # Wayland defaults & compatibility
     programs.xwayland.enable = true;
 
-    environment.sessionVariables = lib.mkIf config.modules.desktop.plasma.enableWaylandEnv {
-      NIXOS_OZONE_WL = "1";          # Electron Wayland
-      MOZ_ENABLE_WAYLAND = "1";      # Firefox Wayland
-      QT_QPA_PLATFORM = "wayland";   # Qt Wayland
-      SDL_VIDEODRIVER = "wayland";   # SDL Wayland
-      XDG_SESSION_TYPE = "wayland";
+    environment.sessionVariables = {
+      # Wayland environment
+      NIXOS_OZONE_WL = lib.mkIf config.modules.desktop.plasma.enableWaylandEnv "1";
+      MOZ_ENABLE_WAYLAND = lib.mkIf config.modules.desktop.plasma.enableWaylandEnv "1";
+      QT_QPA_PLATFORM = lib.mkIf config.modules.desktop.plasma.enableWaylandEnv "wayland";
+      SDL_VIDEODRIVER = lib.mkIf config.modules.desktop.plasma.enableWaylandEnv "wayland";
+      XDG_SESSION_TYPE = lib.mkIf config.modules.desktop.plasma.enableWaylandEnv "wayland";
+
+      # StatusNotifier/AppIndicator support for GTK apps (virt-manager, etc.)
+      XDG_CURRENT_DESKTOP = "KDE";  # Tell GTK apps we're on KDE
     };
 
     # XDG portals (screen sharing, file picker, etc.)
@@ -58,10 +62,11 @@
       kdePackages.kio-extras
       kdePackages.ffmpegthumbs
 
-      # AppIndicator support for system tray icons (StatusNotifier)
+      # AppIndicator/StatusNotifier support for GTK system tray icons
       libdbusmenu
       libdbusmenu-gtk3
       libappindicator-gtk3
+      libayatana-appindicator  # Modern ayatana fork used by many apps
 
       # Wayland utilities
       wl-clipboard

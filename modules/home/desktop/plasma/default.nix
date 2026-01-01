@@ -23,7 +23,11 @@
 
     # Workspace settings
     workspace = {
+      clickItemTo = "select";
+
       # Theme
+      lookAndFeel = "org.kde.breezedark.desktop";
+      iconTheme = "Papirus-Dark";
       theme = "breeze-dark";
       colorScheme = "BreezeDark";
 
@@ -37,34 +41,59 @@
       wallpaper = "${config.home.homeDirectory}/Pictures/wallpapers/nix-wallpaper-binary-red_8k.png";
     };
 
+
     # Shortcuts
     shortcuts = {
-      "kwin" = {
+      ksmserver = {
+        "Lock Session" = [
+          "Screensaver"
+          "Meta+Ctrl+Alt+L"
+        ];
+      };
+
+      kwin = {
+        "Expose" = "Meta+,";
+        "Switch Window Down" = "Meta+J";
+        "Switch Window Left" = "Meta+H";
+        "Switch Window Right" = "Meta+L";
+        "Switch Window Up" = "Meta+K";
         "Window Close" = "Meta+Q";
-        "Window Maximize" = "Meta+Up";
-        "Window Minimize" = "Meta+Down";
-        "Switch to Desktop 1" = "Meta+1";
-        "Switch to Desktop 2" = "Meta+2";
-        "Switch to Desktop 3" = "Meta+3";
-        "Switch to Desktop 4" = "Meta+4";
-        "Window to Desktop 1" = "Meta+Shift+1";
-        "Window to Desktop 2" = "Meta+Shift+2";
-        "Window to Desktop 3" = "Meta+Shift+3";
-        "Window to Desktop 4" = "Meta+Shift+4";
+        # "Window Maximize" = "Meta+Up";
+        # "Window Minimize" = "Meta+Down";
+        # "Switch to Desktop 1" = "Meta+1";
+        # "Switch to Desktop 2" = "Meta+2";
+        # "Switch to Desktop 3" = "Meta+3";
+        # "Switch to Desktop 4" = "Meta+4";
+        # "Window to Desktop 1" = "Meta+Shift+1";
+        # "Window to Desktop 2" = "Meta+Shift+2";
+        # "Window to Desktop 3" = "Meta+Shift+3";
+        # "Window to Desktop 4" = "Meta+Shift+4";
       };
 
-      "org.kde.konsole.desktop" = {
-        "_launch" = "Meta+Return";
-      };
+      # "org.kde.konsole.desktop" = {
+      #   "_launch" = "Meta+Return";
+      # };
 
-      "org.kde.dolphin.desktop" = {
-        "_launch" = "Meta+E";
-      };
+      # "org.kde.dolphin.desktop" = {
+      #   "_launch" = "Meta+E";
+      # };
     };
 
     # Hot corners
-    hotkeys.commands = {
-      # Add custom hotkeys here
+    hotkeys = {
+      commands = {
+        # Add custom hotkeys here
+        "launch-konsole" = {
+          name = "Launch Konsole";
+          key = "Meta+Return";
+          command = "konsole";
+        };
+        "launch-dolphin" = {
+          name = "Launch Dolphin";
+          key = "Meta+E";
+          command = "dolphin";
+        };
+      };
     };
 
     # Desktop configuration
@@ -122,16 +151,17 @@
             config = {
               General = {
                 launchers = [
-                  # "applications:org.kde.dolphin.desktop"
-                  # "applications:zen.desktop"
-                  # "applications:org.kde.konsole.desktop"
-                  # "applications:code.desktop"
-                  # "applications:virt-manager.desktop"
+                  "applications:kdesystemsettings.desktop"
+                  "applications:org.kde.dolphin.desktop"
+                  "applications:zen-beta.desktop"
+                  "applications:org.kde.konsole.desktop"
+                  "applications:code.desktop"
+                  "applications:virt-manager.desktop"
                 ];
               };
             };
           }
-          "org.kde.plasma.marginsseparator"
+          "org.kde.plasma.marginsseparator" # Spacer
           "org.kde.plasma.pager"
           {
             systemTray.items = {
