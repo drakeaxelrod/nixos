@@ -33,8 +33,9 @@ in
     modules.nixos.desktop.display.sddm
     modules.nixos.desktop.managers.plasma
 
-    # Applications
-    modules.nixos.apps.steam
+    # Gaming
+    modules.nixos.gaming.steam
+    modules.nixos.gaming.lutris
 
     # Hardware
     modules.nixos.hardware.amd
@@ -54,8 +55,8 @@ in
     modules.nixos.virtualization.libvirt
     modules.nixos.virtualization.docker
 
-    # VFIO - granular imports
-    modules.nixos.vfio.dualBoot      # Provides dualBoot option + auto-imports core
+    # VFIO - GPU passthrough with specializations
+    modules.nixos.vfio.gpuPassthrough
     modules.nixos.vfio.lookingGlass
     modules.nixos.vfio.scream
 
@@ -65,9 +66,6 @@ in
 
     # Security
     modules.nixos.security.sops
-
-    # Development
-    modules.nixos.dev.nix
   ];
 
   # ==========================================================================
@@ -174,11 +172,18 @@ in
     theme = "sddm-astronaut-theme";
     themePackage = pkgs.sddm-astronaut;
     wayland = true;
-    wallpaper = "/home/draxel/Pictures/wallpapers/nix-wallpaper-binary-red_8k.png";
+    # wallpaper = "/home/draxel/Pictures/wallpapers/nix-wallpaper-binary-red_8k.png";
   };
 
-  # Enable Steam
-  modules.desktop.steam.enable = true;
+  # ==========================================================================
+  # Gaming
+  # ==========================================================================
+
+  # Steam includes: Gamescope, GameMode, MangoHud, ProtonUp-Qt, Protontricks
+  modules.gaming.steam.enable = true;
+
+  # Lutris includes: Wine Staging, Winetricks, GameMode, MangoHud
+  modules.gaming.lutris.enable = true;
 
   # ==========================================================================
   # Networking

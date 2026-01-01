@@ -35,7 +35,7 @@ in
     # modules.home.dev.java
     # modules.home.dev.c
     # modules.home.dev.lua
-    # modules.home.dev.nix
+    modules.home.dev.nix
     # Utilities
     # modules.home.dev.database
     # modules.home.dev.api
@@ -64,6 +64,10 @@ in
     source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/assets/wallpapers";
     recursive = true;
   };
+
+  # Profile image for display managers (SDDM, GDM, KDM, LightDM)
+  # ~/.face is the standard location for user avatars
+  home.file.".face".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos/assets/profile/me.jpg";
 
 
   # User packages

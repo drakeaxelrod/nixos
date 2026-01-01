@@ -30,7 +30,7 @@
 
     environment.systemPackages = with pkgs; [
       tailscale
-      trayscale # GUI
+      # trayscale # GUI
       ktailctl # GUI
       # tail-tray # Tray icon
     ];

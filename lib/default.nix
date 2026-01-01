@@ -119,7 +119,7 @@
         # VFIO modules - fully granular
         vfio = {
           passthrough = "${inputs.self}/modules/nixos/vfio/passthrough.nix";
-          dualBoot = "${inputs.self}/modules/nixos/vfio/default.nix";  # Provides dualBoot option + imports passthrough
+          gpuPassthrough = "${inputs.self}/modules/nixos/vfio/default.nix";  # Main VFIO module with specializations
           lookingGlass = "${inputs.self}/modules/nixos/vfio/looking-glass.nix";
           scream = "${inputs.self}/modules/nixos/vfio/scream.nix";
         };
@@ -127,9 +127,11 @@
         vms = "${inputs.self}/modules/nixos/vms/default.nix";
         # Impermanence
         impermanence = "${inputs.self}/modules/nixos/impermanence/default.nix";
-        # Applications
-        apps = {
-          steam = "${inputs.self}/modules/nixos/apps/steam.nix";
+        # Gaming
+        gaming = {
+          steam = "${inputs.self}/modules/nixos/gaming/steam.nix";
+          lutris = "${inputs.self}/modules/nixos/gaming/lutris.nix";
+          heroic = "${inputs.self}/modules/nixos/gaming/heroic.nix";
         };
       };
     };

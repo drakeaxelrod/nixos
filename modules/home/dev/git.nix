@@ -147,5 +147,6 @@
   home.packages = with pkgs; [
     git-crypt      # Encrypt files in git
     git-lfs        # Large file support
+    opencommit     # AI commit message generation
   ];
 }
