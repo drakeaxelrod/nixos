@@ -38,7 +38,7 @@
       NIXOS_OZONE_WL = lib.mkIf config.modules.desktop.plasma.enableWaylandEnv "1";
       MOZ_ENABLE_WAYLAND = lib.mkIf config.modules.desktop.plasma.enableWaylandEnv "1";
       QT_QPA_PLATFORM = lib.mkIf config.modules.desktop.plasma.enableWaylandEnv "wayland";
-      SDL_VIDEODRIVER = lib.mkIf config.modules.desktop.plasma.enableWaylandEnv "wayland";
+      SDL_VIDEODRIVER = lib.mkIf config.modules.desktop.plasma.enableWaylandEnv "wayland,x11";  # Allow X11 fallback for Steam
       XDG_SESSION_TYPE = lib.mkIf config.modules.desktop.plasma.enableWaylandEnv "wayland";
 
       # StatusNotifier/AppIndicator support for GTK apps (virt-manager, etc.)

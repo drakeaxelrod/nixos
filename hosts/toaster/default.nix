@@ -48,7 +48,7 @@ in
     # Services
     modules.nixos.services.openssh
     modules.nixos.services.btrbk
-    modules.nixos.services.ollama
+    # modules.nixos.services.ollama
 
     # Virtualization
     modules.nixos.virtualization.libvirt

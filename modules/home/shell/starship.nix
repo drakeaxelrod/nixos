@@ -111,7 +111,7 @@
       git_branch = {
         symbol = " ";
         style = "bold purple";
-        format = " [$symbol\\($branch\\)]($style)";
+        format = " [$symbol\\($branch]($style) ";
       };
 
       git_commit = {
@@ -120,7 +120,7 @@
 
       git_status = {
         style = "bold yellow";
-        format = "[$all_status$ahead_behind]($style)";
+        format = "[$all_status$ahead_behind]($style)\\)";
         conflicted = "=";
         ahead = "⇡\${count}";
         behind = "⇣\${count}";
