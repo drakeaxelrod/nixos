@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Git Add, Commit, Push with AI-generated commit messages
-# Tries: GitHub Copilot CLI -> Ollama -> fallback
+# Uses: OpenCommit (oco) -> Ollama -> fallback
 
 set -euo pipefail
 
@@ -41,51 +41,52 @@ log_error() {
 }
 
 # ============================================================================
-# AI Commit Message Generation
+# OpenCommit Integration
 # ============================================================================
 
-generate_with_copilot() {
-    local diff_stat="$1"
-    local diff_content="$2"
+# Check if oco is available and configured
+has_opencommit() {
+    command -v oco &>/dev/null
+}
 
-    # Check if gh copilot is available and authenticated
-    if ! command -v gh &>/dev/null; then
-        return 1
-    fi
+# Run the full workflow using OpenCommit
+run_with_opencommit() {
+    local auto_confirm="$1"
+    local dry_run="$2"
 
-    # Check if copilot extension is installed
-    if ! gh extension list 2>/dev/null | grep -q "copilot"; then
-        return 1
-    fi
+    log_info "Using OpenCommit..."
 
-    log_info "Generating with GitHub Copilot..."
-
-    local prompt="Generate a concise git commit message for these changes following conventional commits format:
-- Use imperative mood (Add, Fix, Update, Remove, Refactor)
-- Format: type(scope): description
-- Types: feat, fix, docs, style, refactor, test, chore
-- Max 50 chars, no period at end
-- Be specific about what changed
-
-Stats:
-$diff_stat
-
-Diff (truncated):
-$diff_content
-
-Reply with ONLY the commit message, nothing else."
-
-    local result
-    result=$(echo "$prompt" | gh copilot suggest -t shell 2>/dev/null | head -1 | sed 's/^[`]*//' | sed 's/[`]*$//' | tr -d '\n')
-
-    # Validate result
-    if [[ -n "$result" && ${#result} -ge 5 && ${#result} -le 100 ]]; then
-        echo "$result"
+    if [[ "$dry_run" == true ]]; then
+        log_info "[Dry run] Would run: oco"
+        git diff --cached --stat
         return 0
     fi
 
-    return 1
+    # Build oco command
+    local oco_args=()
+    if [[ "$auto_confirm" == true ]]; then
+        oco_args+=("--yes")
+    fi
+
+    # Run oco (it handles staging, message generation, and commit)
+    if oco "${oco_args[@]}"; then
+        # Push after successful commit
+        log_info "Pushing..."
+        if git push 2>&1; then
+            log_success "Done!"
+            return 0
+        else
+            log_warn "Push failed. Commit was successful. Try 'git push' manually."
+            return 1
+        fi
+    else
+        return 1
+    fi
 }
+
+# ============================================================================
+# Fallback AI Commit Message Generation
+# ============================================================================
 
 generate_with_ollama() {
     local diff_stat="$1"
@@ -140,12 +141,7 @@ generate_commit_message() {
     diff_stat=$(git diff --cached --stat)
     diff_content=$(git diff --cached | head -500)
 
-    # Try Copilot first (uses existing VS Code auth)
-    if generate_with_copilot "$diff_stat" "$diff_content"; then
-        return 0
-    fi
-
-    # Fall back to Ollama
+    # Try Ollama
     if generate_with_ollama "$diff_stat" "$diff_content"; then
         return 0
     fi
@@ -171,13 +167,13 @@ ${YELLOW}Options:${NC}
   -h, --help  Show this help
 
 ${YELLOW}AI Backends (tried in order):${NC}
-  1. GitHub Copilot CLI (gh copilot) - uses VS Code auth
+  1. OpenCommit (oco) - purpose-built for git commits
   2. Ollama (local) - ollama pull llama3.2
   3. Fallback: "update"
 
 ${YELLOW}Setup:${NC}
-  Copilot: gh extension install github/gh-copilot
-  Ollama:  nix-shell -p ollama && ollama pull llama3.2
+  OpenCommit: oco config set OCO_AI_PROVIDER=ollama OCO_MODEL=llama3.2
+  Ollama:     ollama pull llama3.2
 
 ${YELLOW}Examples:${NC}
   $SCRIPT_NAME                    # AI generates message, prompts to confirm
@@ -224,7 +220,13 @@ main() {
         exit 1
     fi
 
-    # Stage all changes
+    # If no manual message and OpenCommit is available, use it for the full workflow
+    if [[ -z "$manual_message" ]] && has_opencommit; then
+        run_with_opencommit "$auto_confirm" "$dry_run"
+        exit $?
+    fi
+
+    # Fallback: manual workflow with Ollama or fallback message
     log_info "Staging changes..."
     git add -A
 

@@ -111,7 +111,7 @@
       git_branch = {
         symbol = " ";
         style = "bold purple";
-        format = " [$symbol\\($branch]($style) ";
+        format = " [$symbol\\($branch]($style)";
       };
 
       git_commit = {
@@ -182,12 +182,12 @@
 
       nix_shell = {
         symbol = " ";
-        format = "[\\($symbol$state\\)]($style)";
+        format = " [$symbol$state]($style)";
         style = "bold blue";
       };
 
       cmd_duration = {
-        min_time = 2000;
+        min_time = 5000;
         format = " [took $duration]($style)";
         style = "bold yellow";
       };

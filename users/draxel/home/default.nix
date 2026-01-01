@@ -58,6 +58,15 @@ in
   home.homeDirectory = "/home/draxel";
   home.stateVersion = "25.11";
 
+  # OpenCommit configuration (AI-powered git commits via gacp)
+  home.sessionVariables = {
+    OCO_AI_PROVIDER = "ollama";
+    OCO_MODEL = "llama3.2";
+    OCO_LANGUAGE = "en";
+    OCO_EMOJI = "false";
+    OCO_DESCRIPTION = "true";
+  };
+
   # Link wallpapers from nixos config to Pictures directory
   # Example: Makes assets/wallpapers available at ~/Pictures/wallpapers
   home.file."Pictures/wallpapers" = {

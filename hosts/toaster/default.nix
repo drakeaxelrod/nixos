@@ -206,9 +206,12 @@ in
 
   # Ollama - Local LLM server (CUDA accelerated)
   modules.services.ollama = {
-    enable = false;
+    enable = true;
     acceleration = "cuda";
-    models = [ "llama3.2" "codellama" ];
+    models = [
+      "llama3.2"
+      # "codellama"
+    ];
   };
 
   # ==========================================================================
