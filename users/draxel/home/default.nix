@@ -61,6 +61,7 @@ in
   # OpenCommit configuration (AI-powered git commits via gacp)
   home.sessionVariables = {
     OCO_AI_PROVIDER = "ollama";
+    OCO_API_URL = "http://127.0.0.1:11434/api/chat";
     OCO_MODEL = "llama3.2";
     OCO_LANGUAGE = "en";
     OCO_EMOJI = "false";

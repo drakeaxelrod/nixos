@@ -9,7 +9,7 @@ set -euo pipefail
 # ============================================================================
 
 readonly SCRIPT_NAME="gacp"
-readonly OLLAMA_MODELS=("llama3.2" "llama3.1" "mistral" "llama2" "codellama")
+readonly OLLAMA_MODELS=("llama3.2" "llama3.1" "mistral" "codellama")
 readonly FALLBACK_MESSAGE="update"
 
 # Colors for output

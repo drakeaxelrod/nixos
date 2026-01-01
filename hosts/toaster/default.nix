@@ -208,10 +208,7 @@ in
   modules.services.ollama = {
     enable = true;
     acceleration = "cuda";
-    models = [
-      "llama3.2"
-      # "codellama"
-    ];
+    models = [ "llama3.2" ];
   };
 
   # ==========================================================================
