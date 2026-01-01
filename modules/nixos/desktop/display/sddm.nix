@@ -9,22 +9,25 @@
 #   - "sugar-dark" (requires package: sddm-sugar-dark)
 #   - "chili" (requires package: sddm-chili-theme)
 #   - "elegant-sddm" (requires package: elegant-sddm)
+#
+# For sddm-astronaut-theme, use themeConfig to select a variant:
+#   astronaut, black_hole, cyberpunk, hyprland_kath, japanese_aesthetic,
+#   pixel_sakura, purple_leaves, post_apocalyptic, rust, etc.
 { config, lib, pkgs, ... }:
 
 let
   cfg = config.modules.desktop.sddm;
 
-  # Create a patched theme package with custom ConfigFile in metadata.desktop
-  patchedThemePackage = if cfg.themePackage != null && cfg.themeConfig != null then
-    cfg.themePackage.overrideAttrs (old: {
-      postInstall = (old.postInstall or "") + ''
-        # Update metadata.desktop to use the selected theme config
-        substituteInPlace $out/share/sddm/themes/${cfg.theme}/metadata.desktop \
-          --replace-fail "ConfigFile=Themes/astronaut.conf" "ConfigFile=Themes/${cfg.themeConfig}.conf"
-      '';
-    })
-  else
-    cfg.themePackage;
+  # sddm-astronaut has built-in embeddedTheme parameter
+  astronautPackage = pkgs.sddm-astronaut.override {
+    embeddedTheme = cfg.themeConfig;
+  };
+
+  # Use overridden package if themeConfig is set, otherwise use provided package
+  effectivePackage =
+    if cfg.themePackage != null && cfg.themeConfig != null
+    then astronautPackage
+    else cfg.themePackage;
 in
 {
   options.modules.desktop.sddm = {
@@ -52,7 +55,7 @@ in
       type = lib.types.nullOr lib.types.str;
       default = null;
       example = "japanese_aesthetic";
-      description = "Theme variant config file name (without .conf extension) for sddm-astronaut-theme";
+      description = "Theme variant (without .conf extension) for sddm-astronaut-theme";
     };
 
     wallpaper = lib.mkOption {
@@ -70,8 +73,8 @@ in
       enable = true;
       wayland.enable = cfg.wayland;
       theme = cfg.theme;
-      extraPackages = lib.mkIf (patchedThemePackage != null) [
-        patchedThemePackage
+      extraPackages = lib.mkIf (effectivePackage != null) [
+        effectivePackage
         pkgs.kdePackages.qtmultimedia  # Required for video backgrounds
       ];
     };
@@ -79,8 +82,8 @@ in
     # Theme package must be in systemPackages to be symlinked to /run/current-system/sw/share/sddm/themes/
     environment.systemPackages = [
       pkgs.kdePackages.sddm-kcm  # KDE System Settings module for SDDM configuration
-    ] ++ lib.optionals (patchedThemePackage != null) [
-      patchedThemePackage
+    ] ++ lib.optionals (effectivePackage != null) [
+      effectivePackage
     ];
 
     # Configure theme settings

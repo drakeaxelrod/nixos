@@ -94,6 +94,9 @@ in
     # Audio
     pavucontrol  # Audio control
 
+    # Hardware
+    vial  # Keyboard configuration (QMK/Vial firmware)
+
     # Virtualization
     virt-manager        # VM management GUI
     virt-viewer         # VM viewer

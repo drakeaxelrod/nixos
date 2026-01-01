@@ -56,7 +56,7 @@ in
 
         # Disable branding/logo
         interface = {
-          branding = "";  # No branding text or logo
+          branding = null;  # No branding text or logo
         };
 
         # Graphical terminal colors (OneDarkPro palette)

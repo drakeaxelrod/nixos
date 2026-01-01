@@ -105,6 +105,7 @@
           openssh = "${inputs.self}/modules/nixos/services/openssh.nix";
           packages = "${inputs.self}/modules/nixos/services/packages.nix";
           printing = "${inputs.self}/modules/nixos/services/printing.nix";
+          sunshine = "${inputs.self}/modules/nixos/services/sunshine.nix";
         };
         # Security modules
         security = {

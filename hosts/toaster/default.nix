@@ -50,6 +50,7 @@ in
     modules.nixos.services.openssh
     modules.nixos.services.btrbk
     modules.nixos.services.ollama
+    modules.nixos.services.sunshine
 
     # Virtualization
     modules.nixos.virtualization.libvirt
@@ -210,6 +211,9 @@ in
     acceleration = "cuda";
     models = [ "llama3.2" ];
   };
+
+  # Sunshine - Game streaming server (use with Moonlight client)
+  modules.services.sunshine.enable = true;
 
   # ==========================================================================
   # Impermanence (Ephemeral Root)
