@@ -120,7 +120,7 @@
 
       git_status = {
         style = "bold yellow";
-        format = "[$all_status$ahead_behind]($style)\\)";
+        format = "[$all_status$ahead_behind]($style)[\\)](bold purple)";
         conflicted = "=";
         ahead = "⇡\${count}";
         behind = "⇣\${count}";
