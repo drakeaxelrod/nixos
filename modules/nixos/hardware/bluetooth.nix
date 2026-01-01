@@ -27,6 +27,6 @@
     boot.kernelModules = [ "btusb" "btmtk" ];
 
     # Blueman for GUI management
-    services.blueman.enable = true;
+    # services.blueman.enable = true;
   };
 }

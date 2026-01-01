@@ -161,7 +161,10 @@ in
   modules.desktop.plasma.enable = true;
 
   # Enable SDDM with Wayland
-  modules.desktop.sddm.enable = true;
+  modules.desktop.sddm = {
+    enable = true;
+    wallpaper = "${config.users.users.draxel.home}/Pictures/wallpapers/nix-wallpaper-binary-red_8k.png";
+  };
 
   # Enable Steam
   modules.desktop.steam.enable = true;

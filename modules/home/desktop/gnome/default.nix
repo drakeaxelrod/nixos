@@ -65,9 +65,9 @@
         "org.gnome.Settings.desktop"
         "org.gnome.Nautilus.desktop"
         "virt-manager.desktop"
-        "code.desktop"
-        "discord.desktop"
-        "zen-browser.desktop"
+        # "code.desktop"
+        # "discord.desktop"
+        # "zen-browser.desktop"
         "org.gnome.Terminal.desktop"
       ];
       disable-user-extensions = false;

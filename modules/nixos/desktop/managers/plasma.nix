@@ -58,6 +58,11 @@
       kdePackages.kio-extras
       kdePackages.ffmpegthumbs
 
+      # AppIndicator support for system tray icons (StatusNotifier)
+      libdbusmenu
+      libdbusmenu-gtk3
+      libappindicator-gtk3
+
       # Wayland utilities
       wl-clipboard
       wl-clip-persist

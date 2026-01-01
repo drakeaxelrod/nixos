@@ -10,9 +10,8 @@ in
     # Zen Browser - modern Firefox-based browser with vertical tabs
     # Plasma Manager - KDE Plasma configuration
 
-    # Desktop environment (GNOME) - includes fonts, GTK, Qt
-    modules.home.desktop.gnome
-    # modules.home.desktop.plasma  # Or use Plasma instead
+    # Desktop environment (Plasma) - includes fonts, GTK, Qt
+    modules.home.desktop.plasma
 
     # Shell configurations
     modules.home.shell.bat
@@ -117,10 +116,10 @@ in
         "text/html" = "zen.desktop";
         "x-scheme-handler/http" = "zen.desktop";
         "x-scheme-handler/https" = "zen.desktop";
-        "application/pdf" = "org.gnome.Evince.desktop";
-        "image/png" = "org.gnome.eog.desktop";
-        "image/jpeg" = "org.gnome.eog.desktop";
-        "inode/directory" = "org.gnome.Nautilus.desktop";
+        "application/pdf" = "org.kde.okular.desktop";
+        "image/png" = "org.kde.gwenview.desktop";
+        "image/jpeg" = "org.kde.gwenview.desktop";
+        "inode/directory" = "org.kde.dolphin.desktop";
       };
     };
 

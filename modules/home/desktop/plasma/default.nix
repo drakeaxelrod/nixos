@@ -3,7 +3,7 @@
 
 {
   imports = [
-    inputs.plasma-manager.homeManagerModules.plasma-manager
+    inputs.plasma-manager.homeModules.plasma-manager
     ./fonts.nix
     ./gtk.nix
     ./qt.nix
@@ -111,28 +111,29 @@
               };
             };
           }
-          "org.kde.plasma.pager"
           {
             name = "org.kde.plasma.icontasks";
             config = {
               General = {
                 launchers = [
-                  "applications:org.kde.dolphin.desktop"
-                  "applications:zen.desktop"
-                  "applications:org.kde.konsole.desktop"
-                  "applications:code.desktop"
-                  "applications:virt-manager.desktop"
+                  # "applications:org.kde.dolphin.desktop"
+                  # "applications:zen.desktop"
+                  # "applications:org.kde.konsole.desktop"
+                  # "applications:code.desktop"
+                  # "applications:virt-manager.desktop"
                 ];
               };
             };
           }
           "org.kde.plasma.marginsseparator"
+          "org.kde.plasma.pager"
           {
             systemTray.items = {
               shown = [
                 "org.kde.plasma.networkmanagement"
                 "org.kde.plasma.volume"
                 "org.kde.plasma.bluetooth"
+                "org.kde.plasma.battery"
               ];
               hidden = [
                 "org.kde.plasma.clipboard"

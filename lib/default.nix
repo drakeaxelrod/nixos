@@ -134,7 +134,7 @@
     };
 
     modules = [
-      # Allow unfree packages
+      # Nixpkgs configuration (unfree packages + overlays)
       {
         nixpkgs.config = {
           allowUnfree = true;
@@ -142,12 +142,10 @@
           # Allow specific insecure packages when needed
           # NOTE: Only add packages here if absolutely necessary
           # See: https://github.com/NixOS/nixpkgs/issues/437992
-          # permittedInsecurePackages = [
-          #   # Stremio requires orphaned qtwebengine-5.15.19
-          #   # Disabled by default - use https://web.stremio.com instead
-          #   # Uncomment if you need the desktop app:
-          #   # "qtwebengine-5.15.19"
-          # ];
+          permittedInsecurePackages = [
+            # Stremio requires orphaned qtwebengine-5.15.19
+            "qtwebengine-5.15.19"
+          ];
         };
       }
 
@@ -183,6 +181,7 @@
         home-manager = {
           useGlobalPkgs = true;
           useUserPackages = true;
+          backupFileExtension = "backup";  # Backup conflicting files with .backup extension
 
           extraSpecialArgs = {
             inherit inputs;
