@@ -171,8 +171,8 @@ in
     enable = true;
     theme = "sddm-astronaut-theme";
     themePackage = pkgs.sddm-astronaut;
+    themeConfig = "japanese_aesthetic";  # Theme variant
     wayland = true;
-    # wallpaper = "/home/draxel/Pictures/wallpapers/nix-wallpaper-binary-red_8k.png";
   };
 
   # ==========================================================================

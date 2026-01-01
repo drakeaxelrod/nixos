@@ -32,32 +32,6 @@ let
     cursorline = "2d313b";
     selection = "414858";
   };
-
-  # NixOS ANSI art branding with OneDarkPro colors
-  # Blue (61afef) for left lambda, Cyan (56b6c2) for right lambda
-  # Using ANSI escape codes: \e[34m = blue, \e[36m = cyan, \e[1m = bold, \e[0m = reset
-  nixosBranding = ''
-\e[1;34m          ▗▄▄▄       \e[1;36m▗▄▄▄▄    ▄▄▄▖
-\e[1;34m          ▜███▙       \e[1;36m▜███▙  ▟███▛
-\e[1;34m           ▜███▙       \e[1;36m▜███▙▟███▛
-\e[1;34m            ▜███▙       \e[1;36m▜██████▛
-\e[1;34m     ▟█████████████████▙ \e[1;36m▜████▛     \e[1;34m▟▙
-\e[1;34m    ▟███████████████████▙ \e[1;36m▜███▙    \e[1;34m▟██▙
-\e[1;36m           ▄▄▄▄▖           ▜███▙  \e[1;34m▟███▛
-\e[1;36m          ▟███▛             ▜██▛ \e[1;34m▟███▛
-\e[1;36m         ▟███▛               ▜▛ \e[1;34m▟███▛
-\e[1;36m▟███████████▛                  \e[1;34m▟██████████▙
-\e[1;36m▜██████████▛                  \e[1;34m▟███████████▛
-\e[1;36m      ▟███▛ \e[1;34m▟▙               ▟███▛
-\e[1;36m     ▟███▛ \e[1;34m▟██▙             ▟███▛
-\e[1;36m    ▟███▛  \e[1;34m▜███▙           ▝▀▀▀▀
-\e[1;36m    ▜██▛    \e[1;34m▜███▙ \e[1;36m▜██████████████████▛
-\e[1;36m     ▜▛     \e[1;34m▟████▙ \e[1;36m▜████████████████▛
-\e[1;34m           ▟██████▙       \e[1;36m▜███▙
-\e[1;34m          ▟███▛▜███▙       \e[1;36m▜███▙
-\e[1;34m         ▟███▛  ▜███▙       \e[1;36m▜███▙
-\e[1;34m         ▝▀▀▀    ▀▀▀▀▘       \e[1;36m▀▀▀▘
-\e[0m'';
 in
 {
   config = lib.mkIf (cfg.loader == "limine") {
@@ -75,27 +49,10 @@ in
       # Validate boot files for integrity
       validateChecksums = true;
 
-      # OneDarkPro NixOS Theme
+      # OneDarkPro Theme (minimal)
       style = {
         # Background color (OneDarkPro bg)
         backdrop = colors.bg;
-
-        # Wallpaper configuration (optional - uncomment if you have a wallpaper)
-        # wallpapers = [ ../../assets/boot/nixos-onedark.png ];
-        # wallpaperStyle = "centered";
-
-        # Interface branding
-        interface = {
-          # NixOS ANSI art branding
-          branding = nixosBranding;
-          brandingColor = 4;  # Blue (matches NixOS logo color)
-
-          # Hide default help text for cleaner look
-          helpHidden = false;
-
-          # Resolution (optional - let Limine auto-detect)
-          # resolution = "1920x1080";
-        };
 
         # Graphical terminal colors (OneDarkPro palette)
         # Colors are semicolon-separated RRGGBB values

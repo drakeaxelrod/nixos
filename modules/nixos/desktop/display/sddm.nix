@@ -36,6 +36,13 @@ in
       description = "Package providing the SDDM theme (null for built-in themes like breeze)";
     };
 
+    themeConfig = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      example = "japanese_aesthetic";
+      description = "Theme variant config file name (without .conf extension) for sddm-astronaut-theme";
+    };
+
     wallpaper = lib.mkOption {
       type = lib.types.nullOr lib.types.path;
       default = null;
@@ -64,13 +71,28 @@ in
       cfg.themePackage
     ];
 
-    # Configure theme wallpaper (only if set)
-    environment.etc = lib.mkIf (cfg.wallpaper != null) {
-      "sddm/themes/${cfg.theme}/theme.conf.user".text = ''
-        [General]
-        background=${cfg.wallpaper}
-      '';
-    };
+    # Configure theme settings
+    environment.etc = lib.mkMerge [
+      # Theme variant config (for sddm-astronaut-theme)
+      (lib.mkIf (cfg.themeConfig != null) {
+        "sddm.conf.d/theme.conf".text = ''
+          [Theme]
+          ThemeDir=/run/current-system/sw/share/sddm/themes
+          Current=${cfg.theme}
+
+          [${cfg.theme}]
+          ConfigFile=Themes/${cfg.themeConfig}.conf
+        '';
+      })
+
+      # Custom wallpaper override
+      (lib.mkIf (cfg.wallpaper != null) {
+        "sddm/themes/${cfg.theme}/theme.conf.user".text = ''
+          [General]
+          background=${cfg.wallpaper}
+        '';
+      })
+    ];
 
     # Enable XWayland if using Wayland
     programs.xwayland.enable = lib.mkIf cfg.wayland true;
