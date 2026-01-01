@@ -51,14 +51,17 @@ in
       enable = true;
       wayland.enable = cfg.wayland;
       theme = cfg.theme;
-      extraPackages = lib.mkIf (cfg.themePackage != null) [ cfg.themePackage ];
+      extraPackages = lib.mkIf (cfg.themePackage != null) [
+        cfg.themePackage
+        pkgs.kdePackages.qtmultimedia  # Required for video backgrounds
+      ];
     };
 
-    # Some themes (like sddm-astronaut) need qtmultimedia
+    # Theme package must be in systemPackages to be symlinked to /run/current-system/sw/share/sddm/themes/
     environment.systemPackages = [
       pkgs.kdePackages.sddm-kcm  # KDE System Settings module for SDDM configuration
     ] ++ lib.optionals (cfg.themePackage != null) [
-      pkgs.kdePackages.qtmultimedia
+      cfg.themePackage
     ];
 
     # Configure theme wallpaper (only if set)

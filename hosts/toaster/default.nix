@@ -83,7 +83,7 @@ in
     loader = "limine";          # Modern, stylish bootloader
     kernelPackage = "linuxPackages_latest";  # Use latest stable kernel
     maxGenerations = 10;        # Keep boot menu clean
-    timeout = 5;                # 5 second timeout
+    timeout = 20;                # 5 second timeout
 
     # Plymouth for graphical LUKS password prompt
     plymouth = {

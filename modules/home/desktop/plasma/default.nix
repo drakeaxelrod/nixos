@@ -151,12 +151,12 @@
             config = {
               General = {
                 launchers = [
-                  "applications:kdesystemsettings.desktop"
-                  "applications:org.kde.dolphin.desktop"
-                  "applications:zen-beta.desktop"
-                  "applications:org.kde.konsole.desktop"
-                  "applications:code.desktop"
-                  "applications:virt-manager.desktop"
+                  # "applications:kdesystemsettings.desktop"
+                  # "applications:org.kde.dolphin.desktop"
+                  # "applications:zen-beta.desktop"
+                  # "applications:org.kde.konsole.desktop"
+                  # "applications:code.desktop"
+                  # "applications:virt-manager.desktop"
                 ];
               };
             };
