@@ -737,6 +737,20 @@ let
               default = null;
               description = "IOAPIC configuration";
             };
+
+            smm = lib.mkOption {
+              type = lib.types.nullOr (lib.types.submodule {
+                options = {
+                  state = lib.mkOption {
+                    type = lib.types.enum [ "on" "off" ];
+                    default = "on";
+                    description = "SMM state";
+                  };
+                };
+              });
+              default = null;
+              description = "System Management Mode (required for Secure Boot)";
+            };
           };
         };
         default = {};

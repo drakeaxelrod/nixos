@@ -101,6 +101,7 @@
         # Service modules
         services = {
           btrbk = "${inputs.self}/modules/nixos/services/btrbk.nix";
+          ollama = "${inputs.self}/modules/nixos/services/ollama.nix";
           openssh = "${inputs.self}/modules/nixos/services/openssh.nix";
           packages = "${inputs.self}/modules/nixos/services/packages.nix";
           printing = "${inputs.self}/modules/nixos/services/printing.nix";

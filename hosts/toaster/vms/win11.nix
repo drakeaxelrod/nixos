@@ -103,6 +103,7 @@
     };
     vmport = { state = "off"; };  # Disable VMware port (VM detection vector)
     ioapic = { driver = "kvm"; };  # Use KVM IOAPIC for better performance
+    smm = { state = "on"; };  # System Management Mode (required for Secure Boot)
   };
 
   # Clock

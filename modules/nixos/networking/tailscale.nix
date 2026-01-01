@@ -28,6 +28,11 @@
         else "none";
     };
 
-    environment.systemPackages = [ pkgs.tailscale ];
+    environment.systemPackages = with pkgs; [
+      tailscale
+      trayscale # GUI
+      ktailctl # GUI
+      # tail-tray # Tray icon
+    ];
   };
 }

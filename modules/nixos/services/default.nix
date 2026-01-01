@@ -7,5 +7,6 @@
     ./btrbk.nix
     ./printing.nix
     ./packages.nix
+    ./ollama.nix
   ];
 }

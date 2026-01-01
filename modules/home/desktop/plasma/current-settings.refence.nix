@@ -15,7 +15,7 @@
       kmix.mic_mute = ["Microphone Mute" "Meta+Volume Mute"];
       kmix.mute = "Volume Mute";
       ksmserver."Halt Without Confirmation" = [ ];
-      ksmserver."Lock Session" = ["Meta+L" "Screensaver"];
+      ksmserver."Lock Session" = ["Screensaver" "Meta+Ctrl+Alt+L"];
       ksmserver."Log Out" = "Ctrl+Alt+Del";
       ksmserver."Log Out Without Confirmation" = [ ];
       ksmserver.LogOut = [ ];
@@ -27,7 +27,7 @@
       kwin."Cycle Overview Opposite" = [ ];
       kwin."Decrease Opacity" = [ ];
       kwin."Edit Tiles" = "Meta+T";
-      kwin.Expose = "Ctrl+F9";
+      kwin.Expose = "Meta+\\";
       kwin.ExposeAll = ["Ctrl+F10" "Launch (C)"];
       kwin.ExposeClass = "Ctrl+F7";
       kwin.ExposeClassCurrentDesktop = [ ];
@@ -48,10 +48,10 @@
       kwin."Switch One Desktop Up" = "Meta+Ctrl+Up";
       kwin."Switch One Desktop to the Left" = "Meta+Ctrl+Left";
       kwin."Switch One Desktop to the Right" = "Meta+Ctrl+Right";
-      kwin."Switch Window Down" = "Meta+Alt+Down";
-      kwin."Switch Window Left" = "Meta+Alt+Left";
-      kwin."Switch Window Right" = "Meta+Alt+Right";
-      kwin."Switch Window Up" = "Meta+Alt+Up";
+      kwin."Switch Window Down" = "Meta+J";
+      kwin."Switch Window Left" = "Meta+H";
+      kwin."Switch Window Right" = "Meta+L";
+      kwin."Switch Window Up" = "Meta+K";
       kwin."Switch to Desktop 1" = "Meta+1";
       kwin."Switch to Desktop 10" = [ ];
       kwin."Switch to Desktop 11" = [ ];

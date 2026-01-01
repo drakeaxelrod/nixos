@@ -48,6 +48,7 @@ in
     # Services
     modules.nixos.services.openssh
     modules.nixos.services.btrbk
+    modules.nixos.services.ollama
 
     # Virtualization
     modules.nixos.virtualization.libvirt
@@ -169,6 +170,8 @@ in
     enable = true;
     theme = "sddm-astronaut-theme";
     themePackage = pkgs.sddm-astronaut;
+    wayland = true;
+    wallpaper = "/home/draxel/Pictures/wallpapers/nix-wallpaper-binary-red_8k.png";
   };
 
   # Enable Steam
@@ -193,6 +196,13 @@ in
   modules.services.openssh.enable = true;
   modules.services.btrbk.enable = true;
 
+  # Ollama - Local LLM server (CUDA accelerated)
+  modules.services.ollama = {
+    enable = true;
+    acceleration = "cuda";
+    models = [ "llama3.2" "codellama" ];
+  };
+
   # ==========================================================================
   # Impermanence (Ephemeral Root)
   # ==========================================================================
@@ -214,11 +224,4 @@ in
 
   # Disabled by default - enable after setting up age keys
   modules.security.sops.enable = true;
-
-  # VMs are defined in ./vms/ and imported via vms.win11 in imports list
-  # ==========================================================================
-  # Users
-  # ==========================================================================
-  # Users are defined as self-contained modules in users/ directory
-  # and composed in flake.nix via: users = with self.users; [ draxel ];
 }

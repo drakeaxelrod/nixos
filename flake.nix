@@ -144,6 +144,12 @@
               command = builtins.readFile ./scripts/nx.sh;
             }
             {
+              name = "gacp";
+              category = "git";
+              help = "Git add, commit (AI), push: gacp [-m 'msg'] [-y]";
+              command = builtins.readFile ./scripts/gacp.sh;
+            }
+            {
               name = "sops-edit";
               category = "secrets";
               help = "Edit secrets file";

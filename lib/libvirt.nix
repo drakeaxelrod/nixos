@@ -123,13 +123,16 @@ rec {
       nvramXml = if cfg.os.nvram != null
         then mkTag "nvram" { template = cfg.os.nvram.template; } cfg.os.nvram.path
         else "";
+      # Check if any disk has a boot order - if so, don't use os/boot
+      hasDeviceBoot = lib.any (disk: disk.boot != null) (cfg.devices.disks or []);
+      bootXml = if hasDeviceBoot then "" else ''<boot dev="hd"/>'';
     in
     ''
       <os>
         <type arch="${cfg.os.arch}" machine="${cfg.os.machine}">${cfg.os.type}</type>
         ${loaderXml}
         ${nvramXml}
-        <boot dev="hd"/>
+        ${bootXml}
       </os>
     '';
 
@@ -164,12 +167,17 @@ rec {
       ioapicXml = if cfg.features.ioapic != null
         then mkTag "ioapic" { driver = cfg.features.ioapic.driver; } ""
         else "";
+
+      smmXml = if cfg.features.smm != null
+        then mkTag "smm" { state = cfg.features.smm.state; } ""
+        else "";
     in
     ''
       <features>
         ${lib.optionalString cfg.features.acpi "<acpi/>"}
         ${lib.optionalString cfg.features.apic "<apic/>"}
         ${lib.optionalString cfg.features.pae "<pae/>"}
+        ${smmXml}
         ${lib.optionalString (cfg.features.hyperv != null) ''
           <hyperv mode="custom">
             ${hypervXml}
@@ -186,16 +194,17 @@ rec {
     '';
 
   # Generate clock XML
+  # Per libvirt spec: timers use <timer name="..."> not <timername>
   genClock = cfg:
     let
       timersXml = lib.concatStringsSep "\n      " (
-        lib.mapAttrsToList (name: timer:
+        lib.mapAttrsToList (timerName: timer:
           let
-            attrs = {} //
+            attrs = { name = timerName; } //
                     (if timer.present != null then { present = if timer.present then "yes" else "no"; } else {}) //
                     (if timer.tickpolicy != null then { tickpolicy = timer.tickpolicy; } else {});
           in
-          mkTag name attrs ""
+          mkTag "timer" attrs ""
         ) cfg.clock.timers
       );
     in
