@@ -92,7 +92,7 @@
     openDriver = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "Use open-source NVIDIA kernel modules (requires RTX 16xx+ / GTX 16xx+)";
+      description = "Use open-source NVIDIA kernel modules (REQUIRED for RTX 50-series, optional for RTX 20xx+)";
     };
 
     powerManagement = {

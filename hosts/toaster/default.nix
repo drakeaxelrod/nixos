@@ -108,6 +108,9 @@ in
     enableSuspendSupport = true;
     powerManagement.enable = true;
 
+    # RTX 50-series (Blackwell) REQUIRES open kernel modules
+    openDriver = true;
+
     # PRIME configuration for hybrid graphics (AMD iGPU + NVIDIA dGPU)
     prime = {
       enable = false;
@@ -122,6 +125,9 @@ in
 
   # Bluetooth
   modules.hardware.bluetooth.enable = true;
+
+  # QMK/Vial keyboard support (udev rules for flashing and configuring)
+  hardware.keyboard.qmk.enable = true;
 
   # ==========================================================================
   # GPU Mode (Dual-Boot)
