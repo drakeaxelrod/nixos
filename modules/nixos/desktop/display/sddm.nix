@@ -13,6 +13,18 @@
 
 let
   cfg = config.modules.desktop.sddm;
+
+  # Create a patched theme package with custom ConfigFile in metadata.desktop
+  patchedThemePackage = if cfg.themePackage != null && cfg.themeConfig != null then
+    cfg.themePackage.overrideAttrs (old: {
+      postInstall = (old.postInstall or "") + ''
+        # Update metadata.desktop to use the selected theme config
+        substituteInPlace $out/share/sddm/themes/${cfg.theme}/metadata.desktop \
+          --replace-fail "ConfigFile=Themes/astronaut.conf" "ConfigFile=Themes/${cfg.themeConfig}.conf"
+      '';
+    })
+  else
+    cfg.themePackage;
 in
 {
   options.modules.desktop.sddm = {
@@ -58,8 +70,8 @@ in
       enable = true;
       wayland.enable = cfg.wayland;
       theme = cfg.theme;
-      extraPackages = lib.mkIf (cfg.themePackage != null) [
-        cfg.themePackage
+      extraPackages = lib.mkIf (patchedThemePackage != null) [
+        patchedThemePackage
         pkgs.kdePackages.qtmultimedia  # Required for video backgrounds
       ];
     };
@@ -67,24 +79,12 @@ in
     # Theme package must be in systemPackages to be symlinked to /run/current-system/sw/share/sddm/themes/
     environment.systemPackages = [
       pkgs.kdePackages.sddm-kcm  # KDE System Settings module for SDDM configuration
-    ] ++ lib.optionals (cfg.themePackage != null) [
-      cfg.themePackage
+    ] ++ lib.optionals (patchedThemePackage != null) [
+      patchedThemePackage
     ];
 
     # Configure theme settings
     environment.etc = lib.mkMerge [
-      # Theme variant config (for sddm-astronaut-theme)
-      (lib.mkIf (cfg.themeConfig != null) {
-        "sddm.conf.d/theme.conf".text = ''
-          [Theme]
-          ThemeDir=/run/current-system/sw/share/sddm/themes
-          Current=${cfg.theme}
-
-          [${cfg.theme}]
-          ConfigFile=Themes/${cfg.themeConfig}.conf
-        '';
-      })
-
       # Custom wallpaper override
       (lib.mkIf (cfg.wallpaper != null) {
         "sddm/themes/${cfg.theme}/theme.conf.user".text = ''

@@ -54,6 +54,11 @@ in
         # Background color (OneDarkPro bg)
         backdrop = colors.bg;
 
+        # Disable branding/logo
+        interface = {
+          branding = "";  # No branding text or logo
+        };
+
         # Graphical terminal colors (OneDarkPro palette)
         # Colors are semicolon-separated RRGGBB values
         graphicalTerminal = {
