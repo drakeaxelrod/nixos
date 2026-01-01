@@ -48,7 +48,7 @@ in
     # Services
     modules.nixos.services.openssh
     modules.nixos.services.btrbk
-    # modules.nixos.services.ollama
+    modules.nixos.services.ollama
 
     # Virtualization
     modules.nixos.virtualization.libvirt
@@ -65,6 +65,9 @@ in
 
     # Security
     modules.nixos.security.sops
+
+    # Development
+    modules.nixos.dev.nix
   ];
 
   # ==========================================================================
@@ -108,7 +111,7 @@ in
 
     # PRIME configuration for hybrid graphics (AMD iGPU + NVIDIA dGPU)
     prime = {
-      enable = true;
+      enable = false;
       mode = "offload";  # On-demand NVIDIA rendering
       amdBusId = "PCI:13:0:0";    # AMD 780M iGPU (0d:00.0)
       nvidiaBusId = "PCI:1:0:0";  # NVIDIA RTX 5070 Ti (01:00.0)
@@ -198,7 +201,7 @@ in
 
   # Ollama - Local LLM server (CUDA accelerated)
   modules.services.ollama = {
-    enable = true;
+    enable = false;
     acceleration = "cuda";
     models = [ "llama3.2" "codellama" ];
   };
