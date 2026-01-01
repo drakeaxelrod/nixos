@@ -9,6 +9,12 @@
     ./qt.nix
   ];
 
+  # Examples:
+  # https://github.com/nix-community/plasma-manager/blob/trunk/examples/home.nix
+  # How to get current settings:
+  # nix run github:nix-community/plasma-manager > $HOME/.config/nixos/modules/home/desktop/plasma/current-settings.refence.nix
+
+
   # Plasma Manager configuration
   # NOTE: plasma-manager only configures user-level settings (home-manager)
   # System-level Plasma must be enabled in host config: modules.desktop.plasma.enable = true
