@@ -206,6 +206,11 @@
 
     # Cursor theme
     bibata-cursors
+
+    # helpful
+    unrar
+    p7zip
+    ffmpegthumbs
   ];
 
   # Set Bibata cursor theme for all applications
