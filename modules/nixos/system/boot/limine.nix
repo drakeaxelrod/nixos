@@ -54,6 +54,9 @@ in
         # Background color (OneDarkPro bg)
         backdrop = colors.bg;
 
+        # No wallpaper (removes NixOS logo)
+        wallpapers = [];
+
         # Disable branding/logo
         interface = {
           branding = null;  # No branding text or logo

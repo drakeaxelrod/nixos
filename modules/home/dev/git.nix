@@ -107,6 +107,7 @@
         aliases = "config --get-regexp alias";
         contributors = "shortlog -sn";
         whoami = "config user.email";
+
       };
 
       # Colors

@@ -129,6 +129,11 @@ in
   # QMK/Vial keyboard support (udev rules for flashing and configuring)
   hardware.keyboard.qmk.enable = true;
 
+  # System packages
+  environment.systemPackages = with pkgs; [
+    usbutils  # lsusb and other USB utilities
+  ];
+
   # ==========================================================================
   # GPU Mode (Dual-Boot)
   # ==========================================================================
