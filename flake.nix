@@ -1,5 +1,5 @@
 {
-  description = "NixOS configuration - modular, VFIO-optimized";
+  description = "NixOS configuration";
 
   inputs = {
     # Core
@@ -107,7 +107,7 @@
       in {
         # Development shell
         devShells.default = inputs.devshell.legacyPackages.${system}.mkShell {
-          name = "nixos";
+          name = "nixdots";
 
           packages = with pkgs; [
             nil           # Nix LSP

@@ -487,7 +487,7 @@
       };
 
       nix_shell = {
-        format = "[via $symbol $state(\\($name\\)) ]($style)";
+        format = "[ via $symbol $state (\\($name\\)) ]($style)";
         symbol = "󱄅";
         style = "bold blue";
         impure_msg = "impure";
