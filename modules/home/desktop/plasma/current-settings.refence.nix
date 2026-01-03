@@ -229,7 +229,10 @@
       plasmashell."switch to next activity" = [ ];
       plasmashell."switch to previous activity" = [ ];
       plasmashell."toggle do not disturb" = [ ];
-      "services/org.kde.konsole.desktop"._launch = "Meta+Return";
+      "services/org.kde.dolphin.desktop"._launch = [ ];
+      "services/org.kde.konsole.desktop"._launch = [ ];
+      "services/plasma-manager-commands.desktop".launch-dolphin = "Meta+E";
+      "services/plasma-manager-commands.desktop".launch-konsole = "Meta+Return";
     };
     configFile = {
       baloofilerc.General.dbVersion = 2;
@@ -246,7 +249,7 @@
       kcminputrc.Mouse.cursorSize = 24;
       kcminputrc.Mouse.cursorTheme = "Bibata-Modern-Classic";
       kded5rc.Module-device_automounter.autoload = false;
-      kdeglobals.Icons.Theme = "Papirus";
+      kdeglobals.Icons.Theme = "Papirus-Dark";
       kdeglobals.KDE.SingleClick = false;
       kdeglobals."KFileDialog Settings"."Allow Expansion" = false;
       kdeglobals."KFileDialog Settings"."Automatically select filename extension" = true;
@@ -292,8 +295,15 @@
       kwinrc.Windows.NextFocusPrefersMouse = true;
       kwinrc.Xwayland.Scale = 1;
       plasma-localerc.Formats.LANG = "en_US.UTF-8";
+      plasmanotifyrc."Applications/dev.deedles.Trayscale".Seen = true;
       plasmarc.Theme.name = "breeze-dark";
       plasmarc.Wallpapers.usersWallpapers = "/home/draxel/Pictures/wallpapers/nix-wallpaper-binary-red_8k.png";
+      spectaclerc.Annotations.annotationToolType = 6;
+      spectaclerc.Annotations.rectangleStrokeColor = "255,0,0";
+      spectaclerc.Annotations.textFontColor = "255,0,0";
+      spectaclerc.ImageSave.lastImageSaveLocation = "file:///home/draxel/Pictures/Screenshots/Screenshot_20260102_121629.png";
+      spectaclerc.ImageSave.translatedScreenshotsFolder = "Screenshots";
+      spectaclerc.VideoSave.translatedScreencastsFolder = "Screencasts";
     };
     dataFile = {
 

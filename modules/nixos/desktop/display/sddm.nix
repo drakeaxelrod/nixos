@@ -11,6 +11,7 @@
 #   - "elegant-sddm" (requires package: elegant-sddm)
 #
 # For sddm-astronaut-theme, use themeConfig to select a variant:
+#   onedark_custom (custom OneDark Pro theme with custom wallpaper)
 #   astronaut, black_hole, cyberpunk, hyprland_kath, japanese_aesthetic,
 #   pixel_sakura, purple_leaves, post_apocalyptic, rust, etc.
 { config, lib, pkgs, ... }:
@@ -18,15 +19,108 @@
 let
   cfg = config.modules.desktop.sddm;
 
-  # sddm-astronaut has built-in embeddedTheme parameter
-  astronautPackage = pkgs.sddm-astronaut.override {
+  # Custom OneDark Pro theme config for sddm-astronaut
+  # Based on japanese_aesthetic layout with OneDark Pro colors and custom wallpaper
+  onedarkCustomConfig = pkgs.writeText "onedark_custom.conf" ''
+    [General]
+    ScreenWidth="1920"
+    ScreenHeight="1080"
+    ScreenPadding=""
+    Font="Inter"
+    FontSize="12"
+    KeyboardSize="0.4"
+    RoundCorners="20"
+    Locale=""
+    HourFormat="HH:mm"
+    DateFormat="dddd d"
+    HeaderText=""
+
+    # Custom wallpaper
+    Background="${cfg.wallpaper}"
+    BackgroundPlaceholder=""
+    BackgroundSpeed=""
+    PauseBackground=""
+    DimBackground="0.0"
+    CropBackground="true"
+    BackgroundHorizontalAlignment="center"
+    BackgroundVerticalAlignment="center"
+
+    # Colors (OneDark Pro)
+    # Background: #282c34, Foreground: #abb2bf
+    # Red: #e06c75, Green: #98c379, Yellow: #e5c07b
+    # Blue: #61afef, Magenta: #c678dd, Cyan: #56b6c2
+    # Comment: #5c6370, Selection: #3e4451
+    HeaderTextColor="#abb2bf"
+    DateTextColor="#abb2bf"
+    TimeTextColor="#abb2bf"
+    FormBackgroundColor="#282c34"
+    BackgroundColor="#282c34"
+    DimBackgroundColor="#282c34"
+    LoginFieldBackgroundColor="#3e4451"
+    PasswordFieldBackgroundColor="#3e4451"
+    LoginFieldTextColor="#abb2bf"
+    PasswordFieldTextColor="#abb2bf"
+    UserIconColor="#61afef"
+    PasswordIconColor="#61afef"
+    PlaceholderTextColor="#5c6370"
+    WarningColor="#e06c75"
+    LoginButtonTextColor="#282c34"
+    LoginButtonBackgroundColor="#98c379"
+    SystemButtonsIconsColor="#abb2bf"
+    SessionButtonTextColor="#abb2bf"
+    VirtualKeyboardButtonTextColor="#abb2bf"
+    DropdownTextColor="#abb2bf"
+    DropdownSelectedBackgroundColor="#61afef"
+    DropdownBackgroundColor="#3e4451"
+    HighlightTextColor="#282c34"
+    HighlightBackgroundColor="#61afef"
+    HighlightBorderColor="transparent"
+    HoverUserIconColor="#56b6c2"
+    HoverPasswordIconColor="#56b6c2"
+    HoverSystemButtonsIconsColor="#61afef"
+    HoverSessionButtonTextColor="#61afef"
+    HoverVirtualKeyboardButtonTextColor="#61afef"
+
+    # Form
+    PartialBlur=""
+    FullBlur=""
+    BlurMax=""
+    Blur=""
+    HaveFormBackground="false"
+    FormPosition="left"
+    VirtualKeyboardPosition="left"
+
+    # Interface
+    HideVirtualKeyboard="false"
+    HideSystemButtons="false"
+    HideLoginButton="false"
+    ForceLastUser="true"
+    PasswordFocus="true"
+    HideCompletePassword="true"
+    AllowEmptyPassword="false"
+    AllowUppercaseLettersInUsernames="false"
+    BypassSystemButtonsChecks="false"
+    RightToLeftLayout="false"
+  '';
+
+  # sddm-astronaut with custom OneDark theme
+  astronautOnedark = pkgs.sddm-astronaut.overrideAttrs (old: {
+    postInstall = (old.postInstall or "") + ''
+      cp ${onedarkCustomConfig} $out/share/sddm/themes/sddm-astronaut-theme/theme.conf
+    '';
+  });
+
+  # sddm-astronaut with built-in embeddedTheme parameter
+  astronautBuiltin = pkgs.sddm-astronaut.override {
     embeddedTheme = cfg.themeConfig;
   };
 
-  # Use overridden package if themeConfig is set, otherwise use provided package
+  # Determine which package to use based on themeConfig
   effectivePackage =
-    if cfg.themePackage != null && cfg.themeConfig != null
-    then astronautPackage
+    if cfg.themePackage != null && cfg.themeConfig == "onedark_custom"
+    then astronautOnedark
+    else if cfg.themePackage != null && cfg.themeConfig != null
+    then astronautBuiltin
     else cfg.themePackage;
 in
 {
@@ -54,14 +148,18 @@ in
     themeConfig = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
       default = null;
-      example = "japanese_aesthetic";
-      description = "Theme variant (without .conf extension) for sddm-astronaut-theme";
+      example = "onedark_custom";
+      description = ''
+        Theme variant for sddm-astronaut-theme.
+        Use "onedark_custom" for custom OneDark Pro theme with custom wallpaper.
+        Other options: astronaut, black_hole, cyberpunk, japanese_aesthetic, etc.
+      '';
     };
 
     wallpaper = lib.mkOption {
       type = lib.types.nullOr lib.types.path;
-      default = null;
-      description = "Path to wallpaper image for SDDM login screen";
+      default = /home/draxel/.config/nixos/assets/wallpapers/nix-wallpaper-binary-red_8k.png;
+      description = "Path to wallpaper image (only used with onedark_custom theme)";
     };
   };
 
@@ -84,17 +182,6 @@ in
       pkgs.kdePackages.sddm-kcm  # KDE System Settings module for SDDM configuration
     ] ++ lib.optionals (effectivePackage != null) [
       effectivePackage
-    ];
-
-    # Configure theme settings
-    environment.etc = lib.mkMerge [
-      # Custom wallpaper override
-      (lib.mkIf (cfg.wallpaper != null) {
-        "sddm/themes/${cfg.theme}/theme.conf.user".text = ''
-          [General]
-          background=${cfg.wallpaper}
-        '';
-      })
     ];
 
     # Enable XWayland if using Wayland

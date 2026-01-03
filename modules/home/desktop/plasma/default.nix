@@ -143,6 +143,21 @@
             config = {
               General = {
                 icon = "nix-snowflake";
+                favoritesDisplayMode = "grid";
+                applicationsDisplayMode = "list";
+                showButtonsFor = [
+                  "lock-screen"
+                  "logout"
+                  "save-session"
+                  "switch-user"
+                  "suspend"
+                  "hibernate"
+                  "reboot"
+                  "shutdown"
+                ];
+                showActionButtonCaptions = false;
+                popupHeight = 500;
+                popupWidth = 700;
               };
             };
           }
@@ -162,7 +177,45 @@
             };
           }
           "org.kde.plasma.marginsseparator" # Spacer
-          "org.kde.plasma.pager"
+          # "org.kde.plasma.pager"
+          {
+            name = "org.kde.plasma.pager";
+            config = {
+              General = {
+                showWindowOutlines = true;
+                showApplicationIconsOnWindowOutlines = true;
+                showOnlyCurrentScreen = true;
+                navigationWrapsAround = false;
+                displayedText = "Number"; # Options: None, Number, Name
+
+                selectingCurrentVirtualDesktop = "doNothing"; # Options: doNothing, showDesktop
+              };
+            };
+          }
+          {
+            plasmusicToolbar = {
+              panelIcon = {
+                icon = "view-media-track";
+                albumCover = {
+                  useAsIcon = false;
+                  radius = 8;
+                };
+              };
+              playbackSource = "auto";
+              musicControls = {
+                showPlaybackControls = true;
+                volumeStep = 5;
+              };
+              songText = {
+                maximumWidth = 200;
+                scrolling = {
+                  enable = true;
+                  behavior = "alwaysScrollExceptOnHover";
+                  speed = 3;
+                };
+              };
+            };
+          }
           {
             systemTray.items = {
               shown = [
@@ -177,11 +230,30 @@
             };
           }
           {
-            name = "org.kde.plasma.digitalclock";
-            config = {
-              Appearance = {
-                showDate = true;
-                showSeconds = false;
+            digitalClock = {
+              date = {
+                enable = true;
+                format = { custom = "ddd d MMM"; };  # e.g., "Fri 3 Jan"
+                position = "besideTime";
+              };
+              time = {
+                format = "24h";
+                showSeconds = "never";
+              };
+              calendar = {
+                firstDayOfWeek = "monday";
+                showWeekNumbers = true;
+              };
+              timeZone = {
+                selected = [ "Local" ];
+                changeOnScroll = false;
+                format = "city";
+                alwaysShow = false;
+              };
+              font = {
+                family = "Inter";
+                bold = true;
+                size = 12;
               };
             };
           }
@@ -230,6 +302,12 @@
     [General]
     Name=OneDarkPro
     Parent=FALLBACK/
+
+    [Interaction Options]
+    # Enable semantic shell integration (OSC 133)
+    # Allows: click on command output, scroll between prompts
+    SemanticInputClick=true
+    SemanticUpDown=true
 
     [Scrolling]
     ScrollBarPosition=2

@@ -190,7 +190,7 @@ in
     enable = true;
     theme = "sddm-astronaut-theme";
     themePackage = pkgs.sddm-astronaut;
-    themeConfig = "japanese_aesthetic";  # Theme variant
+    themeConfig = "onedark_custom";  # Theme variant
     wayland = true;
   };
 
