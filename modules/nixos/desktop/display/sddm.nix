@@ -14,7 +14,7 @@
 #   onedark_custom (custom OneDark Pro theme with custom wallpaper)
 #   astronaut, black_hole, cyberpunk, hyprland_kath, japanese_aesthetic,
 #   pixel_sakura, purple_leaves, post_apocalyptic, rust, etc.
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, inputs, ... }:
 
 let
   cfg = config.modules.desktop.sddm;
@@ -158,7 +158,7 @@ in
 
     wallpaper = lib.mkOption {
       type = lib.types.nullOr lib.types.path;
-      default = /home/draxel/.config/nixos/assets/wallpapers/nix-wallpaper-binary-red_8k.png;
+      default = "${inputs.self}/assets/wallpapers/nix-wallpaper-binary-red_8k.png";
       description = "Path to wallpaper image (only used with onedark_custom theme)";
     };
   };
