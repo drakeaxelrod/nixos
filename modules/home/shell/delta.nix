@@ -2,8 +2,9 @@
 { config, pkgs, lib, ... }:
 
 {
-  programs.git.delta = {
+  programs.delta = {
     enable = true;
+    enableGitIntegration = true;  # Required: integrate with git
 
     options = {
       # Appearance

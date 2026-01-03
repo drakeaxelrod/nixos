@@ -3,7 +3,8 @@
 
 {
   home.packages = with pkgs; [
-    lua
-    luajit
+    luajit      # LuaJIT - fast JIT compiler for Lua 5.1
+    luarocks    # Lua package manager
+    lua-language-server  # LSP for Lua
   ];
 }

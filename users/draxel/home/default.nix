@@ -29,7 +29,7 @@ in
 
     # Development tools
     modules.home.dev.git
-    modules.home.dev.delta
+    modules.home.shell.delta  # Git diff highlighter
     # modules.home.dev.lazygit
     # Language-specific
     modules.home.dev.rust
