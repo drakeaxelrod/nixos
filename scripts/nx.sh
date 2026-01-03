@@ -97,6 +97,14 @@ cmd_switch() {
     ensure_flake_dir
     validate_host "$host"
 
+    # Clean up old Home Manager backup files to prevent conflicts
+    local backup_count
+    backup_count=$(find "$HOME" -maxdepth 3 -name "*.hm-bak" 2>/dev/null | wc -l)
+    if [[ $backup_count -gt 0 ]]; then
+        log_info "Cleaning up $backup_count old Home Manager backup files"
+        find "$HOME" -maxdepth 3 -name "*.hm-bak" -delete 2>/dev/null || true
+    fi
+
     log_info "Switching to configuration: $host"
     log_cmd "sudo nixos-rebuild switch --flake \".#$host\" -j $DEFAULT_JOBS --cores $DEFAULT_CORES $*"
 

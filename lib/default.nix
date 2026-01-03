@@ -185,7 +185,7 @@
         home-manager = {
           useGlobalPkgs = true;
           useUserPackages = true;
-          backupFileExtension = "backup";  # Backup conflicting files with .backup extension
+          backupFileExtension = "hm-bak";  # Short extension, clean up old .hm-bak files periodically
 
           extraSpecialArgs = {
             inherit inputs;

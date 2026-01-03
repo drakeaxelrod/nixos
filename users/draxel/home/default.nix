@@ -23,18 +23,22 @@ in
     modules.home.shell.zoxide
     modules.home.shell.zsh
     modules.home.shell.fd
+    modules.home.shell.ripgrep
+    modules.home.shell.jq
+    modules.home.shell.fastfetch
 
     # Development tools
     modules.home.dev.git
+    modules.home.dev.delta
     # modules.home.dev.lazygit
     # Language-specific
-    # modules.home.dev.rust
-    # modules.home.dev.go
+    modules.home.dev.rust
+    modules.home.dev.go
     # modules.home.dev.nodejs
     # modules.home.dev.python
     # modules.home.dev.java
     # modules.home.dev.c
-    # modules.home.dev.lua
+    modules.home.dev.lua
     modules.home.dev.nix
     # Utilities
     # modules.home.dev.database
