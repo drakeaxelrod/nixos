@@ -209,6 +209,7 @@
 
     # helpful
     unrar
+    p7zip
   ];
 
   # Set Bibata cursor theme for all applications

@@ -3,9 +3,10 @@
 
 {
   imports = [
-    ./boot      # Bootloader selection (systemd/limine/grub)
+    ./boot           # Bootloader selection (systemd/limine/grub)
     ./nix.nix
     ./locale.nix
     ./users.nix
+    ./environment.nix  # XDG-compliant environment variables
   ];
 }

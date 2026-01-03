@@ -218,7 +218,7 @@
                 starship = "${inputs.self}/modules/home/shell/starship.nix";
                 xh = "${inputs.self}/modules/home/shell/xh.nix";
                 zoxide = "${inputs.self}/modules/home/shell/zoxide.nix";
-                zsh = "${inputs.self}/modules/home/shell/zsh.nix";
+                zsh = "${inputs.self}/modules/home/shell/zsh";
               };
               # Development tools
               dev = {
