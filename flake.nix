@@ -37,7 +37,7 @@
       url = "github:numtide/devshell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    
+
     # Browser
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
@@ -107,7 +107,7 @@
       in {
         # Development shell
         devShells.default = inputs.devshell.legacyPackages.${system}.mkShell {
-          name = "MyNixOS";
+          name = "nixos";
 
           packages = with pkgs; [
             nil           # Nix LSP

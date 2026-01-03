@@ -206,7 +206,7 @@
       };
 
       git_status = {
-        format = "([\\[$all_status$ahead_behind\\]]($style) )";
+        format = "([\\[$all_status$ahead_behind\\]]($style))";
         style = "";
         conflicted = "[=$count](bold red)";
         ahead = "[⇡$count](bold green)";
@@ -487,7 +487,7 @@
       };
 
       nix_shell = {
-        format = "[via $symbol$state(\\($name\\)) ]($style)";
+        format = "[via $symbol $state(\\($name\\)) ]($style)";
         symbol = "󱄅";
         style = "bold blue";
         impure_msg = "impure";
