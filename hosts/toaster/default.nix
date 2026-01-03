@@ -188,9 +188,11 @@ in
   # Enable SDDM with Wayland
   modules.desktop.sddm = {
     enable = true;
-    theme = "sddm-astronaut-theme";
-    themePackage = pkgs.sddm-astronaut;
-    themeConfig = "onedark_custom";  # Theme variant
+    # theme = "sddm-astronaut-theme";
+    # themePackage = pkgs.sddm-astronaut;
+    # themeConfig = "onedark_custom";  # Theme variant
+    theme = "breeze";  # Default Breeze theme
+    wallpaper = "${self.inputs}/assets/wallpapers/nix-wallpaper-binary-red_8k.png";
     wayland = true;
   };
 

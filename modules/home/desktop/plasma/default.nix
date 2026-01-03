@@ -173,6 +173,52 @@
         height = 44;
         floating = true;
         widgets = [
+          # Panel Colorizer - OneDark Pro theme colors
+          {
+            plasmaPanelColorizer = {
+              general = {
+                enable = true;
+                hideWidget = true;
+              };
+              # Panel background - semi-transparent OneDark Pro
+              panelBackground = {
+                originalBackground = {
+                  hide = true;
+                };
+                customBackground = {
+                  enable = true;
+                  colorSource = "custom";
+                  customColor = "#16191d";
+                  opacity = 0.85;
+                  radius = 12;
+                  outline = {
+                    colorSource = "custom";
+                    customColor = "#3e4451";
+                    opacity = 0.5;
+                    width = 1;
+                  };
+                  shadow = {
+                    color = "#000000";
+                    size = 8;
+                    horizontalOffset = 0;
+                    verticalOffset = 2;
+                  };
+                };
+              };
+              # Widget backgrounds - subtle selection color
+              widgetBackground = {
+                enable = false;  # Keep widgets flat
+              };
+              # Text and icons - OneDark Pro foreground
+              textAndIcons = {
+                enable = true;
+                colors = {
+                  source = "custom";
+                  customColor = "#abb2bf";
+                };
+              };
+            };
+          }
           {
             name = "org.kde.plasma.kickoff";
             config = {
@@ -311,6 +357,9 @@
     kdePackages.kcalc
     kdePackages.filelight
     kdePackages.partitionmanager
+
+    # Panel customization
+    plasma-panel-colorizer
 
     # Cursor theme
     bibata-cursors
