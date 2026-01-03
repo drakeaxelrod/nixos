@@ -27,14 +27,14 @@
       clickItemTo = "select";
 
       # Theme - OneDark Pro
-      lookAndFeel = "org.kde.breezedark.desktop";
+      lookAndFeel = "org.kde.onedarkpro.desktop";
       iconTheme = "Papirus-Dark";
       theme = "breeze-dark";
       colorScheme = "OneDarkPro";
 
       # Cursor
       cursor = {
-        theme = "Bibata-Modern-Classic";
+        theme = "Bibata-Modern-Ice";
         size = 24;
       };
 
@@ -112,7 +112,7 @@
         "Effect-overview" = {
           "BorderActivate" = 9;  # Top-left corner
         };
-        # Window decoration - minimal borders
+        # Window decoration - Breeze with OneDark Pro style
         "org.kde.kdecoration2" = {
           "BorderSize" = "None";
           "BorderSizeAuto" = false;
@@ -123,13 +123,13 @@
         };
       };
 
-      # Breeze window decoration settings (OneDark Pro style)
+      # Breeze window decoration settings
       "breezerc" = {
         "Common" = {
           "OutlineCloseButton" = true;
         };
         "Windeco" = {
-          "TitleAlignment" = "Center";
+          "TitleAlignment" = "AlignHCenter";
           "DrawBorderOnMaximizedWindows" = false;
           "DrawSizeGrip" = false;
           "DrawTitleBarSeparator" = false;
@@ -171,6 +171,7 @@
       {
         location = "bottom";
         height = 44;
+        floating = true;
         widgets = [
           {
             name = "org.kde.plasma.kickoff";

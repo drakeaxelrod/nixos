@@ -27,12 +27,12 @@ let
     ScreenHeight="1080"
     ScreenPadding=""
     Font="Inter"
-    FontSize="12"
+    FontSize="14"
     KeyboardSize="0.4"
     RoundCorners="20"
     Locale=""
     HourFormat="HH:mm"
-    DateFormat="dddd d"
+    DateFormat="dddd, MMMM d"
     HeaderText=""
 
     # Custom wallpaper
@@ -40,7 +40,7 @@ let
     BackgroundPlaceholder=""
     BackgroundSpeed=""
     PauseBackground=""
-    DimBackground="0.0"
+    DimBackground="0.3"
     CropBackground="true"
     BackgroundHorizontalAlignment="center"
     BackgroundVerticalAlignment="center"
@@ -50,43 +50,63 @@ let
     # Red: #e06c75, Green: #98c379, Yellow: #e5c07b
     # Blue: #61afef, Magenta: #c678dd, Cyan: #56b6c2
     # Comment: #5c6370, Selection: #3e4451
+
+    # Header/Clock - light text for visibility
     HeaderTextColor="#abb2bf"
     DateTextColor="#abb2bf"
-    TimeTextColor="#abb2bf"
-    FormBackgroundColor="#282c34"
+    TimeTextColor="#ffffff"
+
+    # Form background with transparency (semi-transparent dark)
+    FormBackgroundColor="#282c34E6"
     BackgroundColor="#282c34"
-    DimBackgroundColor="#282c34"
+    DimBackgroundColor="#1e2127"
+
+    # Input fields - selection color background, light text
     LoginFieldBackgroundColor="#3e4451"
     PasswordFieldBackgroundColor="#3e4451"
     LoginFieldTextColor="#abb2bf"
     PasswordFieldTextColor="#abb2bf"
+
+    # Icons - blue accent
     UserIconColor="#61afef"
     PasswordIconColor="#61afef"
+
+    # Placeholder and warnings
     PlaceholderTextColor="#5c6370"
     WarningColor="#e06c75"
-    LoginButtonTextColor="#282c34"
+
+    # Login button - green accent with dark text
+    LoginButtonTextColor="#1e2127"
     LoginButtonBackgroundColor="#98c379"
+
+    # System buttons (power, restart, etc)
     SystemButtonsIconsColor="#abb2bf"
     SessionButtonTextColor="#abb2bf"
     VirtualKeyboardButtonTextColor="#abb2bf"
+
+    # Dropdowns
     DropdownTextColor="#abb2bf"
     DropdownSelectedBackgroundColor="#61afef"
     DropdownBackgroundColor="#3e4451"
-    HighlightTextColor="#282c34"
+
+    # Highlights/Selection
+    HighlightTextColor="#1e2127"
     HighlightBackgroundColor="#61afef"
-    HighlightBorderColor="transparent"
+    HighlightBorderColor="#61afef"
+
+    # Hover states - cyan for interactive feedback
     HoverUserIconColor="#56b6c2"
     HoverPasswordIconColor="#56b6c2"
-    HoverSystemButtonsIconsColor="#61afef"
+    HoverSystemButtonsIconsColor="#98c379"
     HoverSessionButtonTextColor="#61afef"
     HoverVirtualKeyboardButtonTextColor="#61afef"
 
-    # Form
-    PartialBlur=""
-    FullBlur=""
-    BlurMax=""
-    Blur=""
-    HaveFormBackground="false"
+    # Form - enable background with blur
+    PartialBlur="true"
+    FullBlur="false"
+    BlurMax="48"
+    Blur="2.0"
+    HaveFormBackground="true"
     FormPosition="left"
     VirtualKeyboardPosition="left"
 
@@ -105,13 +125,25 @@ let
 
   # sddm-astronaut with custom OneDark theme
   # The theme reads config from Themes/<name>.conf, referenced in metadata.desktop
+  # Note: sddm-astronaut uses installPhase directly (no build phases), so we override that
   astronautOnedark = pkgs.sddm-astronaut.overrideAttrs (old: {
-    postInstall = (old.postInstall or "") + ''
-      themePath=$out/share/sddm/themes/sddm-astronaut-theme
-      # Add our custom config to Themes directory
-      cp ${onedarkCustomConfig} $themePath/Themes/onedark_custom.conf
-      # Update metadata.desktop to use our config
-      sed -i 's|ConfigFile=Themes/.*\.conf|ConfigFile=Themes/onedark_custom.conf|' $themePath/metadata.desktop
+    installPhase = ''
+      runHook preInstall
+
+      mkdir -p $out/share/sddm/themes/sddm-astronaut-theme
+      cp -r $src/* $out/share/sddm/themes/sddm-astronaut-theme
+
+      # Ensure we have write permissions to modify files
+      chmod -R u+w $out/share/sddm/themes/sddm-astronaut-theme
+
+      # Add our custom OneDark Pro config to Themes directory
+      cp ${onedarkCustomConfig} $out/share/sddm/themes/sddm-astronaut-theme/Themes/onedark_custom.conf
+
+      # Update metadata.desktop to use our custom config
+      sed -i 's|ConfigFile=Themes/.*\.conf|ConfigFile=Themes/onedark_custom.conf|' \
+        $out/share/sddm/themes/sddm-astronaut-theme/metadata.desktop
+
+      runHook postInstall
     '';
   });
 

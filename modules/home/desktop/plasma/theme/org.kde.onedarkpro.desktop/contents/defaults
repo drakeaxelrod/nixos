@@ -2,13 +2,13 @@
 Theme=org.kde.onedarkpro.desktop
 
 [kcminputrc][Mouse]
-cursorTheme=Bibata-OneDarkPro
+cursorTheme=Bibata-Modern-Ice
 
 [kdeglobals][General]
 ColorScheme=OneDarkPro
 
 [kdeglobals][Icons]
-Theme=Papirus-OneDarkPro
+Theme=Papirus-Dark
 
 [kdeglobals][KDE]
 widgetStyle=kvantum-dark
