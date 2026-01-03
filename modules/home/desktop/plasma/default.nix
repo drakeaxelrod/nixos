@@ -7,6 +7,7 @@
     ./fonts.nix
     ./gtk.nix
     ./qt.nix
+    ./theme  # OneDark Pro theme
   ];
 
   # Examples:
@@ -25,11 +26,11 @@
     workspace = {
       clickItemTo = "select";
 
-      # Theme
+      # Theme - OneDark Pro
       lookAndFeel = "org.kde.breezedark.desktop";
       iconTheme = "Papirus-Dark";
       theme = "breeze-dark";
-      colorScheme = "BreezeDark";
+      colorScheme = "OneDarkPro";
 
       # Cursor
       cursor = {
@@ -111,6 +112,39 @@
         "Effect-overview" = {
           "BorderActivate" = 9;  # Top-left corner
         };
+        # Window decoration - minimal borders
+        "org.kde.kdecoration2" = {
+          "BorderSize" = "None";
+          "BorderSizeAuto" = false;
+          "ButtonsOnLeft" = "";
+          "ButtonsOnRight" = "IAX";
+          "library" = "org.kde.breeze";
+          "theme" = "Breeze";
+        };
+      };
+
+      # Breeze window decoration settings (OneDark Pro style)
+      "breezerc" = {
+        "Common" = {
+          "OutlineCloseButton" = true;
+        };
+        "Windeco" = {
+          "TitleAlignment" = "Center";
+          "DrawBorderOnMaximizedWindows" = false;
+          "DrawSizeGrip" = false;
+          "DrawTitleBarSeparator" = false;
+        };
+      };
+
+      # KDE global settings
+      "kdeglobals" = {
+        "General" = {
+          "ColorScheme" = "OneDarkPro";
+          "Name" = "One Dark Pro";
+        };
+        "KDE" = {
+          "contrast" = 4;
+        };
       };
 
       # Dolphin (file manager)
@@ -145,16 +179,17 @@
                 icon = "nix-snowflake";
                 favoritesDisplayMode = "grid";
                 applicationsDisplayMode = "list";
-                showButtonsFor = [
-                  "lock-screen"
-                  "logout"
-                  "save-session"
-                  "switch-user"
-                  "suspend"
-                  "hibernate"
-                  "reboot"
-                  "shutdown"
-                ];
+                showButtonsFor = "powerAndSession";
+                #   [
+                #   "lock-screen"
+                #   "logout"
+                #   "save-session"
+                #   "switch-user"
+                #   "suspend"
+                #   "hibernate"
+                #   "reboot"
+                #   "shutdown"
+                # ];
                 showActionButtonCaptions = false;
                 popupHeight = 500;
                 popupWidth = 700;
@@ -250,11 +285,11 @@
                 format = "city";
                 alwaysShow = false;
               };
-              font = {
-                family = "Inter";
-                bold = true;
-                size = 12;
-              };
+              # font = {
+              #   family = "Inter";
+              #   bold = true;
+              #   size = 12;
+              # };
             };
           }
         ];
@@ -293,92 +328,4 @@
     x11.enable = true;
   };
 
-  # Konsole One Dark Pro profile
-  xdg.dataFile."konsole/OneDarkPro.profile".text = ''
-    [Appearance]
-    ColorScheme=OneDarkPro
-    Font=Lilex Nerd Font,10,-1,5,50,0,0,0,0,0
-
-    [General]
-    Name=OneDarkPro
-    Parent=FALLBACK/
-
-    [Interaction Options]
-    # Enable semantic shell integration (OSC 133)
-    # Allows: click on command output, scroll between prompts
-    SemanticInputClick=true
-    SemanticUpDown=true
-
-    [Scrolling]
-    ScrollBarPosition=2
-    HistoryMode=2
-  '';
-
-  # Konsole One Dark Pro color scheme
-  xdg.dataFile."konsole/OneDarkPro.colorscheme".text = ''
-    [Background]
-    Color=40,44,52
-
-    [BackgroundIntense]
-    Color=40,44,52
-
-    [Foreground]
-    Color=171,178,191
-
-    [ForegroundIntense]
-    Color=171,178,191
-
-    [Color0]
-    Color=40,44,52
-
-    [Color0Intense]
-    Color=92,99,112
-
-    [Color1]
-    Color=224,108,117
-
-    [Color1Intense]
-    Color=224,108,117
-
-    [Color2]
-    Color=152,195,121
-
-    [Color2Intense]
-    Color=152,195,121
-
-    [Color3]
-    Color=229,192,123
-
-    [Color3Intense]
-    Color=229,192,123
-
-    [Color4]
-    Color=97,175,239
-
-    [Color4Intense]
-    Color=97,175,239
-
-    [Color5]
-    Color=198,120,221
-
-    [Color5Intense]
-    Color=198,120,221
-
-    [Color6]
-    Color=86,182,194
-
-    [Color6Intense]
-    Color=86,182,194
-
-    [Color7]
-    Color=171,178,191
-
-    [Color7Intense]
-    Color=255,255,255
-
-    [General]
-    Description=One Dark Pro
-    Opacity=1
-    Wallpaper=
-  '';
 }

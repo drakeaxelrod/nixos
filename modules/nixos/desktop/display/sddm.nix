@@ -104,9 +104,14 @@ let
   '';
 
   # sddm-astronaut with custom OneDark theme
+  # The theme reads config from Themes/<name>.conf, referenced in metadata.desktop
   astronautOnedark = pkgs.sddm-astronaut.overrideAttrs (old: {
     postInstall = (old.postInstall or "") + ''
-      cp ${onedarkCustomConfig} $out/share/sddm/themes/sddm-astronaut-theme/theme.conf
+      themePath=$out/share/sddm/themes/sddm-astronaut-theme
+      # Add our custom config to Themes directory
+      cp ${onedarkCustomConfig} $themePath/Themes/onedark_custom.conf
+      # Update metadata.desktop to use our config
+      sed -i 's|ConfigFile=Themes/.*\.conf|ConfigFile=Themes/onedark_custom.conf|' $themePath/metadata.desktop
     '';
   });
 
