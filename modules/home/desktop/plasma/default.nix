@@ -176,7 +176,7 @@
             name = "org.kde.plasma.kickoff";
             config = {
               General = {
-                icon = "nix-snowflake";
+                icon = "${inputs.self}/assets/icons/nix-snowflake-onedarkpro.svg";
                 favoritesDisplayMode = "grid";
                 applicationsDisplayMode = "list";
                 showButtonsFor = "powerAndSession";

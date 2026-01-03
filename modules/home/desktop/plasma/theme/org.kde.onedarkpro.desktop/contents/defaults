@@ -1,14 +1,14 @@
 [KSplash]
-Theme=OneDarkPro
+Theme=org.kde.onedarkpro.desktop
 
 [kcminputrc][Mouse]
-cursorTheme=Bibata-Modern-Classic
+cursorTheme=Bibata-OneDarkPro
 
 [kdeglobals][General]
 ColorScheme=OneDarkPro
 
 [kdeglobals][Icons]
-Theme=Papirus-Dark
+Theme=Papirus-OneDarkPro
 
 [kdeglobals][KDE]
 widgetStyle=kvantum-dark

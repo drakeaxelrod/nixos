@@ -9,7 +9,7 @@
         "Category": "Global Themes (Plasma 6)",
         "Description": "A global theme for KDE Plasma 6 based on One Dark Pro colors with transparency, blur and rounded corners",
         "EnabledByDefault": true,
-        "Id": "OneDarkPro",
+        "Id": "org.kde.onedarkpro.desktop",
         "License": "GPL-2.0+",
         "Name": "One Dark Pro",
         "ServiceTypes": [

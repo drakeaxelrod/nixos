@@ -1,8 +1,54 @@
 # OneDark Pro Theme for KDE Plasma
-# Includes color scheme, Konsole theme, and Kvantum theme
+# Includes color scheme, Konsole theme, Kvantum theme, icons, and cursor
 { config, lib, pkgs, ... }:
 
+let
+  # Custom Papirus with OneDark Pro cyan folders
+  papirus-onedarkpro = pkgs.stdenvNoCC.mkDerivation {
+    pname = "papirus-icon-theme-onedarkpro";
+    version = pkgs.papirus-icon-theme.version;
+
+    src = pkgs.papirus-icon-theme;
+
+    nativeBuildInputs = [ pkgs.papirus-folders ];
+
+    installPhase = ''
+      mkdir -p $out/share/icons
+      cp -r $src/share/icons/Papirus-Dark $out/share/icons/Papirus-OneDarkPro
+
+      # Use cyan as the base (closest to OneDark blue #61afef)
+      papirus-folders -t Papirus-OneDarkPro -o -C cyan --theme-dir $out/share/icons
+
+      # Update theme name in index.theme
+      sed -i 's/Name=Papirus-Dark/Name=Papirus OneDark Pro/' $out/share/icons/Papirus-OneDarkPro/index.theme
+      sed -i 's/Inherits=Papirus/Inherits=Papirus-Dark/' $out/share/icons/Papirus-OneDarkPro/index.theme
+    '';
+  };
+
+  # Custom Bibata cursor based on Modern-Ice (white cursor with dark outline)
+  # Fits well with dark themes like OneDark Pro
+  bibata-onedarkpro = pkgs.stdenvNoCC.mkDerivation {
+    pname = "bibata-cursors-onedarkpro";
+    version = pkgs.bibata-cursors.version;
+
+    src = pkgs.bibata-cursors;
+
+    installPhase = ''
+      mkdir -p $out/share/icons
+      cp -r $src/share/icons/Bibata-Modern-Ice $out/share/icons/Bibata-OneDarkPro
+
+      # Update cursor theme name
+      sed -i 's/Name=Bibata-Modern-Ice/Name=Bibata OneDark Pro/' $out/share/icons/Bibata-OneDarkPro/index.theme
+      sed -i 's/Comment=.*/Comment=Bibata cursor theme for OneDark Pro/' $out/share/icons/Bibata-OneDarkPro/index.theme
+    '';
+  };
+in
 {
+  # Install custom icon and cursor themes
+  home.packages = [
+    papirus-onedarkpro
+    bibata-onedarkpro
+  ];
   # Install the OneDark Pro color scheme
   xdg.dataFile."color-schemes/OneDarkPro.colors".source = ./OneDarkPro.colors;
 
@@ -97,5 +143,5 @@
   xdg.dataFile."Kvantum/OneDarkPro".source = ./kvantum;
 
   # Look and Feel theme (global theme)
-  xdg.dataFile."plasma/look-and-feel/OneDarkPro".source = ./look-and-feel;
+  xdg.dataFile."plasma/look-and-feel/org.kde.onedarkpro.desktop".source = ./org.kde.onedarkpro.desktop;
 }
