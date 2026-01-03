@@ -192,7 +192,7 @@ in
     # themePackage = pkgs.sddm-astronaut;
     # themeConfig = "onedark_custom";  # Theme variant
     theme = "breeze";  # Default Breeze theme
-    wallpaper = "${self.inputs}/assets/wallpapers/nix-wallpaper-binary-red_8k.png";
+    wallpaper = "${inputs.self}/assets/wallpapers/nix-wallpaper-binary-red_8k.png";
     wayland = true;
   };
 
