@@ -124,8 +124,8 @@ in
 
     # PRIME configuration for hybrid graphics (AMD iGPU + NVIDIA dGPU)
     prime = {
-      enable = false;
-      mode = "offload";  # On-demand NVIDIA rendering
+      enable = true;
+      mode = "sync";  # Always use NVIDIA for all rendering
       amdBusId = "PCI:13:0:0";    # AMD 780M iGPU (0d:00.0)
       nvidiaBusId = "PCI:1:0:0";  # NVIDIA RTX 5070 Ti (01:00.0)
     };
@@ -219,9 +219,11 @@ in
 
   modules.gaming.vr = {
     enable = true;
-    runtime = "wivrn";  # For wireless VR to Quest/Pico
-    wivrn.cudaSupport = true;  # If using NVIDIA
+    runtime = "steamvr";  # Use SteamVR for Quest 3 compatibility
+    # ALVR for wireless Quest 3 streaming
+    alvr.enable = true;
     wlxOverlay = true;  # Desktop overlay in VR
+    steamvr.setcapWrapper = true;  # Fix "SteamVR setup is incomplete" warning
   };
 
 

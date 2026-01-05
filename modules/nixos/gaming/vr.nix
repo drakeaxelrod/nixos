@@ -17,6 +17,11 @@
 
 let
   cfg = config.modules.gaming.vr;
+  # WiVRn package - use nixpkgs version with optional CUDA support
+  wivrnPkg =
+    if cfg.wivrn.cudaSupport
+    then pkgs.wivrn.override { cudaSupport = true; }
+    else pkgs.wivrn;
 in
 {
   imports = [ ./common.nix ];
@@ -102,6 +107,17 @@ in
       };
     };
 
+    # ALVR - Wireless streaming to Quest/Pico headsets
+    alvr = {
+      enable = lib.mkEnableOption "ALVR wireless VR streaming";
+
+      openFirewall = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Open firewall for ALVR (ports 9943-9944 UDP)";
+      };
+    };
+
     # SteamVR options
     steamvr = {
       enable = lib.mkOption {
@@ -138,6 +154,14 @@ in
       description = "Install wlx-overlay-s lightweight OpenXR overlay";
     };
 
+    # SideQuest for Quest sideloading
+    sidequest = lib.mkOption {
+      type = lib.types.bool;
+      default = cfg.alvr.enable;
+      defaultText = lib.literalExpression "config.modules.gaming.vr.alvr.enable";
+      description = "Install SideQuest for Quest sideloading (needed for ALVR)";
+    };
+
     # OpenComposite for OpenVR->OpenXR translation
     openComposite = lib.mkOption {
       type = lib.types.bool;
@@ -148,18 +172,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    # SteamVR requirements
-    # CAP_SYS_NICE for SteamVR compositor
-    security.wrappers = lib.mkIf cfg.steamvr.enable {
-      "vrcompositor" = {
-        owner = "root";
-        group = "root";
-        source = "/home/draxel/.local/share/Steam/steamapps/common/SteamVR/bin/linux64/vrcompositor-launcher";
-        capabilities = "cap_sys_nice+ep";
-      };
-    };
-
-    # SteamVR udev rules for HMDs
+    # SteamVR udev rules for HMDs and controllers
     services.udev.extraRules = lib.mkIf cfg.steamvr.enable ''
       # Valve Index HMD
       KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2101", MODE="0666"
@@ -177,6 +190,20 @@ in
       # Base Stations
       KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2000", MODE="0666"
     '';
+
+    # Allow SteamVR to use CAP_SYS_NICE for the compositor
+    # This uses setcap via activation script since the binary is in Steam's directory
+    system.activationScripts.steamvrCaps = lib.mkIf (cfg.steamvr.enable && cfg.steamvr.setcapWrapper) {
+      text = ''
+        STEAMVR_PATH="/home/*/.local/share/Steam/steamapps/common/SteamVR/bin/linux64/vrcompositor-launcher"
+        for launcher in $STEAMVR_PATH; do
+          if [ -f "$launcher" ]; then
+            ${pkgs.libcap}/bin/setcap cap_sys_nice+ep "$launcher" 2>/dev/null || true
+          fi
+        done
+      '';
+      deps = [];
+    };
 
     # Monado OpenXR runtime
     services.monado = lib.mkIf cfg.monado.enable {
@@ -197,13 +224,13 @@ in
       lfs.enable = true;
     };
 
-    # WiVRn wireless VR streaming
+    # WiVRn wireless VR streaming (using latest from flake)
     services.wivrn = lib.mkIf cfg.wivrn.enable {
       enable = true;
       openFirewall = cfg.wivrn.openFirewall;
       defaultRuntime = cfg.runtime == "wivrn";
       autoStart = cfg.wivrn.autoStart;
-      package = lib.mkIf cfg.wivrn.cudaSupport (pkgs.wivrn.override { cudaSupport = true; });
+      package = wivrnPkg;
     };
 
     # Envision VR orchestrator
@@ -211,6 +238,20 @@ in
       enable = true;
       openFirewall = cfg.envision.openFirewall;
     };
+
+    # ALVR - Wireless streaming to Quest/Pico
+    programs.alvr = lib.mkIf cfg.alvr.enable {
+      enable = true;
+      openFirewall = cfg.alvr.openFirewall;
+    };
+
+    # Security limits for real-time scheduling (fixes vrcompositor priority errors)
+    security.pam.loginLimits = lib.mkIf cfg.steamvr.enable [
+      { domain = "@users"; type = "soft"; item = "nice"; value = "-20"; }
+      { domain = "@users"; type = "hard"; item = "nice"; value = "-20"; }
+      { domain = "@users"; type = "soft"; item = "rtprio"; value = "99"; }
+      { domain = "@users"; type = "hard"; item = "rtprio"; value = "99"; }
+    ];
 
     # AMD GPU kernel patch for SteamVR performance
     boot.kernelPatches = lib.mkIf cfg.steamvr.amdgpuPatch [
@@ -232,6 +273,8 @@ in
       lib.optionals cfg.wlxOverlay [ wlx-overlay-s ] ++
       # Monado tools
       lib.optionals cfg.monado.enable [ monado ] ++
+      # SideQuest for Quest sideloading
+      lib.optionals cfg.sidequest [ sidequest ] ++
       # Common VR utilities
       [ ];
   };
