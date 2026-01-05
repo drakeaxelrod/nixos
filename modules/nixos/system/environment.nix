@@ -231,5 +231,19 @@ in
       XDG_CACHE_HOME = "$HOME/.cache";
       XDG_BIN_HOME = "$HOME/.local/bin";
     };
+
+    # Create empty config files for XDG-compliant tools that expect them
+    # This prevents "file not found" warnings from tools like wget
+    system.activationScripts.xdgConfigFiles = lib.stringAfter [ "users" ] ''
+      for user in /home/*; do
+        if [ -d "$user" ]; then
+          username=$(basename "$user")
+          # wget config
+          mkdir -p "$user/.config/wget"
+          touch "$user/.config/wget/wgetrc"
+          chown -R "$username:users" "$user/.config/wget"
+        fi
+      done
+    '';
   };
 }

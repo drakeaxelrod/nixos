@@ -51,6 +51,12 @@ in
       default = true;
       description = "Include ProtonUp-Qt and Protontricks";
     };
+
+    steamHardware = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Enable udev rules for Steam hardware (Steam Controller, Steam Deck, HTC Vive)";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -86,6 +92,9 @@ in
     };
 
     users.groups.gamemode = lib.mkIf cfg.gamemode {};
+
+    # Steam hardware udev rules (Steam Controller, Steam Deck, HTC Vive)
+    hardware.steam-hardware.enable = cfg.steamHardware;
 
     # System packages
     environment.systemPackages = with pkgs;

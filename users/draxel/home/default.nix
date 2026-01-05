@@ -105,6 +105,9 @@ in
     virt-manager        # VM management GUI
     virt-viewer         # VM viewer
     # Note: looking-glass-client and scream are installed via VFIO modules
+
+    # My own custom flake for keyboard learning
+    inputs.yxa.packages.${pkgs.stdenv.hostPlatform.system}.visual-guide
   ];
 
   # Use XDG config directory for zsh (new default in 26.05)

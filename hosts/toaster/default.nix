@@ -35,7 +35,10 @@ in
 
     # Gaming
     modules.nixos.gaming.steam
+    modules.nixos.gaming.heroic
+    modules.nixos.gaming.epic
     modules.nixos.gaming.lutris
+    modules.nixos.gaming.vr
 
     # Hardware
     modules.nixos.hardware.amd
@@ -139,6 +142,7 @@ in
   # System packages
   environment.systemPackages = with pkgs; [
     usbutils  # lsusb and other USB utilities
+    qbittorrent  # Torrent client
   ];
 
   # ==========================================================================
@@ -205,6 +209,17 @@ in
 
   # Lutris includes: Wine Staging, Winetricks, GameMode, MangoHud
   modules.gaming.lutris.enable = true;
+
+  # Heroic Games Launcher (Epic Games + GOG)
+  modules.gaming.heroic.enable = true;
+
+  modules.gaming.vr = {
+    enable = true;
+    runtime = "wivrn";  # For wireless VR to Quest/Pico
+    wivrn.cudaSupport = true;  # If using NVIDIA
+    wlxOverlay = true;  # Desktop overlay in VR
+  };
+
 
   # ==========================================================================
   # Networking

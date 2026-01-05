@@ -49,6 +49,9 @@
       };
     };
 
+    # My Own Custom Flakes
+    yxa.url = "github:DrakeAxelrod/yxa";
+
     # Plasma Manager
     plasma-manager = {
       url = "github:nix-community/plasma-manager";
@@ -142,12 +145,6 @@
               category = "nixos";
               help = "NixOS operations: nx <action> [host]";
               command = builtins.readFile ./scripts/nx.sh;
-            }
-            {
-              name = "gacp";
-              category = "git";
-              help = "Git add, commit (AI), push: gacp [-m 'msg'] [-y]";
-              command = builtins.readFile ./scripts/gacp.sh;
             }
             {
               name = "sops-edit";
