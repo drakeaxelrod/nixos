@@ -172,25 +172,6 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    # SteamVR udev rules for HMDs and controllers
-    services.udev.extraRules = lib.mkIf cfg.steamvr.enable ''
-      # Valve Index HMD
-      KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2101", MODE="0666"
-      KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2102", MODE="0666"
-      KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2103", MODE="0666"
-      KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2104", MODE="0666"
-      # Valve Index Controllers
-      KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2300", MODE="0666"
-      KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2301", MODE="0666"
-      # HTC Vive
-      KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="0bb4", ATTRS{idProduct}=="2c87", MODE="0666"
-      KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="0bb4", ATTRS{idProduct}=="0306", MODE="0666"
-      # HTC Vive Controllers
-      KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2012", MODE="0666"
-      # Base Stations
-      KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2000", MODE="0666"
-    '';
-
     # Allow SteamVR to use CAP_SYS_NICE for the compositor
     # This uses setcap via activation script since the binary is in Steam's directory
     system.activationScripts.steamvrCaps = lib.mkIf (cfg.steamvr.enable && cfg.steamvr.setcapWrapper) {
@@ -276,6 +257,31 @@ in
       # SideQuest for Quest sideloading
       lib.optionals cfg.sidequest [ sidequest ] ++
       # Common VR utilities
-      [ ];
+      [ android-tools ];  # ADB for wired Quest connection
+
+    # udev rules for Quest ADB connection
+    services.udev.extraRules = lib.mkMerge [
+      (lib.mkIf cfg.steamvr.enable ''
+        # Valve Index HMD
+        KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2101", MODE="0666"
+        KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2102", MODE="0666"
+        KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2103", MODE="0666"
+        KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2104", MODE="0666"
+        # Valve Index Controllers
+        KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2300", MODE="0666"
+        KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2301", MODE="0666"
+        # HTC Vive
+        KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="0bb4", ATTRS{idProduct}=="2c87", MODE="0666"
+        KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="0bb4", ATTRS{idProduct}=="0306", MODE="0666"
+        # HTC Vive Controllers
+        KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2012", MODE="0666"
+        # Base Stations
+        KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2000", MODE="0666"
+      '')
+      ''
+        # Meta Quest ADB
+        SUBSYSTEM=="usb", ATTR{idVendor}=="2833", MODE="0666", GROUP="users"
+      ''
+    ];
   };
 }

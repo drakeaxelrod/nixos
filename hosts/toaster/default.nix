@@ -219,11 +219,10 @@ in
 
   modules.gaming.vr = {
     enable = true;
-    runtime = "steamvr";  # Use SteamVR for Quest 3 compatibility
-    # ALVR for wireless Quest 3 streaming
+    runtime = "steamvr";
     alvr.enable = true;
-    wlxOverlay = true;  # Desktop overlay in VR
-    steamvr.setcapWrapper = true;  # Fix "SteamVR setup is incomplete" warning
+    wlxOverlay = true;
+    steamvr.setcapWrapper = true;
   };
 
 

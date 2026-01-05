@@ -152,9 +152,23 @@ let
     embeddedTheme = cfg.themeConfig;
   };
 
+  # Custom breeze theme with custom wallpaper
+  breezeCustom = pkgs.runCommand "sddm-breeze-custom" {
+    nativeBuildInputs = [ pkgs.kdePackages.plasma-desktop ];
+  } ''
+    mkdir -p $out/share/sddm/themes/breeze
+    cp -r ${pkgs.kdePackages.plasma-desktop}/share/sddm/themes/breeze/* $out/share/sddm/themes/breeze/
+    chmod -R u+w $out/share/sddm/themes/breeze
+
+    # Replace the background in theme.conf
+    sed -i 's|^background=.*|background=${cfg.wallpaper}|' $out/share/sddm/themes/breeze/theme.conf
+  '';
+
   # Determine which package to use based on themeConfig
   effectivePackage =
-    if cfg.themePackage != null && cfg.themeConfig == "onedark_custom"
+    if cfg.theme == "breeze" && cfg.wallpaper != null
+    then breezeCustom
+    else if cfg.themePackage != null && cfg.themeConfig == "onedark_custom"
     then astronautOnedark
     else if cfg.themePackage != null && cfg.themeConfig != null
     then astronautBuiltin
@@ -195,8 +209,8 @@ in
 
     wallpaper = lib.mkOption {
       type = lib.types.nullOr lib.types.path;
-      default = "${inputs.self}/assets/wallpapers/nix-wallpaper-binary-red_8k.png";
-      description = "Path to wallpaper image (only used with onedark_custom theme)";
+      default = null;
+      description = "Path to wallpaper image for SDDM (works with breeze and astronaut themes)";
     };
   };
 
