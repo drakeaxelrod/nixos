@@ -133,6 +133,7 @@
           steam = "${inputs.self}/modules/nixos/gaming/steam.nix";
           lutris = "${inputs.self}/modules/nixos/gaming/lutris.nix";
           heroic = "${inputs.self}/modules/nixos/gaming/heroic.nix";
+          bottles = "${inputs.self}/modules/nixos/gaming/bottles.nix";
           epic = "${inputs.self}/modules/nixos/gaming/epic.nix";
           vr = "${inputs.self}/modules/nixos/gaming/vr.nix";
         };

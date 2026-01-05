@@ -38,6 +38,7 @@ in
     modules.nixos.gaming.heroic
     modules.nixos.gaming.epic
     modules.nixos.gaming.lutris
+    modules.nixos.gaming.bottles
     modules.nixos.gaming.vr
 
     # Hardware
@@ -212,6 +213,9 @@ in
 
   # Heroic Games Launcher (Epic Games + GOG)
   modules.gaming.heroic.enable = true;
+
+  # Bottles - Modern Wine prefix manager
+  modules.gaming.bottles.enable = true;
 
   modules.gaming.vr = {
     enable = true;

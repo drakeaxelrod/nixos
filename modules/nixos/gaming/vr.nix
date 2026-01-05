@@ -104,12 +104,29 @@ in
 
     # SteamVR options
     steamvr = {
+      enable = lib.mkOption {
+        type = lib.types.bool;
+        default = cfg.runtime == "steamvr";
+        defaultText = lib.literalExpression "config.modules.gaming.vr.runtime == \"steamvr\"";
+        description = "Enable SteamVR support";
+      };
+
       amdgpuPatch = lib.mkOption {
         type = lib.types.bool;
         default = false;
         description = ''
           Apply kernel patch for AMD GPU high-priority graphics queue.
           Improves SteamVR performance on AMD GPUs.
+        '';
+      };
+
+      setcapWrapper = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = ''
+          Create setcap wrapper for vrcompositor to allow CAP_SYS_NICE.
+          This fixes the "SteamVR setup is incomplete" warning.
+          Requires SteamVR to be installed first.
         '';
       };
     };
@@ -131,6 +148,36 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    # SteamVR requirements
+    # CAP_SYS_NICE for SteamVR compositor
+    security.wrappers = lib.mkIf cfg.steamvr.enable {
+      "vrcompositor" = {
+        owner = "root";
+        group = "root";
+        source = "/home/draxel/.local/share/Steam/steamapps/common/SteamVR/bin/linux64/vrcompositor-launcher";
+        capabilities = "cap_sys_nice+ep";
+      };
+    };
+
+    # SteamVR udev rules for HMDs
+    services.udev.extraRules = lib.mkIf cfg.steamvr.enable ''
+      # Valve Index HMD
+      KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2101", MODE="0666"
+      KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2102", MODE="0666"
+      KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2103", MODE="0666"
+      KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2104", MODE="0666"
+      # Valve Index Controllers
+      KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2300", MODE="0666"
+      KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2301", MODE="0666"
+      # HTC Vive
+      KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="0bb4", ATTRS{idProduct}=="2c87", MODE="0666"
+      KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="0bb4", ATTRS{idProduct}=="0306", MODE="0666"
+      # HTC Vive Controllers
+      KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2012", MODE="0666"
+      # Base Stations
+      KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="28de", ATTRS{idProduct}=="2000", MODE="0666"
+    '';
+
     # Monado OpenXR runtime
     services.monado = lib.mkIf cfg.monado.enable {
       enable = true;
