@@ -45,6 +45,7 @@
                   allowDiscards = true;
                   # Uncomment for automated installs:
                   # keyFile = "/tmp/secret.key";
+                  crypttabExtraOpts = [ "tpm2-device=auto" ]; # Use TPM2 if available
                 };
                 # NO content here - btrfs is defined on disk2
               };
@@ -79,6 +80,7 @@
                   allowDiscards = true;
                   # Uncomment for automated installs:
                   # keyFile = "/tmp/secret.key";
+                  crypttabExtraOpts = [ "tpm2-device=auto" ]; # Use TPM2 if available
                 };
                 # Btrfs RAID 1 content goes HERE (on the second disk alphabetically)
                 content = {

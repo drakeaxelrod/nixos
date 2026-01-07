@@ -808,11 +808,11 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1767625870,
-        "narHash": "sha256-ipCriZV3LC8TYTnok9/q/lJCYQ0TOc1Qw31c6kIdugE=",
+        "lastModified": 1767811303,
+        "narHash": "sha256-Ow+PKwDN/d1fAHv2ZCjcJPd2y5WR2PHzm3W/15qHOM0=",
         "owner": "DrakeAxelrod",
         "repo": "yxa",
-        "rev": "c9ff4c0d5ae55b64d0429a8c5815c9bf0020b350",
+        "rev": "a3a5878d9acdcb581e40407c381b56ff3f7cc15d",
         "type": "github"
       },
       "original": {

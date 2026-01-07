@@ -27,7 +27,7 @@ in
       # Try history first, then completion engine
       strategy = [ "history" "completion" ];
       # Suggestion highlight color (gray, subtle)
-      highlight = "fg=#5c6370,italic";
+      # highlight = "fg=#abb2bf,italic";
     };
 
     # Syntax highlighting (colorize commands as you type)
