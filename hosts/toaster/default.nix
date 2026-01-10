@@ -71,6 +71,9 @@ in
 
     # Security
     modules.nixos.security.sops
+
+    # Appearance
+    modules.nixos.appearance.fonts
   ];
 
   # ==========================================================================
@@ -276,4 +279,10 @@ in
 
   # Disabled by default - enable after setting up age keys
   modules.security.sops.enable = true;
+
+  # ==========================================================================
+  # Appearance
+  # ==========================================================================
+
+  modules.appearance.fonts.enable = true;
 }

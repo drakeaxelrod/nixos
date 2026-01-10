@@ -21,3 +21,4 @@ secrets/*.yaml
 
 # direnv
 !.envrc
+.possible-new-config

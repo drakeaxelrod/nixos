@@ -137,6 +137,10 @@
           epic = "${inputs.self}/modules/nixos/gaming/epic.nix";
           vr = "${inputs.self}/modules/nixos/gaming/vr.nix";
         };
+        # Appearance (fonts, themes, etc.)
+        appearance = {
+          fonts = "${inputs.self}/modules/nixos/appearance/fonts.nix";
+        };
       };
     };
 
