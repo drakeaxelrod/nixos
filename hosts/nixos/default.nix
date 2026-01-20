@@ -25,7 +25,7 @@ in
     modules.nixos.desktop.managers.plasma
 
     # Hardware
-    # modules.nixos.hardware.intel
+    modules.nixos.hardware.intel
     modules.nixos.hardware.nvidia
     modules.nixos.hardware.audio
     modules.nixos.hardware.bluetooth
@@ -41,12 +41,12 @@ in
     # Virtualization
     modules.nixos.virtualization.libvirt
     modules.nixos.virtualization.docker
-    
-   
+
+
     # Security
     modules.nixos.security.base
     modules.nixos.security.sops
-    
+
     # Appearance
     modules.nixos.appearance.fonts
   ];
@@ -64,6 +64,7 @@ in
 
   modules.system.boot = {
     loader = "limine";          # Modern, stylish bootloader
+    efiMountPoint = "/boot/efi";     # ESP mount point
     kernelPackage = "linuxPackages_latest";  # Use latest stable kernel
     maxGenerations = 10;        # Keep boot menu clean
     timeout = 20;                # 5 second timeout
@@ -82,35 +83,41 @@ in
 
   # XDG-compliant environment variables for all users/sessions
   modules.system.environment.enable = true;
- 
+
   # ==========================================================================
   # Hardware
   # ==========================================================================
 
-  # Hardware modules imported above - configure here
-  # Import additional hardware modules as needed:
-  # modules.nixos.hardware.intel.enable = true;
+  # Intel CPU + iGPU (Alder Lake-P with Iris Xe)
+  modules.hardware.intel = {
+    enable = true;
+    cpu.enableHWP = true;      # Intel Hardware P-States for power management
+    gpu.enable = true;          # Iris Xe Graphics
+    gpu.enableGuC = true;       # Enable GuC firmware for media encode/decode
+    gpu.enableHuC = true;       # Enable HuC firmware for HEVC/H.265
+  };
+
+  # NVIDIA RTX 3080 Ti Mobile with PRIME offload
   modules.hardware.nvidia = {
     enable = true;
     enableWayland = true;
     enableSuspendSupport = true;
     powerManagement.enable = true;
 
-    # RTX 50-series (Blackwell) REQUIRES open kernel modules
-    openDriver = true;
+    # RTX 3080 Ti (Ampere) uses proprietary drivers
+    openDriver = false;
 
-    # PRIME configuration for hybrid graphics (AMD iGPU + NVIDIA dGPU)
-    # PRIME configuration for hybrid graphics (AMD iGPU + NVIDIA dGPU)
-    #prime = {
-     # enable = true;
-      #mode = "sync";  # Always use NVIDIA for all rendering
-     # amdBusId = "PCI:13:0:0";    # AMD 780M iGPU (0d:00.0)
-     # nvidiaBusId = "PCI:1:0:0";  # NVIDIA RTX 5070 Ti (01:00.0)
-    #};
+    # PRIME configuration for hybrid graphics (Intel iGPU + NVIDIA dGPU)
+    prime = {
+      enable = true;
+      mode = "offload";  # Use Intel by default, NVIDIA on-demand with nvidia-offload command
+      intelBusId = "PCI:0:2:0";    # Intel Iris Xe (00:02.0)
+      nvidiaBusId = "PCI:1:0:0";   # NVIDIA RTX 3080 Ti (01:00.0)
+    };
   };
   modules.hardware.bluetooth.enable = true;
   modules.hardware.audio.enable = true;
-  
+
   # QMK/Vial keyboard support (udev rules for flashing and configuring)
   hardware.keyboard.qmk.enable = true;
 
@@ -120,7 +127,7 @@ in
     qbittorrent  # Torrent client
     #lspci
   ];
- 
+
   # ==========================================================================
   # Virtualization
   # ==========================================================================
@@ -170,11 +177,11 @@ in
   modules.services.btrbk.enable = true;
 
   # Ollama - Local LLM server (CUDA accelerated)
-  # modules.services.ollama = {
-  #   enable = true;
-  #   acceleration = "cuda";
-  #   models = [ "llama3.2" ];
-  # };
+  modules.services.ollama = {
+    enable = true;
+    acceleration = "cuda";
+    models = [ "llama3.2" ];
+  };
 
   # ==========================================================================
   # Security

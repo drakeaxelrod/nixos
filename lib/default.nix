@@ -88,6 +88,7 @@
           amd = "${inputs.self}/modules/nixos/hardware/amd.nix";
           audio = "${inputs.self}/modules/nixos/hardware/audio.nix";
           bluetooth = "${inputs.self}/modules/nixos/hardware/bluetooth.nix";
+          intel = "${inputs.self}/modules/nixos/hardware/intel.nix";
           nvidia = "${inputs.self}/modules/nixos/hardware/nvidia.nix";
           storage = "${inputs.self}/modules/nixos/hardware/storage.nix";
         };
