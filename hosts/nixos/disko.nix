@@ -8,7 +8,7 @@
       main = {
         type = "disk";
         # Default to /dev/sda - update for your hardware
-        device = "/dev/sda";
+        device = "/dev/nvme0n1";
         content = {
           type = "gpt";
           partitions = {
