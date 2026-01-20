@@ -36,6 +36,7 @@ in
     # Services
     modules.nixos.services.openssh
     modules.nixos.services.btrbk
+    modules.nixos.services.keybase
     modules.nixos.services.ollama
 
     # Virtualization
@@ -63,7 +64,7 @@ in
   # ==========================================================================
 
   modules.system.boot = {
-    loader = "limine";          # Modern, stylish bootloader
+    loader = "limine";          # Use systemd-boot for now (Limine has boot issues)
     efiMountPoint = "/boot/efi";     # ESP mount point
     kernelPackage = "linuxPackages_latest";  # Use latest stable kernel
     maxGenerations = 10;        # Keep boot menu clean
@@ -175,6 +176,13 @@ in
 
   modules.services.openssh.enable = true;
   modules.services.btrbk.enable = true;
+
+  # Keybase - Secure messaging and file sharing
+  modules.services.keybase = {
+    enable = true;
+    enableKBFS = true;  # Mount encrypted filesystem at /keybase
+    enableGUI = true;   # Install GUI app
+  };
 
   # Ollama - Local LLM server (CUDA accelerated)
   modules.services.ollama = {
