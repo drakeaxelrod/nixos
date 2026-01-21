@@ -128,7 +128,7 @@ in
     qbittorrent  # Torrent client
     #lspci
     gnupg  # GPG for encryption and signing
-    qflipper # Flipper Zero management tool
+    qFlipper # Flipper Zero management tool
   ];
 
   hardware.flipperzero.enable = true;
