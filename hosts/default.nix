@@ -28,9 +28,9 @@ in
     users = with users; [ bamse ];
   };
 
-  # Add more hosts:
-  # laptop = lib.mkHost {
-  #   hostname = "laptop";
-  #   users = with users; [ draxel ];
-  # };
+  # Laptop configuration
+  laptop = lib.mkHost {
+    hostname = "laptop";
+    users = with users; [ draxel ];
+  };
 }
