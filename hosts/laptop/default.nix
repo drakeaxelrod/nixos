@@ -129,6 +129,7 @@ in
     #lspci
     gnupg  # GPG for encryption and signing
     qFlipper # Flipper Zero management tool
+    picocom # Minimal dumb-terminal emulation program
   ];
 
   hardware.flipperzero.enable = true;
