@@ -124,12 +124,13 @@ in
 
   # System packages
   environment.systemPackages = with pkgs; [
-    usbutils  # lsusb and other USB utilities
+    usbutils  # lsusb and other USB utilissties
     qbittorrent  # Torrent client
     #lspci
     gnupg  # GPG for encryption and signing
     qFlipper # Flipper Zero management tool
-    picocom # Minimal dumb-terminal emulation program
+    # picocom # Minimal dumb-terminal emulation program
+    proton-pass # Password manager CLI
   ];
 
   hardware.flipperzero.enable = true;
