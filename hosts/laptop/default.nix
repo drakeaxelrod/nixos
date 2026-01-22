@@ -131,6 +131,7 @@ in
     qFlipper # Flipper Zero management tool
     # picocom # Minimal dumb-terminal emulation program
     proton-pass # Password manager CLI
+    cryptsetup # LUKS management tools
   ];
 
   hardware.flipperzero.enable = true;
