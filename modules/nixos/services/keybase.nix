@@ -52,5 +52,25 @@
     # Keybase requires a few system tweaks for proper operation
     # Allow Keybase to use FUSE for KBFS
     programs.fuse.userAllowOther = lib.mkIf config.modules.services.keybase.enableKBFS true;
+
+    # Fix DNS resolution issues with systemd user services and Tailscale MagicDNS
+    # Keybase service needs to wait for network to be fully configured
+    systemd.user.services.keybase = {
+      after = [ "network-online.target" ];
+      wants = [ "network-online.target" ];
+      serviceConfig = {
+        Restart = "on-failure";
+        RestartSec = "5s";
+      };
+    };
+
+    systemd.user.services.kbfs = lib.mkIf config.modules.services.keybase.enableKBFS {
+      after = [ "network-online.target" "keybase.service" ];
+      wants = [ "network-online.target" ];
+      serviceConfig = {
+        Restart = "on-failure";
+        RestartSec = "5s";
+      };
+    };
   };
 }
