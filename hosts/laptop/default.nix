@@ -183,6 +183,7 @@ in
   # ==========================================================================
 
   modules.services.openssh.enable = true;
+  programs.ssh.startAgent = true;
   modules.services.btrbk.enable = true;
 
   # Keybase - Secure messaging and file sharing
