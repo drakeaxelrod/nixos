@@ -43,11 +43,12 @@ fi
 # ═════════════════════════════════════════════════════════════════════════════
 
 # Open VS Code (directory/file or current directory)
+# Filters Electron warnings about Wayland flags (they work fine, just noisy)
 function vsc {
   if (( $# )); then
-    $VSCODE "$@"
+    $VSCODE "$@" 2>&1 | grep -v "^Warning: '.*' is not in the list of known options"
   else
-    $VSCODE .
+    $VSCODE . 2>&1 | grep -v "^Warning: '.*' is not in the list of known options"
   fi
 }
 

@@ -8,5 +8,6 @@
     ./printing.nix
     ./packages.nix
     ./ollama.nix
+    ./flatpak.nix
   ];
 }

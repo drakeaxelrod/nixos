@@ -1,5 +1,5 @@
 # Lazygit - terminal UI for git
-{ config, pkgs, ... }:
+{ config, pkgs, colors, ... }:
 
 {
   programs.lazygit = {
@@ -8,9 +8,9 @@
       gui = {
         theme = {
           lightTheme = false;
-          # One Dark Pro colors
-          selectedLineBgColor = [ "#2d313b" ];
-          selectedRangeBgColor = [ "#414858" ];
+          # Colors from centralized palette
+          selectedLineBgColor = [ colors.hex.bg2 ];
+          selectedRangeBgColor = [ colors.hex.bg3 ];
         };
         showCommandLog = false;
         showRandomTip = false;

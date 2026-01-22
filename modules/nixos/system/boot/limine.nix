@@ -7,30 +7,33 @@
 # Each entry shows: NixOS version, date, git rev, generation number,
 # and specialisation tag if applicable.
 #
-# Theme: OneDarkPro (Atom's One Dark inspired)
+# Theme: Uses centralized color palette from lib.colors
 # https://wiki.nixos.org/wiki/Limine
 { config, lib, pkgs, ... }:
 
 let
   cfg = config.modules.system.boot;
+  palette = lib.colors;
 
-  # OneDarkPro color palette (without # prefix for Limine)
+  # Strip '#' prefix from hex colors (Limine expects raw hex)
+  stripHash = s: lib.removePrefix "#" s;
+
+  # Color palette for Limine (without # prefix)
   colors = {
-    bg = "282c34";
-    fg = "abb2bf";
-    black = "282c34";
-    red = "e06c75";
-    green = "98c379";
-    yellow = "e5c07b";
-    blue = "61afef";
-    purple = "c678dd";
-    cyan = "56b6c2";
-    white = "abb2bf";
-    gray = "5c6370";
-    brightBlack = "5c6370";
-    brightWhite = "ffffff";
-    cursorline = "2d313b";
-    selection = "414858";
+    bg = stripHash palette.hex.bg2;
+    fg = stripHash palette.hex.fg1;
+    black = stripHash palette.hex.black;
+    red = stripHash palette.hex.red;
+    green = stripHash palette.hex.green;
+    yellow = stripHash palette.hex.yellow;
+    blue = stripHash palette.hex.blue;
+    purple = stripHash palette.hex.purple;
+    cyan = stripHash palette.hex.cyan;
+    white = stripHash palette.hex.fg1;
+    gray = stripHash palette.hex.fg0;
+    brightBlack = stripHash palette.hex.blackBright;
+    brightWhite = stripHash palette.hex.whiteBright;
+    selection = stripHash palette.hex.bg3;
   };
 in
 {

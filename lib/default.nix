@@ -3,6 +3,13 @@
 
 {
   # ===========================================================================
+  # OneDark Pro Color Palette
+  # ===========================================================================
+  # Centralized color definitions for use across configurations
+  # Usage: lib.colors.hex.bg0, lib.colors.rgba.blue 0.5, etc.
+  colors = import ./colors.nix { inherit lib; };
+
+  # ===========================================================================
   # Libvirt XML generation helpers
   # ===========================================================================
   libvirt = import ./libvirt.nix { inherit lib; };
@@ -103,6 +110,7 @@
         services = {
           btrbk = "${inputs.self}/modules/nixos/services/btrbk.nix";
           keybase = "${inputs.self}/modules/nixos/services/keybase.nix";
+          flatpak = "${inputs.self}/modules/nixos/services/flatpak.nix";
           ollama = "${inputs.self}/modules/nixos/services/ollama.nix";
           openssh = "${inputs.self}/modules/nixos/services/openssh.nix";
           packages = "${inputs.self}/modules/nixos/services/packages.nix";
@@ -198,6 +206,10 @@
 
           extraSpecialArgs = {
             inherit inputs;
+
+            # Color palettes for theming (lib.colors in NixOS context)
+            colors = import ./colors.nix { inherit lib; };
+
             # Shared home-manager modules following import-based pattern
             # Usage: imports = [ modules.home.shell.zsh modules.home.desktop.gnome ];
             modules.home = {

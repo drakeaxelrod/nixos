@@ -1,7 +1,7 @@
 # GNOME user configuration (home-manager)
 # NOTE: This only configures user-level GNOME settings (dconf, user packages)
 # System-level GNOME must be enabled in host config: modules.desktop.gnome.enable = true
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, colors, ... }:
 
 {
   imports = [
@@ -161,36 +161,36 @@
       use-system-font = false;
       font = "Lilex Nerd Font 10";
       use-theme-colors = false;
-      # One Dark Pro colors
-      foreground-color = "#abb2bf";
-      background-color = "#282c34";
-      bold-color = "#abb2bf";
+      # Colors from centralized palette
+      foreground-color = colors.hex.fg1;
+      background-color = colors.hex.bg0;
+      bold-color = colors.hex.fg1;
       bold-color-same-as-fg = true;
       # Palette: Black, Red, Green, Yellow, Blue, Purple, Cyan, White (normal + bright)
       palette = [
-        "#282c34"  # black
-        "#e06c75"  # red
-        "#98c379"  # green
-        "#e5c07b"  # yellow
-        "#61afef"  # blue
-        "#c678dd"  # purple
-        "#56b6c2"  # cyan
-        "#abb2bf"  # white
-        "#5c6370"  # bright black
-        "#e06c75"  # bright red
-        "#98c379"  # bright green
-        "#e5c07b"  # bright yellow
-        "#61afef"  # bright blue
-        "#c678dd"  # bright purple
-        "#56b6c2"  # bright cyan
-        "#ffffff"  # bright white
+        colors.hex.black        # black
+        colors.hex.red          # red
+        colors.hex.green        # green
+        colors.hex.yellow       # yellow
+        colors.hex.blue         # blue
+        colors.hex.purple       # purple
+        colors.hex.cyan         # cyan
+        colors.hex.fg1          # white
+        colors.hex.blackBright  # bright black
+        colors.hex.redBright    # bright red
+        colors.hex.greenBright  # bright green
+        colors.hex.yellowBright # bright yellow
+        colors.hex.blueBright   # bright blue
+        colors.hex.purpleBright # bright purple
+        colors.hex.cyanBright   # bright cyan
+        colors.hex.whiteBright  # bright white
       ];
       cursor-colors-set = true;
-      cursor-foreground-color = "#282c34";
-      cursor-background-color = "#abb2bf";
+      cursor-foreground-color = colors.hex.bg0;
+      cursor-background-color = colors.hex.fg1;
       highlight-colors-set = true;
-      highlight-foreground-color = "#abb2bf";
-      highlight-background-color = "#3e4451";
+      highlight-foreground-color = colors.hex.fg1;
+      highlight-background-color = colors.hex.bg3;
       audible-bell = false;
       scrollback-unlimited = true;
       show-scrollbar = false;

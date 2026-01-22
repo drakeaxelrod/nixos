@@ -16,8 +16,13 @@
 #   pixel_sakura, purple_leaves, post_apocalyptic, rust, etc.
 { config, lib, pkgs, inputs, ... }:
 
+# Access centralized color palette
+# Colors are available via lib.colors (defined in lib/default.nix)
+# Usage: colors.hex.bg0, colors.rgb.fg1, colors.rgba.blue 0.5
+
 let
   cfg = config.modules.desktop.sddm;
+  colors = lib.colors;
 
   # Custom OneDark Pro theme config for sddm-astronaut
   # Based on japanese_aesthetic layout with OneDark Pro colors and custom wallpaper
@@ -45,61 +50,57 @@ let
     BackgroundHorizontalAlignment="center"
     BackgroundVerticalAlignment="center"
 
-    # Colors (OneDark Pro)
-    # Background: #282c34, Foreground: #abb2bf
-    # Red: #e06c75, Green: #98c379, Yellow: #e5c07b
-    # Blue: #61afef, Magenta: #c678dd, Cyan: #56b6c2
-    # Comment: #5c6370, Selection: #3e4451
+    # Colors from centralized palette (lib.colors)
 
     # Header/Clock - light text for visibility
-    HeaderTextColor="#abb2bf"
-    DateTextColor="#abb2bf"
-    TimeTextColor="#ffffff"
+    HeaderTextColor="${colors.hex.fg1}"
+    DateTextColor="${colors.hex.fg1}"
+    TimeTextColor="${colors.hex.whiteBright}"
 
     # Form background with transparency (semi-transparent dark)
-    FormBackgroundColor="#282c34E6"
-    BackgroundColor="#282c34"
-    DimBackgroundColor="#1e2127"
+    FormBackgroundColor="${colors.hex.bg2}E6"
+    BackgroundColor="${colors.hex.bg2}"
+    DimBackgroundColor="${colors.hex.bg1}"
 
     # Input fields - selection color background, light text
-    LoginFieldBackgroundColor="#3e4451"
-    PasswordFieldBackgroundColor="#3e4451"
-    LoginFieldTextColor="#abb2bf"
-    PasswordFieldTextColor="#abb2bf"
+    LoginFieldBackgroundColor="${colors.hex.bg3}"
+    PasswordFieldBackgroundColor="${colors.hex.bg3}"
+    LoginFieldTextColor="${colors.hex.fg1}"
+    PasswordFieldTextColor="${colors.hex.fg1}"
 
     # Icons - blue accent
-    UserIconColor="#61afef"
-    PasswordIconColor="#61afef"
+    UserIconColor="${colors.hex.blue}"
+    PasswordIconColor="${colors.hex.blue}"
 
     # Placeholder and warnings
-    PlaceholderTextColor="#5c6370"
-    WarningColor="#e06c75"
+    PlaceholderTextColor="${colors.hex.fg0}"
+    WarningColor="${colors.hex.red}"
 
     # Login button - green accent with dark text
-    LoginButtonTextColor="#1e2127"
-    LoginButtonBackgroundColor="#98c379"
+    LoginButtonTextColor="${colors.hex.bg1}"
+    LoginButtonBackgroundColor="${colors.hex.green}"
 
     # System buttons (power, restart, etc)
-    SystemButtonsIconsColor="#abb2bf"
-    SessionButtonTextColor="#abb2bf"
-    VirtualKeyboardButtonTextColor="#abb2bf"
+    SystemButtonsIconsColor="${colors.hex.fg1}"
+    SessionButtonTextColor="${colors.hex.fg1}"
+    VirtualKeyboardButtonTextColor="${colors.hex.fg1}"
 
     # Dropdowns
-    DropdownTextColor="#abb2bf"
-    DropdownSelectedBackgroundColor="#61afef"
-    DropdownBackgroundColor="#3e4451"
+    DropdownTextColor="${colors.hex.fg1}"
+    DropdownSelectedBackgroundColor="${colors.hex.blue}"
+    DropdownBackgroundColor="${colors.hex.bg3}"
 
     # Highlights/Selection
-    HighlightTextColor="#1e2127"
-    HighlightBackgroundColor="#61afef"
-    HighlightBorderColor="#61afef"
+    HighlightTextColor="${colors.hex.bg1}"
+    HighlightBackgroundColor="${colors.hex.blue}"
+    HighlightBorderColor="${colors.hex.blue}"
 
     # Hover states - cyan for interactive feedback
-    HoverUserIconColor="#56b6c2"
-    HoverPasswordIconColor="#56b6c2"
-    HoverSystemButtonsIconsColor="#98c379"
-    HoverSessionButtonTextColor="#61afef"
-    HoverVirtualKeyboardButtonTextColor="#61afef"
+    HoverUserIconColor="${colors.hex.cyan}"
+    HoverPasswordIconColor="${colors.hex.cyan}"
+    HoverSystemButtonsIconsColor="${colors.hex.green}"
+    HoverSessionButtonTextColor="${colors.hex.blue}"
+    HoverVirtualKeyboardButtonTextColor="${colors.hex.blue}"
 
     # Form - enable background with blur
     PartialBlur="true"

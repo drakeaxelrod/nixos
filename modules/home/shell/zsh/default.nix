@@ -1,5 +1,5 @@
 # Zsh shell configuration with advanced features
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, colors, ... }:
 
 let
   # Custom plugins directory
@@ -41,26 +41,26 @@ in
         "cursor"      # Cursor highlighting
         "root"        # Highlight when root
       ];
-      # Custom syntax styles (OneDarkPro colors)
+      # Custom syntax styles (using centralized color palette)
       styles = {
         # Commands
-        "command" = "fg=#98c379";           # Green - valid commands
-        "unknown-command" = "fg=#e06c75";   # Red - unknown commands
-        "builtin" = "fg=#c678dd";           # Purple - builtins
-        "alias" = "fg=#61afef";             # Blue - aliases
-        "function" = "fg=#61afef";          # Blue - functions
+        "command" = "fg=${colors.hex.green}";           # Green - valid commands
+        "unknown-command" = "fg=${colors.hex.red}";     # Red - unknown commands
+        "builtin" = "fg=${colors.hex.purple}";          # Purple - builtins
+        "alias" = "fg=${colors.hex.blue}";              # Blue - aliases
+        "function" = "fg=${colors.hex.blue}";           # Blue - functions
         # Paths and strings
-        "path" = "fg=#e5c07b,underline";    # Yellow - paths
-        "globbing" = "fg=#e5c07b";          # Yellow - globs
-        "single-quoted-argument" = "fg=#98c379";  # Green - strings
-        "double-quoted-argument" = "fg=#98c379";  # Green - strings
+        "path" = "fg=${colors.hex.yellow},underline";   # Yellow - paths
+        "globbing" = "fg=${colors.hex.yellow}";         # Yellow - globs
+        "single-quoted-argument" = "fg=${colors.hex.green}";  # Green - strings
+        "double-quoted-argument" = "fg=${colors.hex.green}";  # Green - strings
         # Options and operators
-        "single-hyphen-option" = "fg=#abb2bf";
-        "double-hyphen-option" = "fg=#abb2bf";
-        "redirection" = "fg=#56b6c2";       # Cyan - redirects
-        "commandseparator" = "fg=#c678dd";  # Purple - ; && ||
+        "single-hyphen-option" = "fg=${colors.hex.fg1}";
+        "double-hyphen-option" = "fg=${colors.hex.fg1}";
+        "redirection" = "fg=${colors.hex.cyan}";        # Cyan - redirects
+        "commandseparator" = "fg=${colors.hex.purple}"; # Purple - ; && ||
         # Comments
-        "comment" = "fg=#5c6370,italic";    # Gray - comments
+        "comment" = "fg=${colors.hex.fg0},italic";      # Muted - comments
       };
     };
 

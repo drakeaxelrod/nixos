@@ -1,6 +1,6 @@
 # fzf - Fuzzy Finder
 # Fast file and command searching with preview support
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, colors, ... }:
 
 {
   programs.fzf = {
@@ -48,12 +48,12 @@
       "--bind=alt-enter:print-query"
       "--bind=change:first"
 
-      # OneDarkPro colors
-      "--color=fg:-1,bg:-1,hl:#61afef"
-      "--color=fg+:#abb2bf,bg+:#3e4452,hl+:#61afef"
-      "--color=info:#e5c07b,prompt:#61afef,pointer:#e06c75"
-      "--color=marker:#98c379,spinner:#c678dd,header:#56b6c2"
-      "--color=border:#5c6370,gutter:-1"
+      # Colors from centralized palette
+      "--color=fg:-1,bg:-1,hl:${colors.hex.blue}"
+      "--color=fg+:${colors.hex.fg1},bg+:${colors.hex.bg2},hl+:${colors.hex.blue}"
+      "--color=info:${colors.hex.yellow},prompt:${colors.hex.blue},pointer:${colors.hex.red}"
+      "--color=marker:${colors.hex.green},spinner:${colors.hex.purple},header:${colors.hex.cyan}"
+      "--color=border:${colors.hex.fg0},gutter:-1"
     ];
 
     # File widget options (Ctrl+T)

@@ -1,5 +1,6 @@
 # delta - Better git diff with syntax highlighting
-{ config, pkgs, lib, ... }:
+# Note: Uses color names and diff-specific background colors that don't map to theme palette
+{ config, pkgs, lib, colors, ... }:
 
 {
   programs.delta = {

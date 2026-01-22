@@ -55,6 +55,7 @@ in
     modules.nixos.services.btrbk
     modules.nixos.services.ollama
     modules.nixos.services.sunshine
+    modules.nixos.services.flatpak
 
     # Virtualization
     modules.nixos.virtualization.libvirt
@@ -147,7 +148,21 @@ in
   environment.systemPackages = with pkgs; [
     usbutils  # lsusb and other USB utilities
     qbittorrent  # Torrent client
+    #stremio  # Media center application
+    yubikey-manager # YubiKey configuration tool
+    proton-pass
+    proton-authenticator
   ];
+
+  services.pcscd.enable = true; # Smart card daemon (for YubiKey)
+
+  # Flatpak with proper desktop integration
+  modules.services.flatpak = {
+    enable = true;
+    packages = [
+      "com.stremio.Stremio"
+    ];
+  };
 
   # ==========================================================================
   # GPU Mode (Dual-Boot)

@@ -1,5 +1,5 @@
 # KDE Plasma configuration using plasma-manager
-{ config, pkgs, inputs, lib, ... }:
+{ config, pkgs, inputs, lib, colors, ... }:
 
 {
   imports = [
@@ -7,7 +7,7 @@
     ./fonts.nix
     ./gtk.nix
     ./qt.nix
-    ./theme  # OneDark Pro theme
+    ./theme  # OneDark Pro the me
   ];
 
   # Examples:
@@ -173,74 +173,58 @@
         height = 44;
         floating = true;
         widgets = [
-          # Panel Colorizer - OneDark Pro theme colors
+          # Panel Colorizer - Theme colors from lib/colors.nix
+          # Note: Using settings.General for direct config since Panel Colorizer v2
+          # uses complex globalSettings JSON that overrides simple options
           {
-            plasmaPanelColorizer = {
-              general = {
-                enable = true;
+            name = "luisbocanegra.panel.colorizer";
+            config = {
+              General = {
+                isEnabled = true;
                 hideWidget = true;
-              };
-              # Panel background - semi-transparent OneDark Pro
-              panelBackground = {
-                originalBackground = {
-                  hide = true;
-                };
-                customBackground = {
-                  enable = true;
-                  colorSource = "custom";
-                  customColor = "#16191d";
-                  opacity = 0.85;
-                  radius = 12;
-                  outline = {
-                    colorSource = "custom";
-                    customColor = "#3e4451";
-                    opacity = 0.5;
-                    width = 1;
-                  };
-                  shadow = {
-                    color = "#000000";
-                    size = 8;
-                    horizontalOffset = 0;
-                    verticalOffset = 2;
-                  };
-                };
-              };
-              # Widget backgrounds - subtle selection color
-              widgetBackground = {
-                enable = false;  # Keep widgets flat
-              };
-              # Text and icons - OneDark Pro foreground
-              textAndIcons = {
-                enable = true;
-                colors = {
-                  source = "custom";
-                  customColor = "#abb2bf";
-                };
+
+                # Hide original panel background
+                hideRealPanelBg = true;
+
+                # Panel custom background
+                panelBgEnabled = true;
+                panelBgColorMode = 0;  # 0 = custom
+                panelBgColor = colors.hex.bg0;  # Main background
+                panelBgOpacity = 0.85;
+                panelBgRadius = 12;
+
+                # Panel outline
+                panelOutlineColorMode = 0;
+                panelOutlineColor = colors.hex.bg3;  # Border color
+                panelOutlineOpacity = 0.5;
+                panelOutlineWidth = 1;
+
+                # Panel shadow
+                panelShadowColor = "#000000";
+                panelShadowSize = 8;
+                panelShadowX = 0;
+                panelShadowY = 2;
+
+                # Text and icons
+                fgColorEnabled = true;
+                fgColorMode = 0;  # 0 = custom
+                fgSingleColor = colors.hex.fg1;  # Normal text
+
+                # Widget backgrounds disabled
+                widgetBgEnabled = false;
               };
             };
           }
           {
-            name = "org.kde.plasma.kickoff";
-            config = {
-              General = {
-                icon = "${inputs.self}/assets/icons/nix-snowflake-onedarkpro.svg";
-                favoritesDisplayMode = "grid";
-                applicationsDisplayMode = "list";
-                showButtonsFor = "powerAndSession";
-                #   [
-                #   "lock-screen"
-                #   "logout"
-                #   "save-session"
-                #   "switch-user"
-                #   "suspend"
-                #   "hibernate"
-                #   "reboot"
-                #   "shutdown"
-                # ];
-                showActionButtonCaptions = false;
-                popupHeight = 500;
-                popupWidth = 700;
-              };
+            kickoff = {
+              icon = "${inputs.self}/assets/icons/nix-snowflake-onedarkpro.svg";
+              sortAlphabetically = false;
+              compactDisplayStyle = false;
+              favoritesDisplayMode = "grid";
+              applicationsDisplayMode = "list";
+              showButtonsFor = "powerAndSession";
+              showActionButtonCaptions = false;
+              pin = false;
             };
           }
           {
@@ -258,22 +242,8 @@
               };
             };
           }
-          "org.kde.plasma.marginsseparator" # Spacer
-          # "org.kde.plasma.pager"
-          {
-            name = "org.kde.plasma.pager";
-            config = {
-              General = {
-                showWindowOutlines = true;
-                showApplicationIconsOnWindowOutlines = true;
-                showOnlyCurrentScreen = true;
-                navigationWrapsAround = false;
-                displayedText = "Number"; # Options: None, Number, Name
-
-                selectingCurrentVirtualDesktop = "doNothing"; # Options: doNothing, showDesktop
-              };
-            };
-          }
+          "org.kde.plasma.panelspacer" # Left spacer - pushes center content
+          # Plasmusic Toolbar - centered in panel
           {
             plasmusicToolbar = {
               panelIcon = {
@@ -298,6 +268,22 @@
               };
             };
           }
+          "org.kde.plasma.panelspacer" # Right spacer - keeps center content centered
+          # Pager - after center section
+          {
+            name = "org.kde.plasma.pager";
+            config = {
+              General = {
+                showWindowOutlines = true;
+                showApplicationIconsOnWindowOutlines = true;
+                showOnlyCurrentScreen = true;
+                navigationWrapsAround = false;
+                displayedText = "Number"; # Options: None, Number, Name
+
+                selectingCurrentVirtualDesktop = "doNothing"; # Options: doNothing, showDesktop
+              };
+            };
+          }
           {
             systemTray.items = {
               shown = [
@@ -316,7 +302,7 @@
               date = {
                 enable = true;
                 format = { custom = "ddd d MMM"; };  # e.g., "Fri 3 Jan"
-                position = "besideTime";
+                position = "adaptive"; # adaptive, besideTime, belowTime
               };
               time = {
                 format = "24h";
@@ -332,11 +318,11 @@
                 format = "city";
                 alwaysShow = false;
               };
-              # font = {
-              #   family = "Inter";
-              #   bold = true;
-              #   size = 12;
-              # };
+              font = {
+                family = "Inter";
+                # bold = true;
+                size = 12;
+              };
             };
           }
         ];
@@ -358,11 +344,20 @@
     kdePackages.filelight
     kdePackages.partitionmanager
 
+    # Good Linux Applications
+    vlc
+    spotify
+
+
     # Panel customization
     plasma-panel-colorizer
 
     # Cursor theme
     bibata-cursors
+
+    # Icon theme
+    papirus-icon-theme
+    papirus-folders
 
     # helpful
     unrar
