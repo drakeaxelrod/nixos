@@ -38,6 +38,7 @@ in
     modules.nixos.services.btrbk
     modules.nixos.services.keybase
     modules.nixos.services.ollama
+    modules.nixos.services.flatpak
 
     # Virtualization
     modules.nixos.virtualization.libvirt
