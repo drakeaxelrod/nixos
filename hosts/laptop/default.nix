@@ -31,6 +31,7 @@ in
     modules.nixos.hardware.bluetooth
 
     # Networking
+    modules.nixos.networking.base
     modules.nixos.networking.tailscale
 
     # Services
@@ -38,6 +39,7 @@ in
     modules.nixos.services.btrbk
     modules.nixos.services.keybase
     modules.nixos.services.ollama
+
     modules.nixos.services.flatpak
 
     # Virtualization

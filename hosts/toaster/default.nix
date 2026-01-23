@@ -48,6 +48,7 @@ in
     modules.nixos.hardware.bluetooth
 
     # Networking
+    modules.nixos.networking.base
     modules.nixos.networking.tailscale
 
     # Services
