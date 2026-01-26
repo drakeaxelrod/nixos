@@ -108,6 +108,11 @@ in
 
     # My own custom flake for keyboard learning
     inputs.yxa.packages.${pkgs.stdenv.hostPlatform.system}.visual-guide
+
+    # Typst
+    typst
+    tinymist
+    typstyle
   ];
 
   # Use XDG config directory for zsh (new default in 26.05)
