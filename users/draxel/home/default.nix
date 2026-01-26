@@ -37,7 +37,7 @@ in
     # modules.home.dev.nodejs
     # modules.home.dev.python
     # modules.home.dev.java
-    # modules.home.dev.c
+    modules.home.dev.c
     modules.home.dev.lua
     modules.home.dev.nix
     # Utilities

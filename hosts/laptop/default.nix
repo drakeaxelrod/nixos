@@ -42,12 +42,6 @@ in
 
     modules.nixos.services.flatpak
 
-    # Development
-    modules.nixos.development.nix
-    modules.nixos.development.git
-    modules.nixos.development.rust
-
-
     # Virtualization
     modules.nixos.virtualization.libvirt
     modules.nixos.virtualization.docker
