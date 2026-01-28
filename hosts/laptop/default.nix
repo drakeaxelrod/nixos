@@ -210,6 +210,22 @@ in
   # Security modules imported above - configure here
   modules.security.base.enable = true;
 
+  # YubiKey U2F authentication for login and sudo
+  # To enroll your YubiKey, run: pamu2fcfg -o pam://$(hostname) -i pam://$(hostname)
+  modules.security.yubikey = {
+    enable = true;
+    control = "sufficient";  # YubiKey OR password works
+    credentials = ''
+      # Paste output from pamu2fcfg here
+      # draxel:KeyHandle,PublicKey,CoseType,Options
+    '';
+    services = {
+      login = true;
+      sudo = true;
+      sddm = true;
+    };
+  };
+
   # ==========================================================================
   # Appearance
   # ==========================================================================
