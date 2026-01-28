@@ -121,6 +121,7 @@
         security = {
           base = "${inputs.self}/modules/nixos/security/base.nix";
           sops = "${inputs.self}/modules/nixos/security/sops.nix";
+          yubikey = "${inputs.self}/modules/nixos/security/yubikey.nix";
         };
         # Virtualization modules
         virtualization = {

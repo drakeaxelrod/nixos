@@ -50,6 +50,7 @@ in
     # Security
     modules.nixos.security.base
     modules.nixos.security.sops
+    modules.nixos.security.yubikey
 
     # Appearance
     modules.nixos.appearance.fonts
@@ -216,8 +217,7 @@ in
     enable = true;
     control = "sufficient";  # YubiKey OR password works
     credentials = ''
-      # Paste output from pamu2fcfg here
-      # draxel:KeyHandle,PublicKey,CoseType,Options
+      draxel:zDW6bkPPMO2HzvLK25Lo9Hh5ljHD4ZpxS0dQ9dG68m1TuEx2Ra+C+n1CCcMrYBIlV6flF9b8TPpmyUyFkR9dXw==,jwuLPNBiJkkkss+HxTn+DNaklliY4Uh+rCNxv6UOJ5zKydEpkI/Nr0JEEwW/49JK2eeKIMAChuylJGG+B36uvQ==,es256,+presence
     '';
     services = {
       login = true;
