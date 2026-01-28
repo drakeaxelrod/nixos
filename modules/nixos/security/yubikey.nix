@@ -1,13 +1,19 @@
-# YubiKey U2F/FIDO2 authentication for login and sudo
+# YubiKey U2F/FIDO2 authentication for login, sudo, and SSH
 #
 # Enables passwordless authentication using YubiKey hardware tokens.
-# Supports login, sudo, and display manager (SDDM) authentication.
+# Supports login, sudo, display manager (SDDM), and SSH authentication.
 #
-# Setup:
+# PAM Setup (login/sudo/sddm):
 #   1. Enable this module
 #   2. Run: pamu2fcfg -o pam://hostname -i pam://hostname
 #   3. Touch your YubiKey when it blinks
 #   4. Add the output to the credentials option
+#
+# SSH Setup (FIDO2 resident keys):
+#   1. Enable ssh option in this module
+#   2. Generate key: ssh-keygen -t ed25519-sk -O resident -O application=ssh:github
+#   3. Touch YubiKey when prompted
+#   4. Add ~/.ssh/id_ed25519_sk.pub to GitHub/GitLab
 #
 { config, lib, pkgs, ... }:
 
@@ -68,6 +74,16 @@ in
         description = "Enable U2F for Polkit authentication dialogs";
       };
     };
+
+    ssh = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = ''
+        Enable FIDO2 SSH key support.
+        After enabling, generate a resident key with:
+          ssh-keygen -t ed25519-sk -O resident -O application=ssh:github
+      '';
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -75,6 +91,8 @@ in
     environment.systemPackages = with pkgs; [
       yubikey-manager  # ykman CLI tool
       pam_u2f          # PAM module for U2F
+    ] ++ lib.optionals cfg.ssh [
+      libfido2         # FIDO2 library for SSH sk keys
     ];
 
     # Enable smart card daemon (required for some YubiKey features)
