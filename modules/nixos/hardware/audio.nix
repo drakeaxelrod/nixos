@@ -10,6 +10,12 @@
       default = false;
       description = "Enable JACK support for professional audio";
     };
+
+    enableNetworkDiscovery = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Enable mDNS/Avahi for WiFi speaker discovery (Spotify Connect, Sonos, Chromecast, etc.)";
+    };
   };
 
   config = lib.mkIf config.modules.hardware.audio.enable {
@@ -30,6 +36,12 @@
 
       pulse.enable = true;
       jack.enable = config.modules.hardware.audio.enableJack;
+    };
+
+    # mDNS/Avahi for WiFi speaker discovery
+    services.avahi = lib.mkIf config.modules.hardware.audio.enableNetworkDiscovery {
+      enable = true;
+      nssmdns4 = true;
     };
   };
 }
