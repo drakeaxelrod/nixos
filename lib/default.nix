@@ -105,6 +105,7 @@
           bridge = "${inputs.self}/modules/nixos/networking/bridge.nix";
           firewall = "${inputs.self}/modules/nixos/networking/firewall.nix";
           tailscale = "${inputs.self}/modules/nixos/networking/tailscale.nix";
+          wireguard = "${inputs.self}/modules/nixos/networking/wireguard.nix";
         };
         # Service modules
         services = {

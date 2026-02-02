@@ -7,5 +7,6 @@
     ./bridge.nix
     ./firewall.nix
     ./tailscale.nix
+    ./wireguard.nix
   ];
 }

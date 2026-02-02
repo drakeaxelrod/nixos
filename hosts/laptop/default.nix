@@ -33,6 +33,7 @@ in
     # Networking
     modules.nixos.networking.base
     modules.nixos.networking.tailscale
+    modules.nixos.networking.wireguard
 
     # Services
     modules.nixos.services.openssh
@@ -181,6 +182,7 @@ in
 
   # Import additional networking modules as needed:
   modules.networking.tailscale.enable = true;
+  modules.networking.wireguard.enable = true;
 
   # ==========================================================================
   # Services
