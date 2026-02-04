@@ -73,8 +73,9 @@ in
     ./vms
 
     # Security
+    modules.nixos.security.base
     modules.nixos.security.sops
-
+    modules.nixos.security.yubikey
     # Appearance
     modules.nixos.appearance.fonts
   ];
