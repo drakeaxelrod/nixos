@@ -34,7 +34,7 @@ in
     # Language-specific
     modules.home.dev.rust
     modules.home.dev.go
-    # modules.home.dev.nodejs
+    modules.home.dev.nodejs
     # modules.home.dev.python
     # modules.home.dev.java
     modules.home.dev.c
