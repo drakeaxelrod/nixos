@@ -29,6 +29,7 @@ in
     modules.nixos.hardware.nvidia
     modules.nixos.hardware.audio
     modules.nixos.hardware.bluetooth
+    modules.nixos.hardware.zmk
 
     # Networking
     modules.nixos.networking.base
@@ -126,6 +127,12 @@ in
 
   # QMK/Vial keyboard support (udev rules for flashing and configuring)
   hardware.keyboard.qmk.enable = true;
+
+  # ZMK Studio support (udev rules for USB serial access)
+  modules.hardware.zmk = {
+    enable = true;
+    users = [ "draxel" ];
+  };
 
   # System packages
   environment.systemPackages = with pkgs; [

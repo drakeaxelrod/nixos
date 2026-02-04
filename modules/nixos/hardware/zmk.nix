@@ -39,5 +39,42 @@ in
       enable = true;
       binfmt = true;  # Register binfmt so AppImages run directly
     };
+
+    # nix-ld for dynamic linking (fixes GPU/EGL in AppImages and other non-Nix binaries)
+    programs.nix-ld = {
+      enable = true;
+      libraries = with pkgs; [
+        # Graphics/EGL (required for Electron AppImages on Wayland)
+        mesa
+        libGL
+        libdrm
+        vulkan-loader
+        # Common dependencies for Electron apps
+        xorg.libX11
+        xorg.libXcursor
+        xorg.libXrandr
+        xorg.libXi
+        xorg.libxcb
+        libxkbcommon
+        wayland
+        # Audio
+        alsa-lib
+        pipewire
+        # System
+        stdenv.cc.cc.lib
+        zlib
+        glib
+        nss
+        nspr
+        dbus
+        atk
+        cups
+        gtk3
+        pango
+        cairo
+        expat
+        systemd
+      ];
+    };
   };
 }

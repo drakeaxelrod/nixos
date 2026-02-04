@@ -98,6 +98,7 @@
           intel = "${inputs.self}/modules/nixos/hardware/intel.nix";
           nvidia = "${inputs.self}/modules/nixos/hardware/nvidia.nix";
           storage = "${inputs.self}/modules/nixos/hardware/storage.nix";
+          zmk = "${inputs.self}/modules/nixos/hardware/zmk.nix";
         };
         # Networking modules
         networking = {

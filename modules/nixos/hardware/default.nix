@@ -8,5 +8,6 @@
     ./audio.nix
     ./bluetooth.nix
     ./storage.nix
+    ./zmk.nix
   ];
 }
