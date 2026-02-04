@@ -14,7 +14,7 @@ in
     isNormalUser = true;
     description = "draxel";
     shell = pkgs.zsh;
-    extraGroups = [ "wheel" "networkmanager" "input" "video" "audio" "docker"];
+    extraGroups = [ "wheel" "networkmanager" "input" "video" "audio" "docker" "uucp"];
     initialPassword = "changeme";
   };
 

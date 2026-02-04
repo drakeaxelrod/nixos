@@ -46,6 +46,7 @@ in
     modules.nixos.hardware.nvidia
     modules.nixos.hardware.audio
     modules.nixos.hardware.bluetooth
+    modules.nixos.hardware.zmk
 
     # Networking
     modules.nixos.networking.base
@@ -144,6 +145,12 @@ in
 
   # QMK/Vial keyboard support (udev rules for flashing and configuring)
   hardware.keyboard.qmk.enable = true;
+
+  # ZMK Studio support (udev rules for USB serial access)
+  modules.hardware.zmk = {
+    enable = true;
+    users = [ "draxel" ];
+  };
 
   # System packages
   environment.systemPackages = with pkgs; [
@@ -274,6 +281,8 @@ in
   # Sunshine - Game streaming server (use with Moonlight client)
   modules.services.sunshine.enable = true;
 
+
+
   # ==========================================================================
   # Impermanence (Ephemeral Root)
   # ==========================================================================
@@ -290,11 +299,30 @@ in
   # modules.impermanence.enable = true;
 
   # ==========================================================================
-  # SOPS Secrets
+  # Security
   # ==========================================================================
 
+  # Security modules imported above - configure here
+  modules.security.base.enable = true;
+
+  # YubiKey U2F authentication for login and sudo
+  # To enroll your YubiKey, run: pamu2fcfg -o pam://$(hostname) -i pam://$(hostname)
+  modules.security.yubikey = {
+    enable = true;
+    control = "sufficient";  # YubiKey OR password works
+    credentials = ''
+      draxel:zDW6bkPPMO2HzvLK25Lo9Hh5ljHD4ZpxS0dQ9dG68m1TuEx2Ra+C+n1CCcMrYBIlV6flF9b8TPpmyUyFkR9dXw==,jwuLPNBiJkkkss+HxTn+DNaklliY4Uh+rCNxv6UOJ5zKydEpkI/Nr0JEEwW/49JK2eeKIMAChuylJGG+B36uvQ==,es256,+presence
+    '';
+    services = {
+      login = true;
+      sudo = true;
+      sddm = true;
+    };
+    ssh = true;  # Enable FIDO2 SSH keys
+  };
+
   # Disabled by default - enable after setting up age keys
-  modules.security.sops.enable = true;
+  # modules.security.sops.enable = true;
 
   # ==========================================================================
   # Appearance
