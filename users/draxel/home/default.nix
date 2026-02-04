@@ -113,6 +113,9 @@ in
     typst
     tinymist
     typstyle
+
+    # for zmk studio
+    chromium
   ];
 
   # Use XDG config directory for zsh (new default in 26.05)
