@@ -118,6 +118,28 @@ in
     chromium
   ];
 
+  # SSH - auto-add keys to agent on login
+  programs.ssh = {
+    enable = true;
+    addKeysToAgent = "yes";
+  };
+
+  systemd.user.services.ssh-add-keys = {
+    Unit = {
+      Description = "Add SSH keys to agent";
+      After = [ "ssh-agent.service" ];
+    };
+    Service = {
+      Type = "oneshot";
+      ExecStart = toString (pkgs.writeShellScript "ssh-add-keys" ''
+        for key in "$HOME"/.ssh/id_*; do
+          [ -f "$key" ] && [[ "$key" != *.pub ]] && ${pkgs.openssh}/bin/ssh-add "$key" 2>/dev/null
+        done
+      '');
+    };
+    Install.WantedBy = [ "default.target" ];
+  };
+
   # Use XDG config directory for zsh (new default in 26.05)
   programs.zsh.dotDir = "${config.xdg.configHome}/zsh";
 
