@@ -51,8 +51,8 @@ in
 
     # Security
     modules.nixos.security.base
+    modules.nixos.security.fido
     modules.nixos.security.sops
-    modules.nixos.security.yubikey
 
     # Appearance
     modules.nixos.appearance.fonts
@@ -220,14 +220,17 @@ in
   # Security modules imported above - configure here
   modules.security.base.enable = true;
 
-  # YubiKey U2F authentication for login and sudo
-  # To enroll your YubiKey, run: pamu2fcfg -o pam://$(hostname) -i pam://$(hostname)
-  modules.security.yubikey = {
+  # FIDO2/U2F authentication for login and sudo (YubiKey + Titan Key)
+  # To enroll a new key: pamu2fcfg -o pam://$(hostname) -i pam://$(hostname)
+  modules.security.fido = {
     enable = true;
-    control = "sufficient";  # YubiKey OR password works
+    yubikey = true;  # YubiKey-specific packages (ykman, pcscd)
+    control = "sufficient";  # Any FIDO key OR password works
     credentials = ''
       draxel:zDW6bkPPMO2HzvLK25Lo9Hh5ljHD4ZpxS0dQ9dG68m1TuEx2Ra+C+n1CCcMrYBIlV6flF9b8TPpmyUyFkR9dXw==,jwuLPNBiJkkkss+HxTn+DNaklliY4Uh+rCNxv6UOJ5zKydEpkI/Nr0JEEwW/49JK2eeKIMAChuylJGG+B36uvQ==,es256,+presence
     '';
+    # TODO: Enroll Titan Key on laptop: pamu2fcfg -o pam://laptop -i pam://laptop
+    # Then add the credential line above
     services = {
       login = true;
       sudo = true;

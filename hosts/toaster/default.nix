@@ -74,8 +74,8 @@ in
 
     # Security
     modules.nixos.security.base
+    modules.nixos.security.fido
     modules.nixos.security.sops
-    modules.nixos.security.yubikey
     # Appearance
     modules.nixos.appearance.fonts
   ];
@@ -306,13 +306,15 @@ in
   # Security modules imported above - configure here
   modules.security.base.enable = true;
 
-  # YubiKey U2F authentication for login and sudo
-  # To enroll your YubiKey, run: pamu2fcfg -o pam://$(hostname) -i pam://$(hostname)
-  modules.security.yubikey = {
+  # FIDO2/U2F authentication for login and sudo (YubiKey + Titan Key)
+  # To enroll a new key: pamu2fcfg -o pam://$(hostname) -i pam://$(hostname)
+  modules.security.fido = {
     enable = true;
-    control = "sufficient";  # YubiKey OR password works
+    yubikey = true;  # YubiKey-specific packages (ykman, pcscd)
+    control = "sufficient";  # Any FIDO key OR password works
     credentials = ''
       draxel:zDW6bkPPMO2HzvLK25Lo9Hh5ljHD4ZpxS0dQ9dG68m1TuEx2Ra+C+n1CCcMrYBIlV6flF9b8TPpmyUyFkR9dXw==,jwuLPNBiJkkkss+HxTn+DNaklliY4Uh+rCNxv6UOJ5zKydEpkI/Nr0JEEwW/49JK2eeKIMAChuylJGG+B36uvQ==,es256,+presence
+      draxel:43n+V5cs7O1cIh1imxrrHn7qGOoi/TuSZI+g5eEQzbJTEQ9b7kuHwKowpTYVPMe1ZRaK50Fy7pM7WrC5KMAWGqtW4cggkpuGC/N/d9lOIVO+C5+DRGj2WSkNPwihPTU/lh3Lro5RCdDKzAPPpX2tRU2/8RB3aw55AK/2RXvv/dy7LG/PLSvgSi4GbrBbFcVMHcehf5wCFbHJOOd0XxmRXYxQ/E/1meVUQcYMmLSfg5Q85kSAtKo2mK5UIMddtQCqL/57WAC8JQrnRCPvaCxAbbqEBqT7oAYIxMWzxT5HOqZwbXbF+2sFEWFY8DiiF+IRNWlrvtQITPXUob1esg3ISqtZOju2TpxIoJhQ4hBrbvoPa9LhD20Nioog+Rj/uQqtLD9cFUk+s+ky+alduvIqhQ==,LqIbHz7byheadQlzkko1oDS9Krq/KMCX2vuXJpc0GaOAsWmm/6J20iy+zWPHeHR5lUcG0fJj0lMkd6TQt8hH2A==,es256,+presence
     '';
     services = {
       login = true;

@@ -118,12 +118,43 @@ in
     chromium
   ];
 
-  # SSH - auto-add keys to agent on login
+  # SSH client configuration
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
-    matchBlocks."*" = {
-      addKeysToAgent = "yes";
+
+    matchBlocks = {
+      # Global defaults
+      "*" = {
+        addKeysToAgent = "yes";
+      };
+
+      # Personal GitHub account (drakeaxelrod)
+      "personal.github.com" = {
+        hostname = "github.com";
+        user = "git";
+        identityFile = "~/.ssh/personal/drakeaxelrod/id_ed25519";
+      };
+
+      # Work/Qestit GitHub account (draxel-qestit)
+      "work.github.com" = {
+        hostname = "github.com";
+        user = "git";
+        identityFile = "~/.ssh/work/draxel_qestit/id_ed25519";
+      };
+
+      # Default GitHub (fallback)
+      "github.com" = {
+        hostname = "github.com";
+        user = "git";
+        identityFile = "~/.ssh/personal/drakeaxelrod/id_ed25519";
+      };
+
+      # Servers
+      "draxlab" = {
+        hostname = "draxlab.axolotl-ph.ts.net";
+        user = "draxel";
+      };
     };
   };
 

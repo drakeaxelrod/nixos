@@ -4,7 +4,7 @@
 {
   imports = [
     ./base.nix
+    ./fido.nix
     ./sops.nix
-    ./yubikey.nix
   ];
 }
