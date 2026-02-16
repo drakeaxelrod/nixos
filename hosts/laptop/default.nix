@@ -145,7 +145,7 @@ in
     proton-pass # Password manager CLI
     # cryptsetup: Newer versions (2.3.0+) have experimental BitLocker support via sudo cryptsetup open --type=bitlk <device> <name>
     cryptsetup # LUKS management tools
-    isoimagewriter # KDE USB/SD card flashing tool
+    kdePackages.isoimagewriter # KDE USB/SD card flashing tool
   ];
 
   hardware.flipperzero.enable = true;
