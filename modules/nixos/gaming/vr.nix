@@ -151,7 +151,7 @@ in
     wlxOverlay = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "Install wlx-overlay-s lightweight OpenXR overlay";
+      description = "Install WayVR overlay (formerly wlx-overlay-s)";
     };
 
     # SideQuest for Quest sideloading
@@ -250,8 +250,8 @@ in
     environment.systemPackages = with pkgs;
       # OpenComposite for OpenVR compatibility
       lib.optionals cfg.openComposite [ opencomposite ] ++
-      # wlx-overlay-s
-      lib.optionals cfg.wlxOverlay [ wlx-overlay-s ] ++
+      # WayVR overlay (formerly wlx-overlay-s)
+      lib.optionals cfg.wlxOverlay [ wayvr ] ++
       # Monado tools
       lib.optionals cfg.monado.enable [ monado ] ++
       # SideQuest for Quest sideloading

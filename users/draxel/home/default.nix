@@ -107,7 +107,7 @@ in
     # Note: looking-glass-client and scream are installed via VFIO modules
 
     # My own custom flake for keyboard learning
-    inputs.yxa.packages.${pkgs.stdenv.hostPlatform.system}.visual-guide
+    # inputs.yxa.packages.${pkgs.stdenv.hostPlatform.system}.visual-guide
 
     # Typst
     typst
@@ -192,8 +192,8 @@ in
       templates = "${config.home.homeDirectory}/Templates";
       publicShare = "${config.home.homeDirectory}/Public";
       extraConfig = {
-        XDG_PROJECTS_DIR = "${config.home.homeDirectory}/Projects";
-        XDG_WORK_DIR = "/work";
+        PROJECTS = "${config.home.homeDirectory}/Projects";
+        WORK = "/work";
       };
     };
 
@@ -201,9 +201,9 @@ in
     mimeApps = {
       enable = true;
       defaultApplications = {
-        "text/html" = "zen.desktop";
-        "x-scheme-handler/http" = "zen.desktop";
-        "x-scheme-handler/https" = "zen.desktop";
+        "text/html" = "zen-beta.desktop";
+        "x-scheme-handler/http" = "zen-beta.desktop";
+        "x-scheme-handler/https" = "zen-beta.desktop";
         "application/pdf" = "org.kde.okular.desktop";
         "image/png" = "org.kde.gwenview.desktop";
         "image/jpeg" = "org.kde.gwenview.desktop";

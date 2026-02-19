@@ -50,11 +50,11 @@ in
         libdrm
         vulkan-loader
         # Common dependencies for Electron apps
-        xorg.libX11
-        xorg.libXcursor
-        xorg.libXrandr
-        xorg.libXi
-        xorg.libxcb
+        libx11
+        libxcursor
+        libxrandr
+        libxi
+        libxcb
         libxkbcommon
         wayland
         # Audio

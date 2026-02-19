@@ -30,6 +30,12 @@
     # Enable Plasma desktop manager
     services.desktopManager.plasma6.enable = true;
 
+    # KDE Wallet PAM integration - auto-unlock wallet on login
+    security.pam.services = {
+      sddm.kwallet.enable = true;
+      login.kwallet.enable = true;
+    };
+
     # Wayland defaults & compatibility
     programs.xwayland.enable = true;
 
@@ -61,6 +67,9 @@
       kdePackages.kio-admin
       kdePackages.kio-extras
       kdePackages.ffmpegthumbs
+      kdePackages.kwallet           # Credential storage
+      kdePackages.kwalletmanager    # GUI to manage wallet
+      kdePackages.kwallet-pam       # PAM integration
 
       # AppIndicator/StatusNotifier support for GTK system tray icons
       libdbusmenu

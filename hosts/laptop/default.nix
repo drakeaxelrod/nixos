@@ -89,7 +89,10 @@ in
   # ==========================================================================
 
   # XDG-compliant environment variables for all users/sessions
-  modules.system.environment.enable = true;
+  modules.system.environment = {
+    enable = true;
+    defaultBrowser = "zen-beta";
+  };
 
   # ==========================================================================
   # Hardware

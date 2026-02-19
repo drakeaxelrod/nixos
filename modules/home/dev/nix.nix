@@ -5,6 +5,6 @@
   home.packages = with pkgs; [
     nixpkgs-fmt
     nil  # Nix LSP
-    nixfmt-rfc-style # Nix formatter with RFC style
+    nixfmt # Nix formatter (RFC style is now the default)
   ];
 }
