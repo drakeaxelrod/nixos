@@ -5,12 +5,9 @@
 let
   cfg = config.modules.services.ollama;
 
-  # Select package based on acceleration type
-  ollamaPackage = {
-    "cuda" = pkgs.ollama-cuda;
-    "rocm" = pkgs.ollama-rocm;
-    "cpu" = pkgs.ollama-cpu;
-  }.${cfg.acceleration} or pkgs.ollama;
+  # Use base ollama package - it auto-detects CUDA/ROCm at runtime
+  # This avoids expensive recompilation and uses binary cache
+  ollamaPackage = pkgs.ollama;
 in
 {
   options.modules.services.ollama = {

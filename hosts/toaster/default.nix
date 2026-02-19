@@ -93,7 +93,7 @@ in
 
   modules.system.boot = {
     loader = "limine";          # Modern, stylish bootloader
-    kernelPackage = "linuxPackages_latest";  # Use latest stable kernel
+    kernelPackage = "linuxPackages_6_12";  # LTS kernel - nvidia-open 580.x doesn't support 6.19 yet
     maxGenerations = 10;        # Keep boot menu clean
     timeout = 20;                # 5 second timeout
 
