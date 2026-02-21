@@ -21,6 +21,8 @@
 
 let
   cfg = config.modules.security.fido;
+  authfile = pkgs.writeText "u2f-mappings" cfg.credentials;
+  origin = "pam://${config.networking.hostName}";
 in
 {
   options.modules.security.fido = {
@@ -117,8 +119,10 @@ in
       enable = true;
       control = cfg.control;
       settings = {
-        authfile = pkgs.writeText "u2f-mappings" cfg.credentials;
+        inherit authfile;
         cue = true;  # Show "Please touch the device" prompt
+        inherit origin;
+        appid = origin;
       };
     };
 
@@ -126,8 +130,22 @@ in
     security.pam.services = {
       login.u2fAuth = cfg.services.login;
       sudo.u2fAuth = cfg.services.sudo;
-      sddm.u2fAuth = cfg.services.sddm;
       polkit-1.u2fAuth = cfg.services.polkit;
     };
+
+    # SDDM's NixOS module hardcodes its PAM config via `text`, bypassing the
+    # rules system where u2fAuth is normally wired. Override to add pam_u2f
+    # directly before the login substack so FIDO2 keys work at the login screen.
+    security.pam.services.sddm.text = lib.mkIf cfg.services.sddm (
+      let
+        u2fArgs = "authfile=${authfile} cue origin=${origin} appid=${origin}";
+      in lib.mkForce ''
+        auth      ${cfg.control}  ${pkgs.pam_u2f}/lib/security/pam_u2f.so ${u2fArgs}
+        auth      substack      login
+        account   include       login
+        password  substack      login
+        session   include       login
+      ''
+    );
   };
 }
