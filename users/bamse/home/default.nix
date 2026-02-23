@@ -1,6 +1,6 @@
 # Home Manager configuration for bamse
 # Penetration testing user
-{ config, pkgs, lib, inputs, ... }:
+{ config, pkgs, lib, inputs, modules, ... }:
 
 {
   imports = [
