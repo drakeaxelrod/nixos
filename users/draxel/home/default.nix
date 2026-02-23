@@ -166,8 +166,8 @@ in
     Service = {
       Type = "oneshot";
       ExecStart = toString (pkgs.writeShellScript "ssh-add-keys" ''
-        for key in "$HOME"/.ssh/id_*; do
-          [ -f "$key" ] && [[ "$key" != *.pub ]] && ${pkgs.openssh}/bin/ssh-add "$key" 2>/dev/null
+        find "$HOME"/.ssh -name 'id_*' ! -name '*.pub' -type f | while read -r key; do
+          ${pkgs.openssh}/bin/ssh-add "$key" 2>/dev/null
         done
       '');
     };

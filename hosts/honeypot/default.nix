@@ -30,7 +30,7 @@ in
 
     # Services
     modules.nixos.services.openssh
-    modules.nixos.services.printing
+    modules.nixos.services.printingke
 
     # Virtualization
     modules.nixos.virtualization.libvirt

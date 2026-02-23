@@ -31,6 +31,6 @@ in
   # Laptop configuration
   laptop = lib.mkHost {
     hostname = "laptop";
-    users = with users; [ draxel ];
+    users = with users; [ draxel bamse ];
   };
 }
