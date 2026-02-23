@@ -58,7 +58,7 @@ in
         package = pkgs.qemu_kvm;
         runAsRoot = true;
         swtpm.enable = cfg.tpm;
-        # OVMF images are now available by default (removed in NixOS 24.11+)
+        vhostUserPackages = [ pkgs.virtiofsd ];
       };
     };
 
