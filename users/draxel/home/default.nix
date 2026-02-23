@@ -89,6 +89,9 @@ in
     # Custom scripts
     nx
 
+    # Note Taking
+    obsidian
+
     # Development
     nix-direnv  # Nix-specific direnv integration
 

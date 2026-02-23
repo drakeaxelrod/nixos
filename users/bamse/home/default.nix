@@ -5,6 +5,7 @@
 {
   imports = [
     ./pentest.nix
+    modules.home.apps.zenBrowser
   ];
 
   home.username = "bamse";
@@ -17,6 +18,7 @@
 
   programs.zsh = {
     enable = true;
+    dotDir = "${config.xdg.configHome}/zsh";
     enableCompletion = true;
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
@@ -61,9 +63,9 @@
 
   programs.git = {
     enable = true;
-    userName = "Bamse";
-    userEmail = "bamse@honeypot.local";
     settings = {
+      user.name = "Bamse";
+      user.email = "bamse@honeypot.local";
       init.defaultBranch = "main";
       pull.rebase = true;
       push.autoSetupRemote = true;
@@ -75,8 +77,8 @@
   # ==========================================================================
 
   home.packages = with pkgs; [
-    # Browser
-    brave
+    # Security
+    burpsuite  # Burp Suite Professional - web security testing
 
     # Note-taking
     obsidian
@@ -87,10 +89,15 @@
     fd
     bat
     eza
+
+    # Typst
+    typst
+    tinymist
+    typstyle
   ];
 
   home.sessionVariables = {
-    BROWSER = "brave";
+    BROWSER = "zen-beta";
     EDITOR = "nvim";
     TERMINAL = "gnome-terminal";
 
