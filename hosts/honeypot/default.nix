@@ -53,6 +53,7 @@ in
 
   modules.system.boot = {
     loader = "systemd";
+    efiMountPoint = "/boot";  # Matches disko ESP mountpoint
     maxGenerations = 10;
     timeout = 3;
   };
