@@ -68,10 +68,11 @@ in
     # Add users to libvirtd group
     users.groups.libvirtd.members = cfg.users;
 
-    # Networking tools
+    # Networking tools and VM utilities
     environment.systemPackages = with pkgs; [
       bridge-utils  # brctl for bridge management
       iproute2      # ip link for interface management
+      virtiofsd     # Virtio filesystem daemon (shared folders)
     ];
 
     # Ensure vhost modules are loaded for network performance
