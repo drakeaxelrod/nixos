@@ -211,6 +211,9 @@ in
     enableGUI = true;   # Install GUI app
   };
 
+  # TeamViewer - Remote desktop (requires system daemon)
+  services.teamviewer.enable = true;
+
   # Ollama - Local LLM server (CUDA accelerated)
   modules.services.ollama = {
     enable = true;

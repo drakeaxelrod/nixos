@@ -123,7 +123,6 @@ in
     # for zmk studio
     chromium
 
-    teamviewer
   ];
 
   # SSH client configuration
