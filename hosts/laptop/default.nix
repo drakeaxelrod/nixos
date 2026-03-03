@@ -212,7 +212,20 @@ in
   };
 
   # TeamViewer - Remote desktop (requires system daemon)
+  # Fix: TeamViewer bundles its own Qt but NixOS wrapper's QT_PLUGIN_PATH causes
+  # ABI mismatch. Force TeamViewer's bundled xcb plugin via XWayland.
   services.teamviewer.enable = true;
+  services.teamviewer.package = pkgs.teamviewer.overrideAttrs (old: {
+    nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ pkgs.makeWrapper ];
+    postFixup = (old.postFixup or "") + ''
+      rm $out/bin/teamviewer
+      makeWrapper $out/share/teamviewer/tv_bin/script/teamviewer $out/bin/teamviewer \
+        --set QT_QPA_PLATFORM xcb \
+        --set QT_QPA_PLATFORM_PLUGIN_PATH "$out/share/teamviewer/tv_bin/RTlib/qt/plugins/platforms"
+      substituteInPlace $out/share/applications/com.teamviewer.TeamViewer.desktop \
+        --replace-fail "$out/share/teamviewer/tv_bin/script/teamviewer" "$out/bin/teamviewer"
+    '';
+  });
 
   # Ollama - Local LLM server (CUDA accelerated)
   modules.services.ollama = {
