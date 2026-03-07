@@ -47,6 +47,7 @@ in
     modules.nixos.hardware.audio
     modules.nixos.hardware.bluetooth
     modules.nixos.hardware.zmk
+    modules.nixos.hardware.wacom
 
     # Networking
     modules.nixos.networking.base
@@ -155,6 +156,9 @@ in
     enable = true;
     users = [ "draxel" ];
   };
+
+  # Wacom tablet support (driver + KDE integration)
+  modules.hardware.wacom.enable = true;
 
   # System packages
   environment.systemPackages = with pkgs; [
