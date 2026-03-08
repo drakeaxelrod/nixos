@@ -63,14 +63,18 @@ in
     # Steam
     programs.steam = {
       enable = true;
+      package = pkgs.steam.override {
+        # Clear Qt env vars that NixOS/KDE sets for Qt 6 — they conflict with
+        # SteamVR's bundled Qt 5 (wrong plugin paths, missing wayland plugin).
+        extraEnv = {
+          QT_PLUGIN_PATH = "";
+          QT_QPA_PLATFORM = "";
+        };
+      };
       remotePlay.openFirewall = cfg.remotePlay;
       dedicatedServer.openFirewall = cfg.dedicatedServer;
       localNetworkGameTransfers.openFirewall = cfg.localTransfer;
       gamescopeSession.enable = cfg.gamescope;
-      extraPackages = with pkgs; [
-        # Qt5 Wayland plugin - needed for SteamVR vrmonitor on Wayland
-        libsForQt5.qt5.qtwayland
-      ];
     };
 
     # Gamescope

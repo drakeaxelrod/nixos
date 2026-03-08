@@ -22,6 +22,16 @@ let
     if cfg.wivrn.cudaSupport
     then pkgs.wivrn.override { cudaSupport = true; }
     else pkgs.wivrn;
+
+  # ALVR with system ADB - ALVR expects platform-tools/adb relative to its
+  # installation directory, which is read-only on NixOS. This override adds
+  # a symlink to the system android-tools adb.
+  alvrWithAdb = pkgs.alvr.overrideAttrs (old: {
+    postInstall = (old.postInstall or "") + ''
+      mkdir -p $out/platform-tools
+      ln -s ${pkgs.android-tools}/bin/adb $out/platform-tools/adb
+    '';
+  });
 in
 {
   imports = [ ./common.nix ];
@@ -223,6 +233,7 @@ in
     # ALVR - Wireless streaming to Quest/Pico
     programs.alvr = lib.mkIf cfg.alvr.enable {
       enable = true;
+      package = alvrWithAdb;
       openFirewall = cfg.alvr.openFirewall;
     };
 

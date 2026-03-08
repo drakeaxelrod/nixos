@@ -218,5 +218,20 @@ in
     };
 
     configFile."mimeapps.list".force = true;
+
+    # OpenVR runtime: point to XRizer (OpenVR→OpenXR translation layer)
+    # This makes OpenVR games use WiVRn via XRizer instead of launching SteamVR.
+    # Managed by Home Manager to prevent SteamVR from overwriting it.
+    configFile."openvr/openvrpaths.vrpath" = {
+      text = builtins.toJSON {
+        config = [ "${config.xdg.dataHome}/Steam/config" ];
+        external_drivers = null;
+        jsonid = "vrpathreg";
+        log = [ "${config.xdg.dataHome}/Steam/logs" ];
+        runtime = [ "${pkgs.opencomposite}/lib/opencomposite" ];
+        version = 1;
+      };
+      force = true;
+    };
   };
 }

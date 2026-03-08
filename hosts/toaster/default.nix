@@ -253,8 +253,9 @@ in
 
   modules.gaming.vr = {
     enable = true;
-    runtime = "steamvr";
-    alvr.enable = true;
+    runtime = "wivrn";
+    wivrn.cudaSupport = true;  # NVENC hardware encoding for NVIDIA GPU
+    alvr.enable = true;        # Keep ALVR available as alternative
     wlxOverlay = true;
     steamvr.setcapWrapper = true;
   };

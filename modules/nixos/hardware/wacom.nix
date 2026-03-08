@@ -21,7 +21,7 @@ in
     environment.systemPackages = with pkgs; [
       libwacom        # Tablet device database and detection
       xf86_input_wacom  # CLI tools: xsetwacom, etc.
-      wacomtablet     # KDE Plasma tablet settings (kcm_wacomtablet)
+      kdePackages.wacomtablet  # KDE Plasma tablet settings (kcm_wacomtablet)
     ];
   };
 }
