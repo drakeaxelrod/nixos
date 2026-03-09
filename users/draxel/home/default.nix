@@ -56,6 +56,9 @@ in
     # modules.home.apps.stremio  # Disabled: requires orphaned qtwebengine-5.15.19 (see nixpkgs#437992)
                                   # Use web version instead: https://web.stremio.com
     modules.home.apps.zenBrowser
+
+    # Touchpad gestures
+    # ./touchegg.nix
   ];
 
   home.username = "draxel";
@@ -123,62 +126,6 @@ in
     # pcb
     #(kicad.override { pname = "kicad-small"; with3d = false; })
   ];
-
-  # Touchegg gesture config (daemon enabled at system level via services.touchegg)
-  xdg.configFile."touchegg/touchegg.conf".text = ''
-    <touchégg>
-      <settings>
-        <property name="animation_delay">150</property>
-        <property name="action_execute_threshold">20</property>
-        <property name="color">auto</property>
-        <property name="borderColor">auto</property>
-      </settings>
-      <application name="All">
-        <gesture type="SWIPE" fingers="3" direction="UP">
-          <action type="RUN_COMMAND">
-            <repeat>false</repeat>
-            <command>qdbus org.kde.kglobalaccel /component/kwin invokeShortcut "Overview"</command>
-            <on>begin</on>
-          </action>
-        </gesture>
-        <gesture type="SWIPE" fingers="3" direction="DOWN">
-          <action type="RUN_COMMAND">
-            <repeat>false</repeat>
-            <command>qdbus org.kde.kglobalaccel /component/kwin invokeShortcut "Overview"</command>
-            <on>begin</on>
-          </action>
-        </gesture>
-        <gesture type="SWIPE" fingers="4" direction="LEFT">
-          <action type="RUN_COMMAND">
-            <repeat>false</repeat>
-            <command>qdbus org.kde.kglobalaccel /component/kwin invokeShortcut "Switch to Next Desktop"</command>
-            <on>begin</on>
-          </action>
-        </gesture>
-        <gesture type="SWIPE" fingers="4" direction="RIGHT">
-          <action type="RUN_COMMAND">
-            <repeat>false</repeat>
-            <command>qdbus org.kde.kglobalaccel /component/kwin invokeShortcut "Switch to Previous Desktop"</command>
-            <on>begin</on>
-          </action>
-        </gesture>
-        <gesture type="PINCH" fingers="4" direction="OUT">
-          <action type="RUN_COMMAND">
-            <repeat>false</repeat>
-            <command>qdbus org.kde.kglobalaccel /component/kwin invokeShortcut "ShowDesktopGrid"</command>
-            <on>begin</on>
-          </action>
-        </gesture>
-        <gesture type="PINCH" fingers="4" direction="IN">
-          <action type="RUN_COMMAND">
-            <repeat>false</repeat>
-            <command>qdbus org.kde.kglobalaccel /component/kwin invokeShortcut "Show Desktop"</command>
-            <on>begin</on>
-          </action>
-        </gesture>
-      </application>
-    </touchégg>
-  '';
 
   # SSH client configuration
   programs.ssh = {
