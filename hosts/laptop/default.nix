@@ -202,6 +202,7 @@ in
   modules.services.openssh.enable = true;
   programs.ssh.startAgent = true;
   modules.services.btrbk.enable = true;
+  services.touchegg.enable = true; # Multi-touch trackpad gestures
 
   # Keybase - Secure messaging and file sharing
   modules.services.keybase = {

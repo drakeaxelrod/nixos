@@ -171,6 +171,7 @@ in
   ];
 
   services.pcscd.enable = true; # Smart card daemon (for YubiKey)
+  services.touchegg.enable = true; # Multi-touch trackpad gestures
 
   # Flatpak with proper desktop integration
   modules.services.flatpak = {
