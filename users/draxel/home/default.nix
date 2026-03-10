@@ -123,8 +123,7 @@ in
     # for zmk studio
     chromium
 
-    # pcb
-    #(kicad.override { pname = "kicad-small"; with3d = false; })
+    teamviewer
   ];
 
   # SSH client configuration
