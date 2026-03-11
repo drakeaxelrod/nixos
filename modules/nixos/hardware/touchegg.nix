@@ -156,11 +156,15 @@ in
     };
 
     # Touche needs XDG_CONFIG_DIRS override to detect touchegg on NixOS
-    # Also needs /nix/store access since /etc/xdg symlinks into the store
+    # NixOS has two /etc/xdg dirs: /etc/xdg (minimal, from nix store) and
+    # /run/current-system/sw/etc/xdg (full, from system profile with pathsToLink).
+    # Touchegg config lives in the latter, so point Touche there.
+    # Also needs /nix/store access since /etc/xdg symlinks into the store.
     system.activationScripts.toucheFlatpakOverride = lib.mkIf cfg.enableGUI ''
       ${pkgs.flatpak}/bin/flatpak override --user \
-        --env=XDG_CONFIG_DIRS=/var/run/host/etc/xdg \
+        --env=XDG_CONFIG_DIRS=/var/run/host/run/current-system/sw/etc/xdg:/var/run/host/etc/xdg \
         --filesystem=/nix/store:ro \
+        --filesystem=/run/current-system/sw/etc/xdg:ro \
         com.github.joseexposito.touche 2>/dev/null || true
     '';
   };
