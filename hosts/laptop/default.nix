@@ -138,12 +138,12 @@ in
     users = [ "draxel" ];
   };
 
-  # Touchegg - multi-touch trackpad gestures (Plasma preset)
-  modules.hardware.touchegg = {
-    enable = true;
-    plasma = true;
-    enableGUI = true;  # Touche flatpak for visual gesture editing
-  };
+  # Touchegg - multi-touch trackpad gestures (disabled: not working well)
+  # modules.hardware.touchegg = {
+  #   enable = true;
+  #   plasma = true;
+  #   enableGUI = true;
+  # };
 
   # System packages
   environment.systemPackages = with pkgs; [

@@ -139,7 +139,10 @@ in
       "personal.github.com" = {
         hostname = "github.com";
         user = "git";
-        identityFile = "~/.ssh/id_ed25519";
+        identityFile = [
+          "~/.ssh/id_ed25519_sk"
+          "~/.ssh/id_ed25519"
+        ];
       };
 
       # Work/Qestit GitHub account (draxel-qestit)
