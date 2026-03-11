@@ -58,7 +58,7 @@ in
     modules.home.apps.zenBrowser
 
     # Touchpad gestures
-    # ./touchegg.nix
+    ./touchegg.nix
   ];
 
   home.username = "draxel";

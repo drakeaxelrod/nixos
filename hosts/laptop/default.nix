@@ -201,7 +201,7 @@ in
 
   modules.services.openssh.enable = true;
   modules.services.btrbk.enable = true;
-  # services.touchegg.enable = true; # Multi-touch trackpad gestures
+  services.touchegg.enable = true; # Multi-touch trackpad gestures
 
   # Keybase - Secure messaging and file sharing
   modules.services.keybase = {
@@ -225,6 +225,9 @@ in
         --replace-fail "$out/share/teamviewer/tv_bin/script/teamviewer" "$out/bin/teamviewer"
     '';
   });
+
+  # Flatpak with proper desktop integration
+  modules.services.flatpak.enable = true;
 
   # Ollama - Local LLM server (CUDA accelerated)
   modules.services.ollama = {
