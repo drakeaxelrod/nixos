@@ -30,7 +30,7 @@ in
     modules.nixos.hardware.audio
     modules.nixos.hardware.bluetooth
     modules.nixos.hardware.zmk
-    modules.nixos.hardware.touchegg
+    # modules.nixos.hardware.touchegg
 
     # Networking
     modules.nixos.networking.base
