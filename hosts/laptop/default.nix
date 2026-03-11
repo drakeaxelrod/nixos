@@ -30,6 +30,7 @@ in
     modules.nixos.hardware.audio
     modules.nixos.hardware.bluetooth
     modules.nixos.hardware.zmk
+    modules.nixos.hardware.touchegg
 
     # Networking
     modules.nixos.networking.base
@@ -137,6 +138,13 @@ in
     users = [ "draxel" ];
   };
 
+  # Touchegg - multi-touch trackpad gestures (Plasma preset)
+  modules.hardware.touchegg = {
+    enable = true;
+    plasma = true;
+    enableGUI = true;  # Touche flatpak for visual gesture editing
+  };
+
   # System packages
   environment.systemPackages = with pkgs; [
     usbutils  # lsusb and other USB utilissties
@@ -201,7 +209,6 @@ in
 
   modules.services.openssh.enable = true;
   modules.services.btrbk.enable = true;
-  services.touchegg.enable = true; # Multi-touch trackpad gestures
 
   # Keybase - Secure messaging and file sharing
   modules.services.keybase = {

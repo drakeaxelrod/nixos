@@ -57,8 +57,7 @@ in
                                   # Use web version instead: https://web.stremio.com
     modules.home.apps.zenBrowser
 
-    # Touchpad gestures
-    ./touchegg.nix
+    # Touchpad gestures managed by modules.hardware.touchegg (NixOS level)
   ];
 
   home.username = "draxel";

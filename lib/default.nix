@@ -98,6 +98,7 @@
           intel = "${inputs.self}/modules/nixos/hardware/intel.nix";
           nvidia = "${inputs.self}/modules/nixos/hardware/nvidia.nix";
           storage = "${inputs.self}/modules/nixos/hardware/storage.nix";
+          touchegg = "${inputs.self}/modules/nixos/hardware/touchegg.nix";
           zmk = "${inputs.self}/modules/nixos/hardware/zmk.nix";
           wacom = "${inputs.self}/modules/nixos/hardware/wacom.nix";
         };
