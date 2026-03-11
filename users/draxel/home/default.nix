@@ -1,5 +1,5 @@
 # draxel's Home Manager configuration
-{ config, pkgs, inputs, modules, ... }:
+{ config, pkgs, lib, inputs, modules, ... }:
 
 let
   # NixOS flake operations script - shared with devshell
@@ -163,6 +163,17 @@ in
       };
     };
   };
+
+  # Fix SSH config permissions: home-manager creates a symlink to /nix/store
+  # which SSH rejects as "bad owner or permissions". Copy it instead.
+  home.activation.fixSshPermissions = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    if [ -L "$HOME/.ssh/config" ]; then
+      target=$(readlink "$HOME/.ssh/config")
+      rm "$HOME/.ssh/config"
+      cp "$target" "$HOME/.ssh/config"
+      chmod 600 "$HOME/.ssh/config"
+    fi
+  '';
 
   systemd.user.services.ssh-add-keys = {
     Unit = {

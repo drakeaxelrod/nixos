@@ -142,8 +142,12 @@ in
       { type = "SWIPE"; fingers = 4; direction = "DOWN";  action = "RUN_COMMAND"; command = ''qdbus org.kde.kglobalaccel /component/kwin invokeShortcut "Overview"''; on = "begin"; }
     ];
 
-    # Write system-level config (touchegg reads from /etc/xdg if no user config exists)
-    environment.etc."xdg/touchegg/touchegg.conf".text = configXml;
+    # Write system-level config to /etc/xdg/ via system profile
+    # (environment.etc doesn't work for /etc/xdg/ on NixOS - it's assembled from profiles)
+    environment.systemPackages = [
+      (pkgs.writeTextDir "etc/xdg/touchegg/touchegg.conf" configXml)
+    ];
+    environment.pathsToLink = [ "/etc/xdg/touchegg" ];
 
     # Touche GUI (Flatpak) for visual gesture editing
     modules.services.flatpak = lib.mkIf cfg.enableGUI {
