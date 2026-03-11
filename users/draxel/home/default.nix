@@ -139,21 +139,21 @@ in
       "personal.github.com" = {
         hostname = "github.com";
         user = "git";
-        identityFile = "~/.ssh/personal/drakeaxelrod/id_ed25519";
+        identityFile = "~/.ssh/id_ed25519";
       };
 
       # Work/Qestit GitHub account (draxel-qestit)
       "work.github.com" = {
         hostname = "github.com";
         user = "git";
-        identityFile = "~/.ssh/work/draxel_qestit/id_ed25519";
+        identityFile = "~/.ssh/id_ed25519-work";
       };
 
       # Default GitHub (fallback)
       "github.com" = {
         hostname = "github.com";
         user = "git";
-        identityFile = "~/.ssh/personal/drakeaxelrod/id_ed25519";
+        identityFile = "~/.ssh/id_ed25519";
       };
 
       # Servers
