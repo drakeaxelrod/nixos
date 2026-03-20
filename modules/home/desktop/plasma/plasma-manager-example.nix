@@ -19,7 +19,7 @@
 
     hotkeys.commands."launch-konsole" = {
       name = "Launch Konsole";
-      key = "Meta+Alt+K";
+      key = "Meta+Alt+Return";
       command = "konsole";
     };
 

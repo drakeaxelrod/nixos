@@ -61,14 +61,14 @@
         "Window Close" = "Meta+Q";
         # "Window Maximize" = "Meta+Up";
         # "Window Minimize" = "Meta+Down";
-        # "Switch to Desktop 1" = "Meta+1";
-        # "Switch to Desktop 2" = "Meta+2";
-        # "Switch to Desktop 3" = "Meta+3";
-        # "Switch to Desktop 4" = "Meta+4";
-        # "Window to Desktop 1" = "Meta+Shift+1";
-        # "Window to Desktop 2" = "Meta+Shift+2";
-        # "Window to Desktop 3" = "Meta+Shift+3";
-        # "Window to Desktop 4" = "Meta+Shift+4";
+        "Switch to Desktop 1" = "Meta+1";
+        "Switch to Desktop 2" = "Meta+2";
+        "Switch to Desktop 3" = "Meta+3";
+        "Switch to Desktop 4" = "Meta+4";
+        "Window to Desktop 1" = "Meta+Shift+1";
+        "Window to Desktop 2" = "Meta+Shift+2";
+        "Window to Desktop 3" = "Meta+Shift+3";
+        "Window to Desktop 4" = "Meta+Shift+4";
       };
 
       # "org.kde.konsole.desktop" = {
@@ -294,6 +294,7 @@
               ];
               hidden = [
                 "org.kde.plasma.clipboard"
+                "org.kde.plasma.blueman"
               ];
             };
           }
