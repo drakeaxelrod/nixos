@@ -157,6 +157,7 @@ in
     # cryptsetup: Newer versions (2.3.0+) have experimental BitLocker support via sudo cryptsetup open --type=bitlk <device> <name>
     cryptsetup # LUKS management tools
     kdePackages.isoimagewriter # KDE USB/SD card flashing tool
+    android-studio
   ];
 
   hardware.flipperzero.enable = true;
