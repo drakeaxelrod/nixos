@@ -181,9 +181,11 @@ in
     Unit = {
       Description = "Add SSH keys to agent";
       After = [ "ssh-agent.service" ];
+      Requires = [ "ssh-agent.service" ];
     };
     Service = {
       Type = "oneshot";
+      Environment = "SSH_AUTH_SOCK=%t/ssh-agent";
       ExecStart = toString (pkgs.writeShellScript "ssh-add-keys" ''
         find "$HOME"/.ssh -name 'id_*' ! -name '*.pub' -type f | while read -r key; do
           ${pkgs.openssh}/bin/ssh-add "$key" 2>/dev/null
