@@ -10,6 +10,9 @@
       package = pkgs.adw-gtk3;
     };
 
+    # Explicitly set gtk4 theme to null (new default in 26.05)
+    gtk4.theme = null;
+
     iconTheme = {
       name = "Papirus-Dark";
       package = pkgs.papirus-icon-theme;

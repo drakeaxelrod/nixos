@@ -238,5 +238,13 @@ in
 
     # Enable XWayland if using Wayland
     programs.xwayland.enable = lib.mkIf cfg.wayland true;
+
+    # Speed up first-boot login:
+    # - Don't block display manager on network
+    # - Don't block display manager on Plymouth quit
+    systemd.services.display-manager = {
+      after = lib.mkForce [ "systemd-user-sessions.service" "getty@tty1.service" ];
+      wants = lib.mkForce [];
+    };
   };
 }

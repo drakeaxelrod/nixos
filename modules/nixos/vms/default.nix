@@ -879,6 +879,18 @@ in
       "transparent_hugepage=never"
     ];
 
+    # Mount 1GB hugetlbfs for VM hugepages
+    fileSystems."/dev/hugepages1G" = lib.mkIf anyHugepages {
+      device = "hugetlbfs";
+      fsType = "hugetlbfs";
+      options = [ "pagesize=1G" ];
+    };
+
+    # Tell libvirt where to find the 1GB hugepage mount
+    virtualisation.libvirtd.qemu.verbatimConfig = lib.mkIf anyHugepages ''
+      hugetlbfs_mount = ["/dev/hugepages1G", "/dev/hugepages"]
+    '';
+
     # =========================================================================
     # Libvirt XML Generation
     # =========================================================================

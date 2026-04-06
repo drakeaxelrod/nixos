@@ -219,9 +219,13 @@ in
     services.wivrn = lib.mkIf cfg.wivrn.enable {
       enable = true;
       openFirewall = cfg.wivrn.openFirewall;
-      defaultRuntime = cfg.runtime == "wivrn";
       autoStart = cfg.wivrn.autoStart;
       package = wivrnPkg;
+    };
+
+    # Register WiVRn as the default OpenXR runtime
+    environment.etc."xdg/openxr/1/active_runtime.json" = lib.mkIf (cfg.wivrn.enable && cfg.runtime == "wivrn") {
+      source = "${wivrnPkg}/share/openxr/1/openxr_wivrn.json";
     };
 
     # Envision VR orchestrator

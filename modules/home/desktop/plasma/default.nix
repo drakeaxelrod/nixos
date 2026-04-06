@@ -112,6 +112,19 @@
         "Effect-overview" = {
           "BorderActivate" = 9;  # Top-left corner
         };
+        # Touchpad gestures (KDE Plasma defaults)
+        "Touchpad" = {
+          "SwipeUpAction" = 1;      # 3-finger swipe up: Overview
+          "SwipeDownAction" = 4;    # 3-finger swipe down: Show Desktop
+          "SwipeLeftAction" = 2;    # 3-finger swipe left: Next Desktop
+          "SwipeRightAction" = 3;   # 3-finger swipe right: Previous Desktop
+          "FourFingerSwipeUpAction" = 4;   # 4-finger swipe up: Show Desktop
+          "FourFingerSwipeDownAction" = 1; # 4-finger swipe down: Overview
+          "FourFingerSwipeLeftAction" = 2;  # 4-finger swipe left: Next Desktop
+          "FourFingerSwipeRightAction" = 3; # 4-finger swipe right: Previous Desktop
+          "PinchZoomOutAction" = 1; # Pinch out: Overview
+          "PinchZoomInAction" = 4;  # Pinch in: Show Desktop
+        };
         # Window decoration - Breeze with OneDark Pro style
         "org.kde.kdecoration2" = {
           "BorderSize" = "None";
@@ -170,7 +183,7 @@
     panels = [
       {
         location = "bottom";
-        height = 44;
+        height = 36;
         floating = true;
         widgets = [
           # Panel Colorizer - Theme colors from lib/colors.nix
@@ -330,6 +343,21 @@
       }
     ];
   };
+
+  # Dolphin context menu: Open in VS Code
+  xdg.dataFile."kio/servicemenus/vscode-open.desktop".text = ''
+    [Desktop Entry]
+    Type=Service
+    ServiceTypes=KonqPopupMenu/Plugin
+    MimeType=inode/directory;application/x-desktop;
+    Actions=openInVSCode;
+    X-KDE-ServiceTypes=KonqPopupMenu/Plugin
+
+    [Desktop Action openInVSCode]
+    Name=Open in VS Code
+    Icon=vscode
+    Exec=code %f
+  '';
 
   # Additional KDE packages
   home.packages = with pkgs; [

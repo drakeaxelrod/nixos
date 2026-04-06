@@ -5,6 +5,6 @@
   home.packages = with pkgs; [
     curl
     jq
-    yq
+    # yq provided by shell/jq.nix (yq-go)
   ];
 }

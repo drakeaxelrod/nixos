@@ -94,9 +94,9 @@ in
 
   modules.system.boot = {
     loader = "limine";          # Modern, stylish bootloader
-    kernelPackage = "linuxPackages_6_12";  # LTS kernel - nvidia-open 580.x doesn't support 6.19 yet
+    kernelPackage = "linuxPackages_6_18";  # nvidia-open 580.x doesn't build on 6.19 yet
     maxGenerations = 10;        # Keep boot menu clean
-    timeout = 20;                # 5 second timeout
+    timeout = 20;                # 20 second timeout
 
     # Plymouth for graphical LUKS password prompt
     plymouth = {
@@ -164,14 +164,14 @@ in
   environment.systemPackages = with pkgs; [
     usbutils  # lsusb and other USB utilities
     qbittorrent  # Torrent client
-    #stremio  # Media center application
     yubikey-manager # YubiKey configuration tool
     proton-pass
     proton-authenticator
+    kicad  # PCB/schematic design
   ];
 
   services.pcscd.enable = true; # Smart card daemon (for YubiKey)
-  # services.touchegg.enable = true; # Multi-touch trackpad gestures
+  services.earlyoom.enable = true; # OOM killer to prevent system freezes under heavy load
 
   # Flatpak with proper desktop integration
   modules.services.flatpak = {
@@ -279,6 +279,7 @@ in
   # ==========================================================================
 
   modules.services.openssh.enable = true;
+  programs.ssh.startAgent = true;  # SSH agent for FIDO2 keys
   modules.services.btrbk.enable = true;
 
   # Ollama - Local LLM server (CUDA accelerated)

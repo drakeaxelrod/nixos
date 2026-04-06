@@ -69,10 +69,10 @@
       readonly = true;
       type = "pflash";
       secure = true;
-      path = "/run/libvirt/nix-ovmf/OVMF_CODE.secboot.fd";
+      path = "/run/libvirt/nix-ovmf/edk2-x86_64-secure-code.fd";
     };
     nvram = {
-      template = "/run/libvirt/nix-ovmf/OVMF_VARS.secboot.fd";
+      template = "/run/libvirt/nix-ovmf/edk2-i386-vars.fd";
       path = "/var/lib/libvirt/qemu/nvram/win11_VARS.fd";
     };
   };

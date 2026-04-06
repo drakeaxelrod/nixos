@@ -173,6 +173,9 @@
             "qtwebengine-5.15.19"
           ];
         };
+        nixpkgs.overlays = [
+          inputs.claude-code.overlays.default  # Up-to-date claude-code package
+        ];
       }
 
       # Set hostname and stateVersion from mkHost arguments

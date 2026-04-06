@@ -414,7 +414,7 @@
       # Formatters
       nixpkgs-fmt
       stylua
-      nodePackages.prettier
+      prettierd
       black
 
       # Tools

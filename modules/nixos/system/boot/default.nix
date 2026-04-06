@@ -71,11 +71,8 @@ in
 
     boot.kernelPackages = pkgs.${cfg.kernelPackage};
 
-    # Base kernel parameters (IOMMU always enabled for VFIO capability)
-    boot.kernelParams = [
-      "amd_iommu=on"
-      "iommu=pt"
-    ];
+    # IOMMU passthrough mode (for VFIO capability)
+    boot.kernelParams = [ "iommu=pt" ];
 
     # Blacklist nouveau (always, regardless of VFIO mode)
     boot.blacklistedKernelModules = [ "nouveau" ];

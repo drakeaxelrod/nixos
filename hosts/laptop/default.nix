@@ -71,11 +71,11 @@ in
   # ==========================================================================
 
   modules.system.boot = {
-    loader = "limine";          # Use systemd-boot for now (Limine has boot issues)
+    loader = "limine";          # Modern bootloader with specializations support
     efiMountPoint = "/boot/efi";     # ESP mount point
     kernelPackage = "linuxPackages_latest";  # Use latest stable kernel
     maxGenerations = 10;        # Keep boot menu clean
-    timeout = 20;                # 5 second timeout
+    timeout = 20;                # 20 second timeout
 
     # Plymouth for graphical LUKS password prompt
     plymouth = {
@@ -162,6 +162,13 @@ in
 
   hardware.flipperzero.enable = true;
 
+  # Memory management
+  zramSwap = {
+    enable = true;
+    memoryPercent = 50;  # Compressed swap using 50% of RAM
+  };
+  services.earlyoom.enable = true; # OOM killer to prevent freezes
+
   # ==========================================================================
   # Virtualization
   # ==========================================================================
@@ -209,7 +216,10 @@ in
   # ==========================================================================
 
   modules.services.openssh.enable = true;
+  programs.ssh.startAgent = true;  # SSH agent for FIDO2 keys
+  services.pcscd.enable = true;  # Smart card daemon (for YubiKey FIDO2/SSH)
   modules.services.btrbk.enable = true;
+  services.touchegg.enable = true; # Multi-touch trackpad gestures
 
   # Keybase - Secure messaging and file sharing
   modules.services.keybase = {

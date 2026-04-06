@@ -30,20 +30,19 @@ in
     # Development tools
     modules.home.dev.git
     modules.home.shell.delta  # Git diff highlighter
-    # modules.home.dev.lazygit
     # Language-specific
     modules.home.dev.rust
     modules.home.dev.go
     modules.home.dev.nodejs
-    # modules.home.dev.python
-    # modules.home.dev.java
+    modules.home.dev.python
+    modules.home.dev.java
     modules.home.dev.c
     modules.home.dev.lua
     modules.home.dev.nix
     # Utilities
-    # modules.home.dev.database
-    # modules.home.dev.api
-    # modules.home.dev.build
+    modules.home.dev.database
+    modules.home.dev.api
+    modules.home.dev.build
 
     # Editors
     modules.home.editors.claudeCode
@@ -203,6 +202,7 @@ in
     userDirs = {
       enable = true;
       createDirectories = true;
+      setSessionVariables = true;  # Keep legacy behavior (new default is false in 26.05)
       documents = "${config.home.homeDirectory}/Documents";
       download = "${config.home.homeDirectory}/Downloads";
       pictures = "${config.home.homeDirectory}/Pictures";

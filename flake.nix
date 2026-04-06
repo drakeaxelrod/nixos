@@ -70,6 +70,11 @@
       url = "github:nix-community/nixvim";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Claude Code - AI coding assistant
+    claude-code = {
+      url = "github:sadjow/claude-code-nix";
+    };
   };
 
   outputs = inputs@{ flake-parts, nixpkgs, ... }:
