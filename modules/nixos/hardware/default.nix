@@ -9,5 +9,6 @@
     ./bluetooth.nix
     ./storage.nix
     ./zmk.nix
+    ./probe-rs.nix
   ];
 }

@@ -132,6 +132,17 @@ in
   # QMK/Vial keyboard support (udev rules for flashing and configuring)
   hardware.keyboard.qmk.enable = true;
 
+  # probe-rs / J-Link debug probe support (DWM3001CDK, embedded dev)
+  users.groups.plugdev = {};
+  users.users.draxel.extraGroups = [ "plugdev" "dialout" ];
+  services.udev.extraRules = ''
+    # J-Link debug probes (SEGGER)
+    SUBSYSTEM=="usb", ATTR{idVendor}=="1366", MODE="0666", TAG+="uaccess"
+    # AutoLock firmware USB-CDC (VID:PID 1209:0001)
+    SUBSYSTEM=="usb", ATTR{idVendor}=="1209", ATTR{idProduct}=="0001", MODE="0666", TAG+="uaccess"
+    SUBSYSTEM=="tty", ATTRS{idVendor}=="1209", ATTRS{idProduct}=="0001", MODE="0666", TAG+="uaccess"
+  '';
+
   # ZMK Studio support (udev rules for USB serial access)
   modules.hardware.zmk = {
     enable = true;
@@ -158,16 +169,27 @@ in
     cryptsetup # LUKS management tools
     kdePackages.isoimagewriter # KDE USB/SD card flashing tool
     android-studio
+
+    # Mobile security & reverse engineering
+    android-tools  # adb, fastboot
+    scrcpy         # Android screen mirroring
+    frida-tools    # Dynamic instrumentation toolkit
+    apktool        # APK decompilation/recompilation
+    jadx           # DEX to Java decompiler
+    dex2jar        # DEX to JAR converter
+    androguard     # Android app analysis (Python)
+    # MobSF: run via Docker - docker run -it --rm -p 8000:8000 opensecurity/mobile-security-framework-mobsf
+
+    # Embedded development
+    probe-rs-tools  # Flash/debug embedded MCUs (probe-rs, cargo-flash, cargo-embed)
+
+    # Python
+    (python3.withPackages (ps: with ps; [ pip virtualenv ]))
+
+    dufs  # Simple file server (HTTP/WebDAV)
   ];
 
   hardware.flipperzero.enable = true;
-
-  # Memory management
-  zramSwap = {
-    enable = true;
-    memoryPercent = 50;  # Compressed swap using 50% of RAM
-  };
-  services.earlyoom.enable = true; # OOM killer to prevent freezes
 
   # ==========================================================================
   # Virtualization

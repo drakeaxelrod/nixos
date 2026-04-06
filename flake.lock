@@ -20,6 +20,7 @@
         ]
       },
       "locked": {
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "lastModified": 1773436376,
         "narHash": "sha256-OUPRrprbgN27BXHuWkMAPSCfLLQ/uwpWghEfKYN2iAg=",
@@ -30,8 +31,16 @@
         "lastModified": 1774211390,
         "narHash": "sha256-sTtAgCCaX8VNNZlQFACd3i1IQ+DB0Wf3COgiFS152ds=",
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "lastModified": 1773436376,
+        "narHash": "sha256-OUPRrprbgN27BXHuWkMAPSCfLLQ/uwpWghEfKYN2iAg=",
+=======
+        "lastModified": 1774211390,
+        "narHash": "sha256-sTtAgCCaX8VNNZlQFACd3i1IQ+DB0Wf3COgiFS152ds=",
+>>>>>>> Stashed changes
         "owner": "hyprwm",
         "repo": "aquamarine",
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "rev": "43f10d24391692bba3d762931ee35e7f17f8e8b8",
 ||||||| parent of 29f63ac (update)
@@ -39,6 +48,11 @@
 =======
         "rev": "f62a4dbfa4e5584f14ad4c62afedf6e4b433cf70",
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "rev": "43f10d24391692bba3d762931ee35e7f17f8e8b8",
+=======
+        "rev": "f62a4dbfa4e5584f14ad4c62afedf6e4b433cf70",
+>>>>>>> Stashed changes
         "type": "github"
       },
       "original": {
@@ -127,6 +141,7 @@
         "nixpkgs-lib": "nixpkgs-lib"
       },
       "locked": {
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "lastModified": 1772408722,
         "narHash": "sha256-rHuJtdcOjK7rAHpHphUb1iCvgkU3GpfvicLMwwnfMT0=",
@@ -137,8 +152,16 @@
         "lastModified": 1775087534,
         "narHash": "sha256-91qqW8lhL7TLwgQWijoGBbiD4t7/q75KTi8NxjVmSmA=",
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "lastModified": 1772408722,
+        "narHash": "sha256-rHuJtdcOjK7rAHpHphUb1iCvgkU3GpfvicLMwwnfMT0=",
+=======
+        "lastModified": 1775087534,
+        "narHash": "sha256-91qqW8lhL7TLwgQWijoGBbiD4t7/q75KTi8NxjVmSmA=",
+>>>>>>> Stashed changes
         "owner": "hercules-ci",
         "repo": "flake-parts",
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "rev": "f20dc5d9b8027381c474144ecabc9034d6a839a3",
 ||||||| parent of 29f63ac (update)
@@ -146,6 +169,11 @@
 =======
         "rev": "3107b77cd68437b9a76194f0f7f9c55f2329ca5b",
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "rev": "f20dc5d9b8027381c474144ecabc9034d6a839a3",
+=======
+        "rev": "3107b77cd68437b9a76194f0f7f9c55f2329ca5b",
+>>>>>>> Stashed changes
         "type": "github"
       },
       "original": {
@@ -240,6 +268,7 @@
         ]
       },
       "locked": {
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "lastModified": 1773962693,
         "narHash": "sha256-nf9pgktDE4E2TCavUT1vh3Nd/tfKixL1BK6P32Zp3hI=",
@@ -250,8 +279,16 @@
         "lastModified": 1775268934,
         "narHash": "sha256-Sa5tW5kYPJornQEkFVD43F/0d4/WP+/GLTNktTFe2qU=",
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "lastModified": 1773962693,
+        "narHash": "sha256-nf9pgktDE4E2TCavUT1vh3Nd/tfKixL1BK6P32Zp3hI=",
+=======
+        "lastModified": 1775104157,
+        "narHash": "sha256-rm/7k0D2J9SP30pyZ2C1HqarDncZDN6KAUI0gzgg4TA=",
+>>>>>>> Stashed changes
         "owner": "nix-community",
         "repo": "home-manager",
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "rev": "9d3c1d636e7b8ab10f357cd9bee653cd400437de",
 ||||||| parent of 29f63ac (update)
@@ -259,6 +296,11 @@
 =======
         "rev": "9dc93220c1c9a410ef6277d6dc55c571d9e592d0",
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "rev": "9d3c1d636e7b8ab10f357cd9bee653cd400437de",
+=======
+        "rev": "41e6e2ab37763c09db4e639033392cf40900440a",
+>>>>>>> Stashed changes
         "type": "github"
       },
       "original": {
@@ -366,6 +408,7 @@
         "xdph": "xdph"
       },
       "locked": {
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "lastModified": 1773954292,
         "narHash": "sha256-w/RA1CKR85/1CF4OgaB48Z/p9vxeiRyA1r5DHDGSU9o=",
@@ -376,7 +419,15 @@
         "lastModified": 1775165818,
         "narHash": "sha256-kPRntzI7WipiJEaYrpPo+LyI4gkOeUHIVD6W4QK87TE=",
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "lastModified": 1773954292,
+        "narHash": "sha256-w/RA1CKR85/1CF4OgaB48Z/p9vxeiRyA1r5DHDGSU9o=",
+=======
+        "lastModified": 1775082056,
+        "narHash": "sha256-yw6wuB5FC2z3UXB4SIs4LQv0YHq9JlcHXqG2jM5CA/0=",
+>>>>>>> Stashed changes
         "ref": "refs/heads/main",
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "rev": "b940b0d2c197841b0f648598ee782dbaf9e0a89b",
         "revCount": 7042,
@@ -387,6 +438,13 @@
         "rev": "f25473b21b45ab8ded4a0dbba69eb6b6660d568e",
         "revCount": 7099,
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "rev": "b940b0d2c197841b0f648598ee782dbaf9e0a89b",
+        "revCount": 7042,
+=======
+        "rev": "529f72249c2cf4cefc824a612aeddf2d5f858f54",
+        "revCount": 7093,
+>>>>>>> Stashed changes
         "submodules": true,
         "type": "git",
         "url": "https://github.com/hyprwm/Hyprland"
@@ -561,6 +619,7 @@
         ]
       },
       "locked": {
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "lastModified": 1773436263,
         "narHash": "sha256-n+2xFJngUkBqUJD5FsbVnYEHBTyDFSqtBIwQIGPXWWo=",
@@ -571,8 +630,16 @@
         "lastModified": 1774211405,
         "narHash": "sha256-6KNwP4ojUzv3YBlZU5BqCpTrWHcix1Jo01BISsTT0xk=",
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "lastModified": 1773436263,
+        "narHash": "sha256-n+2xFJngUkBqUJD5FsbVnYEHBTyDFSqtBIwQIGPXWWo=",
+=======
+        "lastModified": 1774211405,
+        "narHash": "sha256-6KNwP4ojUzv3YBlZU5BqCpTrWHcix1Jo01BISsTT0xk=",
+>>>>>>> Stashed changes
         "owner": "hyprwm",
         "repo": "hyprutils",
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "rev": "5e228db6821380a5875d5643176c5c46a47b8134",
 ||||||| parent of 29f63ac (update)
@@ -580,6 +647,11 @@
 =======
         "rev": "cb4e152dc72095a2af422956c6b689590572231a",
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "rev": "5e228db6821380a5875d5643176c5c46a47b8134",
+=======
+        "rev": "cb4e152dc72095a2af422956c6b689590572231a",
+>>>>>>> Stashed changes
         "type": "github"
       },
       "original": {
@@ -663,6 +735,7 @@
     },
     "nixos-hardware": {
       "locked": {
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "lastModified": 1773533765,
         "narHash": "sha256-qonGfS2lzCgCl59Zl63jF6dIRRpvW3AJooBGMaXjHiY=",
@@ -673,8 +746,16 @@
         "lastModified": 1775203647,
         "narHash": "sha256-6MWaMLXK9QMndI94CIxeiPafi3wuO+imCtK9tfhsZdw=",
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "lastModified": 1773533765,
+        "narHash": "sha256-qonGfS2lzCgCl59Zl63jF6dIRRpvW3AJooBGMaXjHiY=",
+=======
+        "lastModified": 1774933469,
+        "narHash": "sha256-OrnCQeUO2bqaWUl0lkDWyGWjKsOhtCyd7JSfTedQNUE=",
+>>>>>>> Stashed changes
         "owner": "NixOS",
         "repo": "nixos-hardware",
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "rev": "f8e82243fd601afb9f59ad230958bd073795cbfe",
 ||||||| parent of 29f63ac (update)
@@ -682,6 +763,11 @@
 =======
         "rev": "80afbd13eea0b7c4ac188de949e1711b31c2b5f0",
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "rev": "f8e82243fd601afb9f59ad230958bd073795cbfe",
+=======
+        "rev": "f4c4c2c0c923d7811ac2a63ccc154767e4195337",
+>>>>>>> Stashed changes
         "type": "github"
       },
       "original": {
@@ -739,12 +825,20 @@
     },
     "nixpkgs_3": {
       "locked": {
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "lastModified": 1772328832,
         "narHash": "sha256-e+/T/pmEkLP6BHhYjx6GmwP5ivonQQn0bJdH9YrRB+Q=",
+||||||| Stash base
+        "lastModified": 1772328832,
+        "narHash": "sha256-e+/T/pmEkLP6BHhYjx6GmwP5ivonQQn0bJdH9YrRB+Q=",
+=======
+        "lastModified": 1774748309,
+        "narHash": "sha256-+U7gF3qxzwD5TZuANzZPeJTZRHS29OFQgkQ2kiTJBIQ=",
+>>>>>>> Stashed changes
         "owner": "nix-community",
         "repo": "nixpkgs.lib",
-        "rev": "c185c7a5e5dd8f9add5b2f8ebeff00888b070742",
+        "rev": "333c4e0545a6da976206c74db8773a1645b5870a",
         "type": "github"
       },
       "original": {
@@ -755,6 +849,7 @@
     },
     "nixpkgs_2": {
       "locked": {
+<<<<<<< Updated upstream
         "lastModified": 1773821835,
         "narHash": "sha256-TJ3lSQtW0E2JrznGVm8hOQGVpXjJyXY2guAxku2O9A4=",
 ||||||| parent of 29f63ac (update)
@@ -779,8 +874,16 @@
         "lastModified": 1775036866,
         "narHash": "sha256-ZojAnPuCdy657PbTq5V0Y+AHKhZAIwSIT2cb8UgAz/U=",
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "lastModified": 1773821835,
+        "narHash": "sha256-TJ3lSQtW0E2JrznGVm8hOQGVpXjJyXY2guAxku2O9A4=",
+=======
+        "lastModified": 1775036866,
+        "narHash": "sha256-ZojAnPuCdy657PbTq5V0Y+AHKhZAIwSIT2cb8UgAz/U=",
+>>>>>>> Stashed changes
         "owner": "NixOS",
         "repo": "nixpkgs",
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "rev": "b40629efe5d6ec48dd1efba650c797ddbd39ace0",
 ||||||| parent of 29f63ac (update)
@@ -788,6 +891,11 @@
 =======
         "rev": "6201e203d09599479a3b3450ed24fa81537ebc4e",
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "rev": "b40629efe5d6ec48dd1efba650c797ddbd39ace0",
+=======
+        "rev": "6201e203d09599479a3b3450ed24fa81537ebc4e",
+>>>>>>> Stashed changes
         "type": "github"
       },
       "original": {
@@ -822,6 +930,7 @@
         "systems": "systems_3"
       },
       "locked": {
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "lastModified": 1772402258,
         "narHash": "sha256-3DmCFOdmbkFML1/G9gj8Wb+rCCZFPOQtNoMCpqOF8SA=",
@@ -832,8 +941,16 @@
         "lastModified": 1775268911,
         "narHash": "sha256-3Ro4qz3HXgos0mvAkrTWsBTpIgPO6K+fogUYoO3c/UA=",
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "lastModified": 1772402258,
+        "narHash": "sha256-3DmCFOdmbkFML1/G9gj8Wb+rCCZFPOQtNoMCpqOF8SA=",
+=======
+        "lastModified": 1774802402,
+        "narHash": "sha256-L1UJ/zxKTyyaGGmytH6OYlgQ0HGSMhvPkvU+iz4Mkb8=",
+>>>>>>> Stashed changes
         "owner": "nix-community",
         "repo": "nixvim",
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "rev": "21ae25e13b01d3b4cdc750b5f9e7bad68b150c10",
 ||||||| parent of 29f63ac (update)
@@ -841,6 +958,11 @@
 =======
         "rev": "0166a4a54c0430e59308e9a3b0ab95f42293ac4e",
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "rev": "21ae25e13b01d3b4cdc750b5f9e7bad68b150c10",
+=======
+        "rev": "cbd8536a05d1aae2593cb5c9ace1010c8c5845cb",
+>>>>>>> Stashed changes
         "type": "github"
       },
       "original": {
@@ -859,6 +981,7 @@
         ]
       },
       "locked": {
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "lastModified": 1772361940,
         "narHash": "sha256-B1Cz+ydL1iaOnGlwOFld/C8lBECPtzhiy/pP93/CuyY=",
@@ -869,8 +992,16 @@
         "lastModified": 1774915545,
         "narHash": "sha256-COT4l/+ZddGBvrDVfPf7MEOJxV8EDKame6/aRnNIKcY=",
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "lastModified": 1772361940,
+        "narHash": "sha256-B1Cz+ydL1iaOnGlwOFld/C8lBECPtzhiy/pP93/CuyY=",
+=======
+        "lastModified": 1774915545,
+        "narHash": "sha256-COT4l/+ZddGBvrDVfPf7MEOJxV8EDKame6/aRnNIKcY=",
+>>>>>>> Stashed changes
         "owner": "nix-community",
         "repo": "plasma-manager",
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "rev": "a4b33606111c9c5dcd10009042bb710307174f51",
 ||||||| parent of 29f63ac (update)
@@ -878,6 +1009,11 @@
 =======
         "rev": "f3177b3c69fb3f03201098d7fe8ab6422cce7fc1",
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "rev": "a4b33606111c9c5dcd10009042bb710307174f51",
+=======
+        "rev": "f3177b3c69fb3f03201098d7fe8ab6422cce7fc1",
+>>>>>>> Stashed changes
         "type": "github"
       },
       "original": {
@@ -896,6 +1032,7 @@
         ]
       },
       "locked": {
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "lastModified": 1772893680,
         "narHash": "sha256-JDqZMgxUTCq85ObSaFw0HhE+lvdOre1lx9iI6vYyOEs=",
@@ -906,8 +1043,16 @@
         "lastModified": 1774104215,
         "narHash": "sha256-EAtviqz0sEAxdHS4crqu7JGR5oI3BwaqG0mw7CmXkO8=",
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "lastModified": 1772893680,
+        "narHash": "sha256-JDqZMgxUTCq85ObSaFw0HhE+lvdOre1lx9iI6vYyOEs=",
+=======
+        "lastModified": 1774104215,
+        "narHash": "sha256-EAtviqz0sEAxdHS4crqu7JGR5oI3BwaqG0mw7CmXkO8=",
+>>>>>>> Stashed changes
         "owner": "cachix",
         "repo": "git-hooks.nix",
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "rev": "8baab586afc9c9b57645a734c820e4ac0a604af9",
 ||||||| parent of 29f63ac (update)
@@ -915,6 +1060,11 @@
 =======
         "rev": "f799ae951fde0627157f40aec28dec27b22076d0",
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "rev": "8baab586afc9c9b57645a734c820e4ac0a604af9",
+=======
+        "rev": "f799ae951fde0627157f40aec28dec27b22076d0",
+>>>>>>> Stashed changes
         "type": "github"
       },
       "original": {
@@ -969,6 +1119,7 @@
         ]
       },
       "locked": {
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "lastModified": 1773889674,
         "narHash": "sha256-+ycaiVAk3MEshJTg35cBTUa0MizGiS+bgpYw/f8ohkg=",
@@ -979,8 +1130,16 @@
         "lastModified": 1775188331,
         "narHash": "sha256-/0BoSi0Dg0ON7IW0oscM12WSPBaMSCn36XTt0lHZoy8=",
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "lastModified": 1773889674,
+        "narHash": "sha256-+ycaiVAk3MEshJTg35cBTUa0MizGiS+bgpYw/f8ohkg=",
+=======
+        "lastModified": 1774910634,
+        "narHash": "sha256-B+rZDPyktGEjOMt8PcHKYmgmKoF+GaNAFJhguktXAo0=",
+>>>>>>> Stashed changes
         "owner": "Mic92",
         "repo": "sops-nix",
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "rev": "29b6519f3e0780452bca0ac0be4584f04ac16cc5",
 ||||||| parent of 29f63ac (update)
@@ -988,6 +1147,11 @@
 =======
         "rev": "8f093d0d2f08f37317778bd94db5951d6cce6c46",
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "rev": "29b6519f3e0780452bca0ac0be4584f04ac16cc5",
+=======
+        "rev": "19bf3d8678fbbfbc173beaa0b5b37d37938db301",
+>>>>>>> Stashed changes
         "type": "github"
       },
       "original": {
@@ -1084,6 +1248,7 @@
         ]
       },
       "locked": {
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "lastModified": 1772669058,
         "narHash": "sha256-XhnY0aRuDo5LT8pmJVPofPOgO2hAR7T+XRoaQxtNPzQ=",
@@ -1094,8 +1259,16 @@
         "lastModified": 1773601989,
         "narHash": "sha256-2tJf/CQoHApoIudxHeJye+0Ii7scR0Yyi7pNiWk0Hn8=",
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "lastModified": 1772669058,
+        "narHash": "sha256-XhnY0aRuDo5LT8pmJVPofPOgO2hAR7T+XRoaQxtNPzQ=",
+=======
+        "lastModified": 1773601989,
+        "narHash": "sha256-2tJf/CQoHApoIudxHeJye+0Ii7scR0Yyi7pNiWk0Hn8=",
+>>>>>>> Stashed changes
         "owner": "hyprwm",
         "repo": "xdg-desktop-portal-hyprland",
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "rev": "906d0ac159803a7df2dc1f948df9327670380f69",
 ||||||| parent of 29f63ac (update)
@@ -1103,6 +1276,11 @@
 =======
         "rev": "a9b862d1aa000a676d310cc62d249f7ad726233d",
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "rev": "906d0ac159803a7df2dc1f948df9327670380f69",
+=======
+        "rev": "a9b862d1aa000a676d310cc62d249f7ad726233d",
+>>>>>>> Stashed changes
         "type": "github"
       },
       "original": {
@@ -1141,6 +1319,7 @@
         ]
       },
       "locked": {
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "lastModified": 1773737882,
         "narHash": "sha256-P6k0BtT1/idYveVRdcwAZk8By9UjZW8XOMhSoS6wTBY=",
@@ -1151,8 +1330,16 @@
         "lastModified": 1775278263,
         "narHash": "sha256-BgkUmlOuFaaZQCnlhXkQ3/Fng65aq00tJQkpoeTn7Mw=",
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "lastModified": 1773737882,
+        "narHash": "sha256-P6k0BtT1/idYveVRdcwAZk8By9UjZW8XOMhSoS6wTBY=",
+=======
+        "lastModified": 1775106234,
+        "narHash": "sha256-ZCHEj7dvqaguQy2yOHELkrkgPRAbnno+Lg9PAAiBv44=",
+>>>>>>> Stashed changes
         "owner": "0xc000022070",
         "repo": "zen-browser-flake",
+<<<<<<< Updated upstream
 <<<<<<< HEAD
         "rev": "a7f1db35d74faf04e5189b3a32f890186ace5c28",
 ||||||| parent of 29f63ac (update)
@@ -1160,6 +1347,11 @@
 =======
         "rev": "bb051d7a0f04356d42528bbb65dc014adf2dab66",
 >>>>>>> 29f63ac (update)
+||||||| Stash base
+        "rev": "a7f1db35d74faf04e5189b3a32f890186ace5c28",
+=======
+        "rev": "0118405698718bd82343050d4419072fffd0df54",
+>>>>>>> Stashed changes
         "type": "github"
       },
       "original": {

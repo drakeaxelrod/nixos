@@ -61,7 +61,7 @@ in
 
   home.username = "draxel";
   home.homeDirectory = "/home/draxel";
-  home.stateVersion = "25.11";
+  home.stateVersion = "26.05";
 
   # OpenCommit configuration (AI-powered git commits via gacp)
   home.sessionVariables = {

@@ -223,13 +223,13 @@
         formatters_by_ft = {
           nix = ["nixpkgs_fmt"];
           lua = ["stylua"];
-          javascript = ["prettier"];
-          typescript = ["prettier"];
+          javascript = ["prettierd"];
+          typescript = ["prettierd"];
           python = ["black"];
-          html = ["prettier"];
-          css = ["prettier"];
-          json = ["prettier"];
-          markdown = ["prettier"];
+          html = ["prettierd"];
+          css = ["prettierd"];
+          json = ["prettierd"];
+          markdown = ["prettierd"];
         };
         format_on_save = {
           lsp_fallback = true;
