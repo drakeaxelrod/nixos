@@ -173,12 +173,6 @@
             "qtwebengine-5.15.19"
           ];
         };
-<<<<<<< Updated upstream
-        nixpkgs.overlays = [
-          inputs.claude-code.overlays.default  # Up-to-date claude-code package
-        ];
-||||||| Stash base
-=======
 
         # TODO: remove overlay once nixpkgs updates past yanked claude-code 2.1.88
         nixpkgs.overlays = [
@@ -192,7 +186,6 @@
             });
           })
         ];
->>>>>>> Stashed changes
       }
 
       # Set hostname and stateVersion from mkHost arguments

@@ -187,6 +187,8 @@ in
     (python3.withPackages (ps: with ps; [ pip virtualenv ]))
 
     dufs  # Simple file server (HTTP/WebDAV)
+
+    microsoft-edge  # Microsoft Edge browser
   ];
 
   hardware.flipperzero.enable = true;
