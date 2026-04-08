@@ -141,6 +141,9 @@ in
     # AutoLock firmware USB-CDC (VID:PID 1209:0001)
     SUBSYSTEM=="usb", ATTR{idVendor}=="1209", ATTR{idProduct}=="0001", MODE="0666", TAG+="uaccess"
     SUBSYSTEM=="tty", ATTRS{idVendor}=="1209", ATTRS{idProduct}=="0001", MODE="0666", TAG+="uaccess"
+    # Tell ModemManager not to probe the AutoLock device (it interferes with serial)
+    SUBSYSTEM=="usb", ATTR{idVendor}=="1209", ATTR{idProduct}=="0001", ENV{ID_MM_DEVICE_IGNORE}="1"
+    SUBSYSTEM=="tty", ATTRS{idVendor}=="1209", ATTRS{idProduct}=="0001", ENV{ID_MM_DEVICE_IGNORE}="1"
   '';
 
   # ZMK Studio support (udev rules for USB serial access)
@@ -189,6 +192,8 @@ in
     dufs  # Simple file server (HTTP/WebDAV)
 
     microsoft-edge  # Microsoft Edge browser
+    kicad  # PCB/schematic design
+    libreoffice
   ];
 
   hardware.flipperzero.enable = true;
