@@ -169,8 +169,10 @@ in
     proton-authenticator
     kicad  # PCB/schematic design
     exfatprogs  # exFAT filesystem support
+    qFlipper  # Flipper Zero management tool
   ];
 
+  hardware.flipperzero.enable = true; # Flipper Zero udev rules
   services.pcscd.enable = true; # Smart card daemon (for YubiKey)
   services.earlyoom.enable = true; # OOM killer to prevent system freezes under heavy load
 
