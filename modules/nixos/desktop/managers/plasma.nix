@@ -49,13 +49,26 @@
 
       # StatusNotifier/AppIndicator support for GTK apps (virt-manager, etc.)
       XDG_CURRENT_DESKTOP = "KDE";  # Tell GTK apps we're on KDE
+
+      # Fix screen locker losing Wayland session after suspend
+      KSCREENLOCKER_GRACE_SECS = "5";
     };
+
+    # Ensure screen locker works after suspend (prevent kscreenlocker disconnect)
+    security.pam.services.kde-fingerprint = {};
+    security.pam.services.kde = {};
 
     # XDG portals (screen sharing, file picker, etc.)
     xdg.portal = {
       enable = true;
       extraPortals = [ pkgs.kdePackages.xdg-desktop-portal-kde ];
+      # Prevent xdg-desktop-portal-gtk from loading — it crashes on KDE
+      # and cascades into blueman, virt-manager, and other GTK apps dying
+      xdgOpenUsePortal = true;
     };
+
+    # Disable the GTK portal on KDE — KDE portal handles everything
+    systemd.user.services.xdg-desktop-portal-gtk.enable = false;
 
     # Remove KDE bloat
     environment.plasma6.excludePackages =
@@ -76,6 +89,10 @@
       libdbusmenu-gtk3
       libappindicator-gtk3
       libayatana-appindicator  # Modern ayatana fork used by many apps
+
+      # System tools requiring polkit
+      kdePackages.partitionmanager
+      kdePackages.filelight
 
       # Wayland utilities
       wl-clipboard

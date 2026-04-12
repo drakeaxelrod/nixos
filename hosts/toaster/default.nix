@@ -168,6 +168,7 @@ in
     proton-pass
     proton-authenticator
     kicad  # PCB/schematic design
+    exfatprogs  # exFAT filesystem support
   ];
 
   services.pcscd.enable = true; # Smart card daemon (for YubiKey)
@@ -292,7 +293,12 @@ in
   # Sunshine - Game streaming server (use with Moonlight client)
   modules.services.sunshine.enable = true;
 
-
+  # KDE Connect - phone/device integration
+  programs.kdeconnect.enable = true;
+  networking.firewall = {
+    allowedTCPPortRanges = [ { from = 1714; to = 1764; } ];
+    allowedUDPPortRanges = [ { from = 1714; to = 1764; } ];
+  };
 
   # ==========================================================================
   # Impermanence (Ephemeral Root)

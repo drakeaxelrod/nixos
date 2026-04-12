@@ -85,6 +85,11 @@ in
     };
   };
 
+  # Fix: ensure lock screen works after suspend by restarting SDDM greeter
+  powerManagement.resumeCommands = ''
+    ${pkgs.systemd}/bin/loginctl lock-sessions
+  '';
+
   # ==========================================================================
   # Environment Variables
   # ==========================================================================
@@ -167,7 +172,10 @@ in
     gnupg  # GPG for encryption and signing
     qFlipper # Flipper Zero management tool
     # picocom # Minimal dumb-terminal emulation program
+    yubikey-manager # YubiKey configuration tool
     proton-pass # Password manager CLI
+    exfatprogs  # exFAT filesystem support
+    ntfs3g      # NTFS read/write support
     # cryptsetup: Newer versions (2.3.0+) have experimental BitLocker support via sudo cryptsetup open --type=bitlk <device> <name>
     cryptsetup # LUKS management tools
     kdePackages.isoimagewriter # KDE USB/SD card flashing tool

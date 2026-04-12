@@ -223,6 +223,7 @@ in
       enable = true;
       wayland.enable = cfg.wayland;
       theme = cfg.theme;
+      settings.General.Numlock = "on";
       extraPackages = lib.mkIf (effectivePackage != null) [
         effectivePackage
         pkgs.kdePackages.qtmultimedia  # Required for video backgrounds

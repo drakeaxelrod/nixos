@@ -121,6 +121,8 @@ in
     # for zmk studio
     chromium
 
+    tor-browser
+
   ];
 
   # SSH client configuration
@@ -132,6 +134,11 @@ in
       # Global defaults
       "*" = {
         addKeysToAgent = "yes";
+        extraOptions = {
+          ControlMaster = "auto";
+          ControlPath = "~/.ssh/sockets/%r@%h-%p";
+          ControlPersist = "10m";
+        };
       };
 
       # Personal GitHub account (drakeaxelrod)
@@ -162,9 +169,13 @@ in
       "draxlab" = {
         hostname = "draxlab.axolotl-ph.ts.net";
         user = "draxel";
+        forwardAgent = true;  # Forward SSH agent to server
       };
     };
   };
+
+  # Create SSH control socket directory for connection pooling
+  home.file.".ssh/sockets/.keep".text = "";
 
   # Fix SSH config permissions: home-manager creates a symlink to /nix/store
   # which SSH rejects as "bad owner or permissions". Copy it instead.

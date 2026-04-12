@@ -370,8 +370,7 @@
     kdePackages.okular
     kdePackages.spectacle
     kdePackages.kcalc
-    kdePackages.filelight
-    kdePackages.partitionmanager
+    # filelight & partitionmanager moved to system level (need polkit policies)
 
     # Good Linux Applications
     vlc
