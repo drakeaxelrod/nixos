@@ -85,11 +85,6 @@ in
     };
   };
 
-  # Fix: ensure lock screen works after suspend by restarting SDDM greeter
-  powerManagement.resumeCommands = ''
-    ${pkgs.systemd}/bin/loginctl lock-sessions
-  '';
-
   # ==========================================================================
   # Environment Variables
   # ==========================================================================

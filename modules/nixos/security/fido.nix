@@ -136,9 +136,10 @@ in
     # SDDM's NixOS module hardcodes its PAM config via `text`, bypassing the
     # rules system where u2fAuth is normally wired. Override to add pam_u2f
     # directly before the login substack so FIDO2 keys work at the login screen.
+    # timeout=3: only wait 3s for key touch (SDDM can't show the prompt properly)
     security.pam.services.sddm.text = lib.mkIf cfg.services.sddm (
       let
-        u2fArgs = "authfile=${authfile} cue origin=${origin} appid=${origin}";
+        u2fArgs = "authfile=${authfile} cue origin=${origin} appid=${origin} timeout=3";
       in lib.mkForce ''
         auth      ${cfg.control}  ${pkgs.pam_u2f}/lib/security/pam_u2f.so ${u2fArgs}
         auth      substack      login

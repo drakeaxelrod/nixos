@@ -177,6 +177,10 @@
         nvidiaSettings = true;
       };
 
+      # Fix black screen after suspend (affects multiple NVIDIA GPU generations)
+      # See: https://discourse.nixos.org/t/black-screen-after-suspend-hibernate-with-nvidia/54341
+      systemd.services."systemd-suspend".serviceConfig.Environment = ''SYSTEMD_SLEEP_FREEZE_USER_SESSIONS=false'';
+
       # Hardware acceleration
       hardware.graphics = {
         enable = true;
