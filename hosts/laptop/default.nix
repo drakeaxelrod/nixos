@@ -318,9 +318,12 @@ in
 
   programs.kdeconnect.enable = true;
   networking.firewall = {
+    allowedTCPPorts = [ 3000 4444 8080 2121 8443 4455 ];
+    allowedUDPPorts = [ 4444 ];
     allowedTCPPortRanges = [ { from = 1714; to = 1764; } ];
     allowedUDPPortRanges = [ { from = 1714; to = 1764; } ];
   };
+
 
   # ==========================================================================
   # Appearance
