@@ -199,7 +199,8 @@ in
       Environment = "SSH_AUTH_SOCK=%t/ssh-agent";
       ExecStart = toString (pkgs.writeShellScript "ssh-add-keys" ''
         find "$HOME"/.ssh -name 'id_*' ! -name '*.pub' -type f | while read -r key; do
-          ${pkgs.openssh}/bin/ssh-add "$key" 2>/dev/null
+          chmod 600 "$key"
+          ${pkgs.openssh}/bin/ssh-add "$key" || echo "ssh-add failed for $key" >&2
         done
       '');
     };

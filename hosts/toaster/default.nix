@@ -337,7 +337,7 @@ in
     services = {
       login = true;
       sudo = true;
-      sddm = true;
+      sddm = false;  # Disabled: use password at login screen
     };
     ssh = true;  # Enable FIDO2 SSH keys
   };
