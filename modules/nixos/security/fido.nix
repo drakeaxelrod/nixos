@@ -79,6 +79,12 @@ in
         default = false;
         description = "Enable U2F for Polkit authentication dialogs";
       };
+
+      kde = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Enable U2F for KDE screen locker (kscreenlocker)";
+      };
     };
 
     ssh = lib.mkOption {
@@ -131,6 +137,8 @@ in
       login.u2fAuth = cfg.services.login;
       sudo.u2fAuth = cfg.services.sudo;
       polkit-1.u2fAuth = cfg.services.polkit;
+      kde.u2fAuth = cfg.services.kde;
+      kde-fingerprint.u2fAuth = cfg.services.kde;
     };
 
     # SDDM's NixOS module hardcodes its PAM config via `text`, bypassing the
