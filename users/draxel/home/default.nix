@@ -265,4 +265,10 @@ in
 
   # KDE Connect - phone/device integration (service auto-start)
   services.kdeconnect.enable = true;
+
+  # The home-manager unit hardcodes PATH=/etc/profiles/per-user/draxel/bin,
+  # which excludes system tools like loginctl. Extend it so Run Command
+  # plugin actions can call system binaries by name.
+  systemd.user.services.kdeconnect.Service.Environment = lib.mkForce
+    "PATH=/run/wrappers/bin:/etc/profiles/per-user/draxel/bin:/run/current-system/sw/bin";
 }

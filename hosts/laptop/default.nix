@@ -305,7 +305,7 @@ in
     # TODO: Enroll Titan Key on laptop: pamu2fcfg -o pam://laptop -i pam://laptop
     # Then add the credential line above
     services = {
-      login = true;
+      login = false;
       sudo = true;
       sddm = false;  # Disabled: use password at login screen
     };

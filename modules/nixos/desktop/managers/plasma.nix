@@ -55,8 +55,13 @@
     };
 
     # Ensure screen locker works after suspend (prevent kscreenlocker disconnect)
-    security.pam.services.kde-fingerprint = {};
-    security.pam.services.kde = {};
+    # Disabled: empty kde-fingerprint forces /etc/pam.d/kde-fingerprint to exist
+    # without fprintd, which makes kscreenlocker show the fingerprint UI and
+    # blocks password auth (incl. KDE Connect unlock). Upstream plasma6 module
+    # already defines `kde` and `kde-fingerprint` correctly (the latter only
+    # when services.fprintd.enable). See nixpkgs#239770.
+    # security.pam.services.kde-fingerprint = {};
+    # security.pam.services.kde = {};
 
     # XDG portals (screen sharing, file picker, etc.)
     xdg.portal = {
