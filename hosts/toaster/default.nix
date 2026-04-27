@@ -170,6 +170,7 @@ in
     kicad  # PCB/schematic design
     exfatprogs  # exFAT filesystem support
     qFlipper  # Flipper Zero management tool
+    proton-vpn  # ProtonVPN client
   ];
 
   hardware.flipperzero.enable = true; # Flipper Zero udev rules
