@@ -123,6 +123,10 @@ in
 
     tor-browser
 
+
+    bun # js compiler
+    pkg-config # Tool that allows packages to find out information about other packages (wrapper script)
+
   ];
 
   # SSH client configuration
