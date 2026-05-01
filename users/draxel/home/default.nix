@@ -121,7 +121,12 @@ in
     # for zmk studio
     chromium
 
-    tor-browser
+    tor-browser # Privacy-focused web browser with built-in Tor support
+
+    readest # E-book reader with support for various formats (PDF, EPUB, MOBI, etc.)
+
+    zmk-studio # Configuration tool for ZMK firmware (keyboard configuration)
+    #zmkbatx # zmk battery monitoring tool
 
 
     bun # js compiler
