@@ -7,9 +7,9 @@
 # (bat, btop, delta, direnv, dog, fastfetch, fd, fzf, gping, grc, jless, jq,
 # lsd, procs, ripgrep, starship, xh, zoxide, gpg) generally do NOT need to
 # be repeated here — those modules call programs.X.enable which installs
-# the package per user. Exceptions: jq/ripgrep/fd/bat/lsd/htop are
-# intentionally kept in both places so they are available pre-home-manager
-# and to non-draxel users.
+# the package per user. Exceptions: jq/ripgrep/fd/bat/lsd are intentionally
+# kept in both places so they are available pre-home-manager and to
+# non-draxel users.
 { config, pkgs, lib, ... }:
 
 {
@@ -29,8 +29,9 @@
     htop        # Process monitor
     tree        # Directory listing
     file        # File type detection
-    dig         # DNS lookup (also provided by `bind` below)
     nmap        # Network scanner
+    # dig: provided by `bind` in the Network section below (it ships dig,
+    # drill, and nslookup) — no need for a separate `pkgs.dig` derivation.
 
     # ========================================================================
     # Text & data processing
@@ -78,7 +79,7 @@
     socat               # Bidirectional socket relay
     tcpdump             # Packet capture
     iperf3              # Network throughput test
-    bind                # drill, nslookup (dig already in core)
+    bind                # dig, drill, nslookup
     inetutils           # telnet, ftp, hostname
     aria2               # Multi-source / parallel downloader
     mosh                # Robust SSH replacement (NOTE: needs UDP 60000-61000 in firewall)
