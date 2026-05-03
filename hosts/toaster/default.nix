@@ -260,7 +260,7 @@ in
     enable = true;
     runtime = "wivrn";
     wivrn.cudaSupport = true;  # NVENC hardware encoding for NVIDIA GPU
-    alvr.enable = true;        # Keep ALVR available as alternative
+    alvr.enable = false;       # Disabled: source build is slow, wivrn is primary
     wlxOverlay = true;
     steamvr.setcapWrapper = true;
   };
