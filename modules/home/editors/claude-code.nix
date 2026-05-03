@@ -2,24 +2,9 @@
 { config, pkgs, lib, ... }:
 
 {
-  # CLI tools commonly used by Claude — always on PATH
-  home.packages = with pkgs; [
-    poppler-utils      # pdftotext, pdfinfo
-    jq                 # JSON processing
-    # yq removed: conflicts with yq-go already installed elsewhere
-    ripgrep            # rg (faster grep)
-    fd                 # find replacement
-    bat                # cat with syntax highlighting
-    imagemagick        # image operations
-    ffmpeg             # video/audio
-    curl               # HTTP
-    wget               # downloads
-    unzip
-    zip
-    tree
-    htop
-    fzf
-  ];
+  # CLI tools used by Claude (poppler-utils, jq, ripgrep, fd, bat,
+  # imagemagick, ffmpeg, curl, wget, unzip/zip, tree, htop, fzf) are
+  # provided system-wide by modules/nixos/system/packages.nix.
 
   programs.claude-code = {
     enable = true;
