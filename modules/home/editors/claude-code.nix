@@ -2,9 +2,13 @@
 { config, pkgs, lib, ... }:
 
 {
-  # CLI tools used by Claude (poppler-utils, jq, ripgrep, fd, bat,
-  # imagemagick, ffmpeg, curl, wget, unzip/zip, tree, htop, fzf) are
-  # provided system-wide by modules/nixos/system/packages.nix.
+  # CLI tools used by Claude are installed elsewhere — no local home.packages
+  # block needed:
+  #   system-wide via modules/nixos/system/packages.nix:
+  #     poppler-utils, jq, ripgrep, fd, bat, imagemagick, ffmpeg, curl,
+  #     wget, unzip/zip, tree, htop
+  #   per-user via modules/home/shell/fzf.nix:
+  #     fzf
 
   programs.claude-code = {
     enable = true;
