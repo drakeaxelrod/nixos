@@ -133,6 +133,22 @@ in
     pkg-config # Tool that allows packages to find out information about other packages (wrapper script)
     dbus
 
+    # poppler_utils      # pdftotext, pdfinfo
+    # jq                 # JSON processing
+    # yq                 # YAML processing
+    # ripgrep            # rg (faster grep)
+    # fd                 # find replacement
+    # bat                # cat with syntax highlighting
+    # imagemagick        # image operations
+    # ffmpeg             # video/audio
+    # curl               # HTTP
+    # wget               # downloads
+    # unzip
+    # zip
+    # tree
+    # htop
+    # fzf
+
   ];
 
   # SSH client configuration
