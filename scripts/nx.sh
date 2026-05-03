@@ -14,14 +14,15 @@ readonly DEFAULT_HOST="${NX_DEFAULT_HOST:-nixos}"
 readonly DEFAULT_JOBS="${NX_JOBS:-8}"
 readonly DEFAULT_CORES="${NX_CORES:-2}"
 
-# Colors for output
-readonly RED='\033[0;31m'
-readonly GREEN='\033[0;32m'
-readonly YELLOW='\033[1;33m'
-readonly BLUE='\033[0;34m'
-readonly MAGENTA='\033[0;35m'
-readonly CYAN='\033[0;36m'
-readonly NC='\033[0m' # No Color
+# Colors for output (ANSI-C quoted so escape sequences are real ESC bytes,
+# which works in both `echo` and heredocs without needing `echo -e`)
+readonly RED=$'\033[0;31m'
+readonly GREEN=$'\033[0;32m'
+readonly YELLOW=$'\033[1;33m'
+readonly BLUE=$'\033[0;34m'
+readonly MAGENTA=$'\033[0;35m'
+readonly CYAN=$'\033[0;36m'
+readonly NC=$'\033[0m' # No Color
 
 # ============================================================================
 # Utility Functions
