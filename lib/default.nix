@@ -173,19 +173,6 @@
             "qtwebengine-5.15.19"
           ];
         };
-
-        # TODO: remove overlay once nixpkgs updates past yanked claude-code 2.1.88
-        nixpkgs.overlays = [
-          (final: prev: {
-            claude-code = prev.claude-code-bin.overrideAttrs (old: {
-              version = "2.1.90";
-              src = prev.fetchurl {
-                url = "https://storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases/2.1.90/linux-x64/claude";
-                hash = "sha256-YHTjlZmJspWKmr7GCt97RBoPbxx+ZkAav/D+VNrQT9Y=";
-              };
-            });
-          })
-        ];
       }
 
       # Set hostname and stateVersion from mkHost arguments
