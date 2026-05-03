@@ -173,6 +173,18 @@
             "qtwebengine-5.15.19"
           ];
         };
+
+        nixpkgs.overlays = [
+          # openldap 2.6.13 in current nixpkgs has a flaky check phase
+          # (test017-syncreplication-refresh fails intermittently). It's
+          # pulled transitively by bottles/lutris (gaming modules). Skip
+          # the test suite — the library itself is fine.
+          (final: prev: {
+            openldap = prev.openldap.overrideAttrs (old: {
+              doCheck = false;
+            });
+          })
+        ];
       }
 
       # Set hostname and stateVersion from mkHost arguments
