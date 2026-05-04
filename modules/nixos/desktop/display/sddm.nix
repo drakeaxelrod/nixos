@@ -230,6 +230,9 @@ in
       ];
     };
 
+    # Ensure sddm user can access DRM devices for Wayland greeter compositor
+    users.users.sddm.extraGroups = [ "video" "render" ];
+
     # Theme package must be in systemPackages to be symlinked to /run/current-system/sw/share/sddm/themes/
     environment.systemPackages = [
       pkgs.kdePackages.sddm-kcm  # KDE System Settings module for SDDM configuration
@@ -239,13 +242,5 @@ in
 
     # Enable XWayland if using Wayland
     programs.xwayland.enable = lib.mkIf cfg.wayland true;
-
-    # Speed up first-boot login:
-    # - Don't block display manager on network
-    # - Don't block display manager on Plymouth quit
-    systemd.services.display-manager = {
-      after = lib.mkForce [ "systemd-user-sessions.service" "getty@tty1.service" ];
-      wants = lib.mkForce [];
-    };
   };
 }

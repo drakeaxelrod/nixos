@@ -50,6 +50,9 @@
 
 { config, lib, pkgs, inputs, ... }:
 
+let
+  cfg = config.modules.hardware.nvidia;
+in
 {
   options.modules.hardware.nvidia = {
     enable = lib.mkEnableOption "NVIDIA GPU support";
@@ -204,20 +207,20 @@
     })
 
     # NVIDIA PRIME configuration
-    (lib.mkIf (config.modules.hardware.nvidia.enable && config.modules.hardware.nvidia.prime.enable) {
+    (lib.mkIf (cfg.enable && cfg.prime.enable) {
       hardware.nvidia.prime = lib.mkMerge [
         # Common settings
         {
-          nvidiaBusId = config.modules.hardware.nvidia.prime.nvidiaBusId;
+          nvidiaBusId = cfg.prime.nvidiaBusId;
         }
 
         # Sync mode (always use NVIDIA)
-        (lib.mkIf (config.modules.hardware.nvidia.prime.mode == "sync") {
+        (lib.mkIf (cfg.prime.mode == "sync") {
           sync.enable = true;
         })
 
         # Offload mode (use NVIDIA on-demand)
-        (lib.mkIf (config.modules.hardware.nvidia.prime.mode == "offload") {
+        (lib.mkIf (cfg.prime.mode == "offload") {
           offload = {
             enable = true;
             enableOffloadCmd = true;
@@ -225,20 +228,52 @@
         })
 
         # Reverse sync mode (NVIDIA as primary, render on iGPU)
-        (lib.mkIf (config.modules.hardware.nvidia.prime.mode == "reverse-sync") {
+        (lib.mkIf (cfg.prime.mode == "reverse-sync") {
           reverseSync.enable = true;
         })
 
         # Intel iGPU
-        (lib.mkIf (config.modules.hardware.nvidia.prime.intelBusId != "") {
-          intelBusId = config.modules.hardware.nvidia.prime.intelBusId;
+        (lib.mkIf (cfg.prime.intelBusId != "") {
+          intelBusId = cfg.prime.intelBusId;
         })
 
         # AMD iGPU
-        (lib.mkIf (config.modules.hardware.nvidia.prime.amdBusId != "") {
-          amdgpuBusId = config.modules.hardware.nvidia.prime.amdBusId;
+        (lib.mkIf (cfg.prime.amdBusId != "") {
+          amdgpuBusId = cfg.prime.amdBusId;
         })
       ];
     })
+
+    # In PRIME offload mode, the NVIDIA GPU (often card0) has no display outputs
+    # for the built-in panel, but HDMI/DP ports are wired through it.
+    # KWin's default device enumeration order may try the dGPU first and fail.
+    # KWIN_DRM_DEVICES sets explicit order: iGPU first (primary/eDP), dGPU second (HDMI/DP).
+    # Note: KWIN_DRM_DEVICES splits on ':', so by-path symlinks (which contain colons) can't be used.
+    # Create stable /dev/dri/igpu and /dev/dri/dgpu symlinks via udev.
+    (lib.mkIf (cfg.enable && cfg.prime.enable && cfg.prime.mode == "offload") (
+      let
+        # Convert "PCI:0:2:0" to "00:02.0" for udev matching
+        busIdToPciSlot = busId:
+          let parts = lib.splitString ":" (lib.removePrefix "PCI:" busId);
+          in lib.fixedWidthString 2 "0" (builtins.elemAt parts 0)
+             + ":" + lib.fixedWidthString 2 "0" (builtins.elemAt parts 1)
+             + "." + builtins.elemAt parts 2;
+
+        igpuBusId =
+          if cfg.prime.intelBusId != "" then cfg.prime.intelBusId
+          else if cfg.prime.amdBusId != "" then cfg.prime.amdBusId
+          else null;
+
+        igpuPciSlot = if igpuBusId != null then busIdToPciSlot igpuBusId else null;
+        dgpuPciSlot = busIdToPciSlot cfg.prime.nvidiaBusId;
+      in lib.mkIf (igpuPciSlot != null) {
+        services.udev.extraRules = ''
+          SUBSYSTEM=="drm", KERNEL=="card[0-9]*", KERNELS=="0000:${igpuPciSlot}", SYMLINK+="dri/igpu"
+          SUBSYSTEM=="drm", KERNEL=="card[0-9]*", KERNELS=="0000:${dgpuPciSlot}", SYMLINK+="dri/dgpu"
+        '';
+        # iGPU first (primary, drives eDP), dGPU second (HDMI/DP outputs)
+        environment.variables.KWIN_DRM_DEVICES = "/dev/dri/igpu:/dev/dri/dgpu";
+      }
+    ))
   ];
 }

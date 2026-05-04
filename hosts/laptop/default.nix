@@ -301,9 +301,8 @@ in
     control = "sufficient";  # Any FIDO key OR password works
     credentials = ''
       draxel:zDW6bkPPMO2HzvLK25Lo9Hh5ljHD4ZpxS0dQ9dG68m1TuEx2Ra+C+n1CCcMrYBIlV6flF9b8TPpmyUyFkR9dXw==,jwuLPNBiJkkkss+HxTn+DNaklliY4Uh+rCNxv6UOJ5zKydEpkI/Nr0JEEwW/49JK2eeKIMAChuylJGG+B36uvQ==,es256,+presence
+      draxel:43n+V5cs7O1cIh1imxrrHn7qGOoi/TuSZI+g5eEQzbJTEQ9b7kuHwKowpTYVPMe1ZRaK50Fy7pM7WrC5KMAWGqtW4cggkpuGC/N/d9lOIVO+C5+DRGj2WSkNPwihPTU/lh3Lro5RCdDKzAPPpX2tRU2/8RB3aw55AK/2RXvv/dy7LG/PLSvgSi4GbrBbFcVMHcehf5wCFbHJOOd0XxmRXYxQ/E/1meVUQcYMmLSfg5Q85kSAtKo2mK5UIMddtQCqL/57WAC8JQrnRCPvaCxAbbqEBqT7oAYIxMWzxT5HOqZwbXbF+2sFEWFY8DiiF+IRNWlrvtQITPXUob1esg3ISqtZOju2TpxIoJhQ4hBrbvoPa9LhD20Nioog+Rj/uQqtLD9cFUk+s+ky+alduvIqhQ==,LqIbHz7byheadQlzkko1oDS9Krq/KMCX2vuXJpc0GaOAsWmm/6J20iy+zWPHeHR5lUcG0fJj0lMkd6TQt8hH2A==,es256,+presence
     '';
-    # TODO: Enroll Titan Key on laptop: pamu2fcfg -o pam://laptop -i pam://laptop
-    # Then add the credential line above
     services = {
       login = false;
       sudo = true;
