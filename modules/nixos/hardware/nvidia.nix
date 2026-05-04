@@ -244,12 +244,12 @@ in
       ];
     })
 
-    # In PRIME offload mode, the NVIDIA GPU (often card0) has no display outputs
-    # for the built-in panel, but HDMI/DP ports are wired through it.
-    # KWin's default device enumeration order may try the dGPU first and fail.
-    # KWIN_DRM_DEVICES sets explicit order: iGPU first (primary/eDP), dGPU second (HDMI/DP).
-    # Note: KWIN_DRM_DEVICES splits on ':', so by-path symlinks (which contain colons) can't be used.
-    # Create stable /dev/dri/igpu and /dev/dri/dgpu symlinks via udev.
+    # In PRIME offload mode, the NVIDIA dGPU has no usable display CRTCs.
+    # KWin's default device enumeration tries all DRM devices including the dGPU,
+    # which causes hangs/failures. Restrict KWin to the iGPU only.
+    # Note: KWIN_DRM_DEVICES splits on ':', so by-path symlinks (which contain colons)
+    # can't be used. Create a stable /dev/dri/igpu symlink via udev instead.
+    # External displays (HDMI/DP wired to dGPU) require reverse-sync or sync mode.
     (lib.mkIf (cfg.enable && cfg.prime.enable && cfg.prime.mode == "offload") (
       let
         # Convert "PCI:0:2:0" to "00:02.0" for udev matching
@@ -265,14 +265,11 @@ in
           else null;
 
         igpuPciSlot = if igpuBusId != null then busIdToPciSlot igpuBusId else null;
-        dgpuPciSlot = busIdToPciSlot cfg.prime.nvidiaBusId;
       in lib.mkIf (igpuPciSlot != null) {
         services.udev.extraRules = ''
           SUBSYSTEM=="drm", KERNEL=="card[0-9]*", KERNELS=="0000:${igpuPciSlot}", SYMLINK+="dri/igpu"
-          SUBSYSTEM=="drm", KERNEL=="card[0-9]*", KERNELS=="0000:${dgpuPciSlot}", SYMLINK+="dri/dgpu"
         '';
-        # iGPU first (primary, drives eDP), dGPU second (HDMI/DP outputs)
-        environment.variables.KWIN_DRM_DEVICES = "/dev/dri/igpu:/dev/dri/dgpu";
+        environment.variables.KWIN_DRM_DEVICES = "/dev/dri/igpu";
       }
     ))
   ];

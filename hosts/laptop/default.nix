@@ -121,7 +121,7 @@ in
     # PRIME configuration for hybrid graphics (Intel iGPU + NVIDIA dGPU)
     prime = {
       enable = true;
-      mode = "offload";  # Use Intel by default, NVIDIA on-demand with nvidia-offload command
+      mode = "reverse-sync";  # NVIDIA renders, iGPU outputs — enables HDMI/DP on dGPU
       intelBusId = "PCI:0:2:0";    # Intel Iris Xe (00:02.0)
       nvidiaBusId = "PCI:1:0:0";   # NVIDIA RTX 3080 Ti (01:00.0)
     };

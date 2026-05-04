@@ -242,5 +242,13 @@ in
 
     # Enable XWayland if using Wayland
     programs.xwayland.enable = lib.mkIf cfg.wayland true;
+
+    # On NVIDIA PRIME systems, the greeter's kwin can't get DRM master on the dGPU.
+    # Restrict the greeter compositor to the iGPU only.
+    # SDDM constructs its own env for helpers (bypassing systemd service env),
+    # so we inject KWIN_DRM_DEVICES via the compositor command itself.
+    services.displayManager.sddm.wayland.compositorCommand = lib.mkIf
+      (config.environment.variables ? KWIN_DRM_DEVICES)
+      (lib.mkForce "env KWIN_DRM_DEVICES=/dev/dri/igpu ${pkgs.kdePackages.kwin}/bin/kwin_wayland --no-global-shortcuts --no-kactivities --no-lockscreen --locale1");
   };
 }
