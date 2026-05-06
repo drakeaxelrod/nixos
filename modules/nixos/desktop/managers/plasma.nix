@@ -99,6 +99,12 @@
       kdePackages.partitionmanager
       kdePackages.filelight
 
+      # Remote desktop — krdp (RDP server) is included in plasma6 defaults;
+      # freerdp provides the library it needs at runtime, and krdc is the
+      # KDE GUI client for connecting to RDP/VNC hosts.
+      freerdp
+      kdePackages.krdc
+
       # Wayland utilities
       wl-clipboard
       wl-clip-persist
