@@ -174,7 +174,23 @@
           ];
         };
 
+<<<<<<< Updated upstream
+||||||| Stash base
+        # TODO: remove overlay once nixpkgs updates past yanked claude-code 2.1.88
+=======
+        # Fix certipy-ad build: upstream pins requests~=2.32.3, but nixpkgs ships 2.33.x.
+        # pythonRelaxDeps doesn't strip the implicit upper bound from `~=`, so we use
+        # pythonRemoveDeps to drop the entry from wheel METADATA entirely (the package
+        # is still propagated via nixpkgs' propagatedBuildInputs).
+        #
+        # netexec's package.nix builds a local python via `python312.override {...}` to
+        # inject a custom impacket. `python.override` REPLACES packageOverrides instead
+        # of composing, wiping any global fix. We pass netexec a wrapped python312 whose
+        # `.override` composes our certipy-ad fix into whatever packageOverrides the
+        # caller supplies — giving netexec's local python BOTH overrides.
+>>>>>>> Stashed changes
         nixpkgs.overlays = [
+<<<<<<< Updated upstream
           # openldap 2.6.13 in current nixpkgs has a flaky check phase
           # (test017-syncreplication-refresh fails intermittently). It's
           # pulled transitively by bottles/lutris (gaming modules). Skip
@@ -184,6 +200,58 @@
               doCheck = false;
             });
           })
+||||||| Stash base
+          (final: prev: {
+            claude-code = prev.claude-code-bin.overrideAttrs (old: {
+              version = "2.1.90";
+              src = prev.fetchurl {
+                url = "https://storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases/2.1.90/linux-x64/claude";
+                hash = "sha256-YHTjlZmJspWKmr7GCt97RBoPbxx+ZkAav/D+VNrQT9Y=";
+              };
+            });
+          })
+=======
+          (final: prev:
+            let
+              certipyFix = pyFinal: pyPrev: {
+                certipy-ad = pyPrev.certipy-ad.overridePythonAttrs (old: {
+                  pythonRemoveDeps = (old.pythonRemoveDeps or []) ++ [ "requests" ];
+                });
+              };
+              wrapPython = origPy:
+                origPy // {
+                  override = args:
+                    origPy.override (args // {
+                      packageOverrides = lib.composeExtensions
+                        (args.packageOverrides or (_: _: {}))
+                        certipyFix;
+                    });
+                };
+
+              # GitLab archive tarballs aren't byte-stable; the hash recorded in
+              # nixpkgs for wireshark v4.6.5 doesn't match what GitLab currently
+              # serves. Override with the actually-served hash. Both wireshark-qt
+              # (the default `wireshark`) and wireshark-cli need fixing because
+              # `.override` discards `overrideAttrs` modifications.
+              wiresharkSrc = final.fetchFromGitLab {
+                repo = "wireshark";
+                owner = "wireshark";
+                tag = "v4.6.5";
+                hash = "sha256-Zvrwxjp4LK2J3QnxmPxKKrU01YHQvPyp54UWzeGNCjA=";
+              };
+            in {
+              python312 = prev.python312.override {
+                packageOverrides = certipyFix;
+              };
+
+              netexec = prev.netexec.override {
+                python312 = wrapPython prev.python312;
+              };
+
+              wireshark = prev.wireshark.overrideAttrs (_: { src = wiresharkSrc; });
+              wireshark-cli = prev.wireshark-cli.overrideAttrs (_: { src = wiresharkSrc; });
+            })
+>>>>>>> Stashed changes
         ];
       }
 

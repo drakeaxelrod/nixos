@@ -299,6 +299,8 @@ in
   # KDE Connect - phone/device integration
   programs.kdeconnect.enable = true;
   networking.firewall = {
+    allowedTCPPorts = [ 3389 ];  # RDP
+    allowedUDPPorts = [ 3389 ];  # RDP (UDP transport)
     allowedTCPPortRanges = [ { from = 1714; to = 1764; } ];
     allowedUDPPortRanges = [ { from = 1714; to = 1764; } ];
   };
