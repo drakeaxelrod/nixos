@@ -321,6 +321,10 @@ in
     allowedUDPPorts = [ 4444 ];
     allowedTCPPortRanges = [ { from = 1714; to = 1764; } ];
     allowedUDPPortRanges = [ { from = 1714; to = 1764; } ];
+
+    # KDE Remote Desktop (krdpserver listens on 3389) — only expose over
+    # Tailscale, not the local LAN or any other interface.
+    interfaces.tailscale0.allowedTCPPorts = [ 3389 ];
   };
 
 
