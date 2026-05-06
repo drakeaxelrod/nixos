@@ -167,11 +167,11 @@ in
         identityFile = "~/.ssh/id_ed25519-work";
       };
 
-      # Default GitHub (fallback)
+      # Default GitHub (fallback) — uses YubiKey FIDO key (id_ed25519_sk)
       "github.com" = {
         hostname = "github.com";
         user = "git";
-        identityFile = "~/.ssh/id_ed25519";
+        identityFile = "~/.ssh/id_ed25519_sk";
       };
 
       # Servers
