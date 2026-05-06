@@ -90,10 +90,8 @@
     nload               # Interface load TUI
     speedtest-cli       # ISP speed test
     arp-scan            # Local network discovery
-    # wireshark-cli removed 2026-05-03: hash mismatch in current nixpkgs
-    # (specified U30OJ8m+... but upstream now ships Zvrwxjp4...). Re-add
-    # once nixpkgs updates the package, or use the full `wireshark` package
-    # which also provides tshark.
+    wireshark-cli       # tshark — CLI packet analyzer (no GUI)
+                        # NOTE: source hash override in lib/default.nix overlay
 
     # ========================================================================
     # System inspection
