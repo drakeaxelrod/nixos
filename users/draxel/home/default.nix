@@ -4,6 +4,16 @@
 let
   # NixOS flake operations script - shared with devshell
   nx = pkgs.writeShellScriptBin "nx" (builtins.readFile ../../../scripts/nx.sh);
+
+  # Walk ~/.ssh recursively, fix perms on every private key, and load it
+  # into the running ssh-agent. Exposed as a CLI (`ssh-add-all`) and reused
+  # by the ssh-add-keys systemd user service below.
+  sshAddAll = pkgs.writeShellScriptBin "ssh-add-all" ''
+    find "$HOME"/.ssh -type f -name 'id_*' ! -name '*.pub' | while read -r key; do
+      chmod 600 "$key"
+      ${pkgs.openssh}/bin/ssh-add "$key" || echo "ssh-add failed for $key" >&2
+    done
+  '';
 in
 {
   imports = [
@@ -89,6 +99,7 @@ in
   home.packages = with pkgs; [
     # Custom scripts
     nx
+    sshAddAll  # ssh-add-all: load every private key under ~/.ssh into the agent
 
     # Note Taking
     obsidian
@@ -206,12 +217,7 @@ in
     Service = {
       Type = "oneshot";
       Environment = "SSH_AUTH_SOCK=%t/ssh-agent";
-      ExecStart = toString (pkgs.writeShellScript "ssh-add-keys" ''
-        find "$HOME"/.ssh -name 'id_*' ! -name '*.pub' -type f | while read -r key; do
-          chmod 600 "$key"
-          ${pkgs.openssh}/bin/ssh-add "$key" || echo "ssh-add failed for $key" >&2
-        done
-      '');
+      ExecStart = "${sshAddAll}/bin/ssh-add-all";
     };
     Install.WantedBy = [ "default.target" ];
   };
