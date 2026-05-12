@@ -3,9 +3,13 @@
 
 {
   home.packages = with pkgs; [
-    python312
-    python312Packages.pip
-    python312Packages.virtualenv
+    # System Python with libraries available globally (no venv needed for these).
+    # For project-scoped deps, use uv/virtualenv as before.
+    (python312.withPackages (ps: with ps; [
+      pip
+      virtualenv
+      reportlab  # PDF generation library
+    ]))
     uv  # Fast Python package installer
   ];
 
