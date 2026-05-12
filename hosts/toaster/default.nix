@@ -171,6 +171,7 @@ in
     exfatprogs  # exFAT filesystem support
     qFlipper  # Flipper Zero management tool
     proton-vpn  # ProtonVPN client
+    microsoft-edge  # Microsoft Edge browser
   ];
 
   hardware.flipperzero.enable = true; # Flipper Zero udev rules
