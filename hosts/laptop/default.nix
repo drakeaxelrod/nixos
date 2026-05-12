@@ -197,6 +197,7 @@ in
     microsoft-edge  # Microsoft Edge browser
     kicad  # PCB/schematic design
     libreoffice
+    onlyoffice-desktopeditors
   ];
 
   hardware.flipperzero.enable = true;
