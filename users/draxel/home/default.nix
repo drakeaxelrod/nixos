@@ -100,6 +100,7 @@ in
     # Custom scripts
     nx
     sshAddAll  # ssh-add-all: load every private key under ~/.ssh into the agent
+    kdePackages.ksshaskpass  # KWallet-backed askpass for ssh-add (auto-fills passphrases at login)
 
     # Note Taking
     obsidian
@@ -211,15 +212,20 @@ in
   systemd.user.services.ssh-add-keys = {
     Unit = {
       Description = "Add SSH keys to agent";
-      After = [ "ssh-agent.service" ];
+      After    = [ "ssh-agent.service" "graphical-session.target" ];
       Requires = [ "ssh-agent.service" ];
+      PartOf   = [ "graphical-session.target" ];
     };
     Service = {
       Type = "oneshot";
-      Environment = "SSH_AUTH_SOCK=%t/ssh-agent";
+      Environment = [
+        "SSH_AUTH_SOCK=%t/ssh-agent"
+        "SSH_ASKPASS=${pkgs.kdePackages.ksshaskpass}/bin/ksshaskpass"
+        "SSH_ASKPASS_REQUIRE=force"
+      ];
       ExecStart = "${sshAddAll}/bin/ssh-add-all";
     };
-    Install.WantedBy = [ "default.target" ];
+    Install.WantedBy = [ "graphical-session.target" ];
   };
 
   # Use XDG config directory for zsh (new default in 26.05)
