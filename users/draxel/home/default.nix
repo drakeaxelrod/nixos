@@ -153,11 +153,15 @@ in
 
     matchBlocks = {
       # Global defaults
+      # %n (Host alias from command line) — NOT %h (resolved HostName).
+      # Both personal.github.com and work.github.com resolve to github.com,
+      # so %h would collide their sockets and reuse whichever identity
+      # authenticated first.
       "*" = {
         addKeysToAgent = "yes";
         extraOptions = {
           ControlMaster = "auto";
-          ControlPath = "~/.ssh/sockets/%r@%h-%p";
+          ControlPath = "~/.ssh/sockets/%r@%n-%p";
           ControlPersist = "10m";
         };
       };
@@ -166,9 +170,10 @@ in
       "personal.github.com" = {
         hostname = "github.com";
         user = "git";
+        identitiesOnly = true;
         identityFile = [
           "~/.ssh/id_ed25519_sk"
-          "~/.ssh/id_ed25519"
+          "~/.ssh/personal/drakeaxelrod/id_ed25519"
         ];
       };
 
@@ -176,13 +181,15 @@ in
       "work.github.com" = {
         hostname = "github.com";
         user = "git";
-        identityFile = "~/.ssh/id_ed25519-work";
+        identitiesOnly = true;
+        identityFile = "~/.ssh/work/draxel_qestit/id_ed25519";
       };
 
       # Default GitHub (fallback) — uses YubiKey FIDO key (id_ed25519_sk)
       "github.com" = {
         hostname = "github.com";
         user = "git";
+        identitiesOnly = true;
         identityFile = "~/.ssh/id_ed25519_sk";
       };
 
