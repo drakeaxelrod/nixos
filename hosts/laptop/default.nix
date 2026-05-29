@@ -199,6 +199,7 @@ in
     libreoffice
     onlyoffice-desktopeditors
     virt-viewer
+    python3Packages.pyside6
   ];
 
   hardware.flipperzero.enable = true;

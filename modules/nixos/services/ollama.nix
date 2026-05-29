@@ -47,10 +47,16 @@ in
   config = lib.mkIf cfg.enable {
     services.ollama = {
       enable = true;
-      package = ollamaPackage;
+      # package = ollamaPackage;Codex
       host = cfg.host;
       port = cfg.port;
       openFirewall = cfg.openFirewall;
+
+      # Map your custom acceleration strings to the new 26.05 explicit package flavors
+      package =
+        if cfg.acceleration == "cuda" then pkgs.ollama-cuda
+        else if cfg.acceleration == "rocm" then pkgs.ollama-rocm
+        else pkgs.ollama-cpu;
     };
 
     # Pull models on activation
