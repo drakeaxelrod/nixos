@@ -93,16 +93,16 @@ in
   # ==========================================================================
 
   modules.system.boot = {
-    loader = "limine";          # Modern, stylish bootloader
-    kernelPackage = "linuxPackages_6_18";  # nvidia-open 580.x doesn't build on 6.19 yet
-    maxGenerations = 10;        # Keep boot menu clean
-    timeout = 20;                # 20 second timeout
+    loader = "limine"; # Modern, stylish bootloader
+    kernelPackage = "linuxPackages_6_18"; # nvidia-open 580.x doesn't build on 6.19 yet
+    maxGenerations = 10; # Keep boot menu clean
+    timeout = 20; # 20 second timeout
 
     # Plymouth for graphical LUKS password prompt
     plymouth = {
       enable = true;
-      theme = "breeze";      # KDE Breeze theme (modern and clean)
-      silentBoot = true;     # Hide kernel messages for cleaner experience
+      theme = "breeze"; # KDE Breeze theme (modern and clean)
+      silentBoot = true; # Hide kernel messages for cleaner experience
     };
   };
 
@@ -136,9 +136,9 @@ in
     # PRIME configuration for hybrid graphics (AMD iGPU + NVIDIA dGPU)
     prime = {
       enable = true;
-      mode = "sync";  # Always use NVIDIA for all rendering
-      amdBusId = "PCI:13:0:0";    # AMD 780M iGPU (0d:00.0)
-      nvidiaBusId = "PCI:1:0:0";  # NVIDIA RTX 5070 Ti (01:00.0)
+      mode = "sync"; # Always use NVIDIA for all rendering
+      amdBusId = "PCI:13:0:0"; # AMD 780M iGPU (0d:00.0)
+      nvidiaBusId = "PCI:1:0:0"; # NVIDIA RTX 5070 Ti (01:00.0)
     };
   };
 
@@ -162,16 +162,16 @@ in
 
   # System packages
   environment.systemPackages = with pkgs; [
-    usbutils  # lsusb and other USB utilities
-    qbittorrent  # Torrent client
+    usbutils # lsusb and other USB utilities
+    qbittorrent # Torrent client
     yubikey-manager # YubiKey configuration tool
     proton-pass
     proton-authenticator
-    kicad  # PCB/schematic design
-    exfatprogs  # exFAT filesystem support
-    qFlipper  # Flipper Zero management tool
-    proton-vpn  # ProtonVPN client
-    microsoft-edge  # Microsoft Edge browser
+    kicad # PCB/schematic design
+    exfatprogs # exFAT filesystem support
+    qFlipper # Flipper Zero management tool
+    proton-vpn # ProtonVPN client
+    microsoft-edge # Microsoft Edge browser
   ];
 
   hardware.flipperzero.enable = true; # Flipper Zero udev rules
@@ -197,13 +197,13 @@ in
 
   modules.vfio.dualBoot = {
     enable = true;
-    defaultMode = "host";  # "host" or "vfio"
+    defaultMode = "host"; # "host" or "vfio"
   };
   #
   # # Looking Glass & Scream (active in VFIO mode)
   modules.vfio.lookingGlass = {
     enable = true;
-    users = [ users.draxel ];  # Derived from meta.users
+    users = [ users.draxel ]; # Derived from meta.users
   };
   modules.vfio.scream.enable = true;
 
@@ -213,12 +213,12 @@ in
 
   modules.virtualization.libvirt = {
     enable = true;
-    users = [ users.draxel ];  # Auto-added to libvirtd group
+    users = [ users.draxel ]; # Auto-added to libvirtd group
   };
 
   modules.virtualization.docker = {
     enable = true;
-    users = [ users.draxel ];  # Auto-added to docker group
+    users = [ users.draxel ]; # Auto-added to docker group
   };
 
   # ==========================================================================
@@ -236,7 +236,7 @@ in
     # theme = "sddm-astronaut-theme";
     # themePackage = pkgs.sddm-astronaut;
     # themeConfig = "onedark_custom";  # Theme variant
-    theme = "breeze";  # Default Breeze theme
+    theme = "breeze"; # Default Breeze theme
     wallpaper = "${inputs.self}/assets/wallpapers/nix-wallpaper-binary-red_8k.png";
     wayland = true;
   };
@@ -260,8 +260,8 @@ in
   modules.gaming.vr = {
     enable = true;
     runtime = "wivrn";
-    wivrn.cudaSupport = true;  # NVENC hardware encoding for NVIDIA GPU
-    alvr.enable = false;       # Disabled: source build is slow, wivrn is primary
+    wivrn.cudaSupport = true; # NVENC hardware encoding for NVIDIA GPU
+    alvr.enable = false; # Disabled: source build is slow, wivrn is primary
     wlxOverlay = true;
     steamvr.setcapWrapper = true;
   };
@@ -279,12 +279,22 @@ in
 
   modules.networking.tailscale.enable = true;
 
+  # Wake on LAN for the physical Ethernet interface.
+  # From another machine on the LAN, install `wakeonlan` and send a magic packet
+  # to the NIC MAC address. Example on Arch Linux:
+  #   sudo pacman -S wakeonlan
+  #   wakeonlan -i <broadcast-ip> -p 9 a0:ad:9f:1c:0b:18
+  networking.interfaces.eno1 = {
+    wakeOnLan.enable = true;
+    wakeOnLan.policy = [ "magic" ];
+  };
+
   # ==========================================================================
   # Services
   # ==========================================================================
 
   modules.services.openssh.enable = true;
-  programs.ssh.startAgent = true;  # SSH agent for FIDO2 keys
+  programs.ssh.startAgent = true; # SSH agent for FIDO2 keys
   modules.services.btrbk.enable = true;
 
   # Ollama - Local LLM server (CUDA accelerated)
@@ -300,10 +310,10 @@ in
   # KDE Connect - phone/device integration
   programs.kdeconnect.enable = true;
   networking.firewall = {
-    allowedTCPPorts = [ 3389 ];  # RDP
-    allowedUDPPorts = [ 3389 ];  # RDP (UDP transport)
-    allowedTCPPortRanges = [ { from = 1714; to = 1764; } ];
-    allowedUDPPortRanges = [ { from = 1714; to = 1764; } ];
+    allowedTCPPorts = [ 3389 ]; # RDP
+    allowedUDPPorts = [ 9 3389 ]; # WoL + RDP (UDP transport)
+    allowedTCPPortRanges = [{ from = 1714; to = 1764; }];
+    allowedUDPPortRanges = [{ from = 1714; to = 1764; }];
   };
 
   # ==========================================================================
@@ -332,8 +342,8 @@ in
   # To enroll a new key: pamu2fcfg -o pam://$(hostname) -i pam://$(hostname)
   modules.security.fido = {
     enable = true;
-    yubikey = true;  # YubiKey-specific packages (ykman, pcscd)
-    control = "sufficient";  # Any FIDO key OR password works
+    yubikey = true; # YubiKey-specific packages (ykman, pcscd)
+    control = "sufficient"; # Any FIDO key OR password works
     credentials = ''
       draxel:zDW6bkPPMO2HzvLK25Lo9Hh5ljHD4ZpxS0dQ9dG68m1TuEx2Ra+C+n1CCcMrYBIlV6flF9b8TPpmyUyFkR9dXw==,jwuLPNBiJkkkss+HxTn+DNaklliY4Uh+rCNxv6UOJ5zKydEpkI/Nr0JEEwW/49JK2eeKIMAChuylJGG+B36uvQ==,es256,+presence
       draxel:43n+V5cs7O1cIh1imxrrHn7qGOoi/TuSZI+g5eEQzbJTEQ9b7kuHwKowpTYVPMe1ZRaK50Fy7pM7WrC5KMAWGqtW4cggkpuGC/N/d9lOIVO+C5+DRGj2WSkNPwihPTU/lh3Lro5RCdDKzAPPpX2tRU2/8RB3aw55AK/2RXvv/dy7LG/PLSvgSi4GbrBbFcVMHcehf5wCFbHJOOd0XxmRXYxQ/E/1meVUQcYMmLSfg5Q85kSAtKo2mK5UIMddtQCqL/57WAC8JQrnRCPvaCxAbbqEBqT7oAYIxMWzxT5HOqZwbXbF+2sFEWFY8DiiF+IRNWlrvtQITPXUob1esg3ISqtZOju2TpxIoJhQ4hBrbvoPa9LhD20Nioog+Rj/uQqtLD9cFUk+s+ky+alduvIqhQ==,LqIbHz7byheadQlzkko1oDS9Krq/KMCX2vuXJpc0GaOAsWmm/6J20iy+zWPHeHR5lUcG0fJj0lMkd6TQt8hH2A==,es256,+presence
@@ -341,9 +351,9 @@ in
     services = {
       login = true;
       sudo = true;
-      sddm = false;  # Disabled: use password at login screen
+      sddm = false; # Disabled: use password at login screen
     };
-    ssh = true;  # Enable FIDO2 SSH keys
+    ssh = true; # Enable FIDO2 SSH keys
   };
 
   # Disabled by default - enable after setting up age keys

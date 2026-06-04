@@ -190,10 +190,28 @@ let
               default = null;
               description = "PCI address";
             };
+
+            vendor = lib.mkOption {
+              type = lib.types.nullOr lib.types.str;
+              default = null;
+              description = ''USB vendor ID (hex string, e.g. "0x0b05"). Used when type = "usb".'';
+            };
+
+            product = lib.mkOption {
+              type = lib.types.nullOr lib.types.str;
+              default = null;
+              description = ''USB product ID (hex string, e.g. "0x190e"). Used when type = "usb".'';
+            };
           };
         };
         default = {};
         description = "Device source";
+      };
+
+      startupPolicy = lib.mkOption {
+        type = lib.types.nullOr (lib.types.enum [ "mandatory" "requisite" "optional" ]);
+        default = null;
+        description = ''USB startupPolicy attribute. "optional" lets the VM start even if the device is unplugged.'';
       };
     };
   };

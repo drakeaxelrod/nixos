@@ -243,7 +243,7 @@ rec {
       </disk>
     '';
 
-  # Generate hostdev XML (PCI passthrough)
+  # Generate hostdev XML (PCI or USB passthrough)
   genHostdev = hostdev:
     let
       addressXml = if hostdev.source.address != null
@@ -254,11 +254,19 @@ rec {
           function = hostdev.source.address.function;
         } ""
         else "";
+      vendorXml = lib.optionalString (hostdev.source.vendor != null)
+        ''<vendor id="${hostdev.source.vendor}"/>'';
+      productXml = lib.optionalString (hostdev.source.product != null)
+        ''<product id="${hostdev.source.product}"/>'';
+      startupPolicyAttr = lib.optionalString (hostdev.startupPolicy or null != null)
+        '' startupPolicy="${hostdev.startupPolicy}"'';
     in
     ''
       <hostdev mode="${hostdev.mode}" type="${hostdev.type}" managed="${if hostdev.managed then "yes" else "no"}">
-        <source>
+        <source${startupPolicyAttr}>
           ${addressXml}
+          ${vendorXml}
+          ${productXml}
         </source>
       </hostdev>
     '';

@@ -174,7 +174,7 @@
       }
     ];
 
-    # PCI Passthrough (GPU)
+    # PCI Passthrough (GPU) + USB Bluetooth dongle
     hostdevs = [
       {
         mode = "subsystem";
@@ -196,6 +196,18 @@
           bus = "0x01";
           slot = "0x00";
           function = "0x1";
+        };
+      }
+      # ASUS USB-BT500 (Realtek RTL8761B). startupPolicy=optional so the VM
+      # can still boot when the dongle is unplugged.
+      {
+        mode = "subsystem";
+        type = "usb";
+        managed = true;
+        startupPolicy = "optional";
+        source = {
+          vendor = "0x0b05";
+          product = "0x190e";
         };
       }
     ];
