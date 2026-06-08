@@ -321,7 +321,7 @@ in
   programs.kdeconnect.enable = true;
   networking.firewall = {
     # 3389 = krdpserver (KDE Remote Desktop), exposed on all interfaces.
-    allowedTCPPorts = [ 3000 4444 8080 2121 8443 4455 3389 8888 ];
+    allowedTCPPorts = [ 3000 4444 8080 2121 8443 4455 3389 8888 3390 ];
     allowedUDPPorts = [ 4444 ];
     allowedTCPPortRanges = [ { from = 1714; to = 1764; } ];
     allowedUDPPortRanges = [ { from = 1714; to = 1764; } ];
