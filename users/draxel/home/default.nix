@@ -151,27 +151,25 @@ in
     enable = true;
     enableDefaultConfig = false;
 
-    matchBlocks = {
+    settings = {
       # Global defaults
       # %n (Host alias from command line) — NOT %h (resolved HostName).
       # Both personal.github.com and work.github.com resolve to github.com,
       # so %h would collide their sockets and reuse whichever identity
       # authenticated first.
       "*" = {
-        addKeysToAgent = "yes";
-        extraOptions = {
-          ControlMaster = "auto";
-          ControlPath = "~/.ssh/sockets/%r@%n-%p";
-          ControlPersist = "10m";
-        };
+        AddKeysToAgent = "yes";
+        ControlMaster = "auto";
+        ControlPath = "~/.ssh/sockets/%r@%n-%p";
+        ControlPersist = "10m";
       };
 
       # Personal GitHub account (drakeaxelrod)
       "personal.github.com" = {
-        hostname = "github.com";
-        user = "git";
-        identitiesOnly = true;
-        identityFile = [
+        HostName = "github.com";
+        User = "git";
+        IdentitiesOnly = "yes";
+        IdentityFile = [
           "~/.ssh/id_ed25519_sk"
           "~/.ssh/personal/drakeaxelrod/id_ed25519"
         ];
@@ -179,25 +177,25 @@ in
 
       # Work/Qestit GitHub account (draxel-qestit)
       "work.github.com" = {
-        hostname = "github.com";
-        user = "git";
-        identitiesOnly = true;
-        identityFile = "~/.ssh/work/draxel_qestit/id_ed25519";
+        HostName = "github.com";
+        User = "git";
+        IdentitiesOnly = "yes";
+        IdentityFile = "~/.ssh/work/draxel_qestit/id_ed25519";
       };
 
       # Default GitHub (fallback) — uses YubiKey FIDO key (id_ed25519_sk)
       "github.com" = {
-        hostname = "github.com";
-        user = "git";
-        identitiesOnly = true;
-        identityFile = "~/.ssh/id_ed25519_sk";
+        HostName = "github.com";
+        User = "git";
+        IdentitiesOnly = "yes";
+        IdentityFile = "~/.ssh/id_ed25519_sk";
       };
 
       # Servers
       "draxlab" = {
-        hostname = "draxlab.axolotl-ph.ts.net";
-        user = "draxel";
-        forwardAgent = true;  # Forward SSH agent to server
+        HostName = "draxlab.axolotl-ph.ts.net";
+        User = "draxel";
+        ForwardAgent = "yes";  # Forward SSH agent to server
       };
     };
   };

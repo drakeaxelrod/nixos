@@ -49,6 +49,7 @@ in
     modules.nixos.virtualization.libvirt
     modules.nixos.virtualization.docker
 
+    modules.nixos.gaming.steam
 
     # Security
     modules.nixos.security.base
@@ -192,7 +193,9 @@ in
     # Python
     (python3.withPackages (ps: with ps; [ pip virtualenv ]))
 
-    dufs  # Simple file server (HTTP/WebDAV)
+    # dufs 0.46.0 ships network tests that try to load system CA certs;
+    # those aren't available in the Nix sandbox, so the test phase fails.
+    (dufs.overrideAttrs (_: { doCheck = false; }))  # Simple file server (HTTP/WebDAV)
 
     microsoft-edge  # Microsoft Edge browser
     kicad  # PCB/schematic design
@@ -288,6 +291,13 @@ in
     acceleration = "cuda";
     models = [ "llama3.2" ];
   };
+
+  # ==========================================================================
+  # Gaming
+  # ==========================================================================
+
+  # Steam includes: Gamescope, GameMode, MangoHud, ProtonUp-Qt, Protontricks
+  modules.gaming.steam.enable = true;
 
   # ==========================================================================
   # Security

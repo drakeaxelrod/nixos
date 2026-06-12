@@ -13,6 +13,10 @@
     vimAlias = true;
     vimdiffAlias = true;
 
+    # Acknowledge that we're intentionally using our flake's nixpkgs (via
+    # inputs.nixvim.inputs.nixpkgs.follows) rather than nixvim's pinned one.
+    nixpkgs.source = pkgs.path;
+
     # =========================================================================
     # General Settings
     # =========================================================================

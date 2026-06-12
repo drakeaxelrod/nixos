@@ -11,8 +11,15 @@ set -euo pipefail
 readonly SCRIPT_NAME="nx"
 readonly FLAKE_DIR="${FLAKE_DIR:-$HOME/.config/nixos}"
 readonly DEFAULT_HOST="${NX_DEFAULT_HOST:-nixos}"
-readonly DEFAULT_JOBS="${NX_JOBS:-8}"
-readonly DEFAULT_CORES="${NX_CORES:-2}"
+
+# By default, defer to the Nix daemon's nix.settings.{max-jobs,cores} (set in
+# modules/nixos/system/nix.nix to "auto" and 0). Override with NX_JOBS/NX_CORES.
+build_flags() {
+    local flags=()
+    [[ -n "${NX_JOBS:-}" ]] && flags+=(-j "$NX_JOBS")
+    [[ -n "${NX_CORES:-}" ]] && flags+=(--cores "$NX_CORES")
+    printf '%s\n' "${flags[@]}"
+}
 
 # Colors for output (ANSI-C quoted so escape sequences are real ESC bytes,
 # which works in both `echo` and heredocs without needing `echo -e`)
@@ -106,10 +113,13 @@ cmd_switch() {
         find "$HOME" -maxdepth 3 -name "*.hm-bak" -delete 2>/dev/null || true
     fi
 
-    log_info "Switching to configuration: $host"
-    log_cmd "sudo nixos-rebuild switch --flake \".#$host\" -j $DEFAULT_JOBS --cores $DEFAULT_CORES $*"
+    local flags
+    mapfile -t flags < <(build_flags)
 
-    sudo nixos-rebuild switch --flake ".#$host" -j "$DEFAULT_JOBS" --cores "$DEFAULT_CORES" "$@"
+    log_info "Switching to configuration: $host"
+    log_cmd "sudo nixos-rebuild switch --flake \".#$host\" ${flags[*]} $*"
+
+    sudo nixos-rebuild switch --flake ".#$host" "${flags[@]}" "$@"
     log_success "System switched to $host configuration"
 }
 
@@ -120,10 +130,13 @@ cmd_boot() {
     ensure_flake_dir
     validate_host "$host"
 
-    log_info "Building boot configuration: $host"
-    log_cmd "sudo nixos-rebuild boot --flake \".#$host\" -j $DEFAULT_JOBS --cores $DEFAULT_CORES $*"
+    local flags
+    mapfile -t flags < <(build_flags)
 
-    sudo nixos-rebuild boot --flake ".#$host" -j "$DEFAULT_JOBS" --cores "$DEFAULT_CORES" "$@"
+    log_info "Building boot configuration: $host"
+    log_cmd "sudo nixos-rebuild boot --flake \".#$host\" ${flags[*]} $*"
+
+    sudo nixos-rebuild boot --flake ".#$host" "${flags[@]}" "$@"
     log_success "Boot configuration updated for $host (effective after reboot)"
 }
 
@@ -134,10 +147,13 @@ cmd_test() {
     ensure_flake_dir
     validate_host "$host"
 
-    log_info "Testing configuration: $host"
-    log_cmd "sudo nixos-rebuild test --flake \".#$host\" -j $DEFAULT_JOBS --cores $DEFAULT_CORES $*"
+    local flags
+    mapfile -t flags < <(build_flags)
 
-    sudo nixos-rebuild test --flake ".#$host" -j "$DEFAULT_JOBS" --cores "$DEFAULT_CORES" "$@"
+    log_info "Testing configuration: $host"
+    log_cmd "sudo nixos-rebuild test --flake \".#$host\" ${flags[*]} $*"
+
+    sudo nixos-rebuild test --flake ".#$host" "${flags[@]}" "$@"
     log_success "Configuration tested (not added to boot menu)"
 }
 
@@ -361,8 +377,8 @@ ${YELLOW}Options:${NC}
 ${YELLOW}Environment Variables:${NC}
   FLAKE_DIR          Path to flake directory (default: ~/.config/nixos)
   NX_DEFAULT_HOST    Default host name (default: toaster)
-  NX_JOBS            Parallel build jobs (default: 8)
-  NX_CORES           Cores per job (default: 2)
+  NX_JOBS            Parallel build jobs (default: nix.settings.max-jobs)
+  NX_CORES           Cores per job (default: nix.settings.cores)
 
 ${YELLOW}Examples:${NC}
   $SCRIPT_NAME switch              # Switch current host to new config
