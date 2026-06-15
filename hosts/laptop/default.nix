@@ -203,6 +203,8 @@ in
     onlyoffice-desktopeditors
     virt-viewer
     python3Packages.pyside6
+
+    stremio-linux-shell
   ];
 
   hardware.flipperzero.enable = true;
