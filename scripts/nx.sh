@@ -10,14 +10,14 @@ set -euo pipefail
 
 readonly SCRIPT_NAME="nx"
 readonly FLAKE_DIR="${FLAKE_DIR:-$HOME/.config/nixos}"
-readonly DEFAULT_HOST="${NX_DEFAULT_HOST:-nixos}"
+readonly DEFAULT_HOST="${NX_DEFAULT_HOST:-$(hostname)}"
 
-# By default, defer to the Nix daemon's nix.settings.{max-jobs,cores} (set in
-# modules/nixos/system/nix.nix to "auto" and 0). Override with NX_JOBS/NX_CORES.
+# Default: all parallel jobs (-j auto) and all cores per job (--cores 0).
+# Override with NX_JOBS / NX_CORES env vars.
 build_flags() {
     local flags=()
-    [[ -n "${NX_JOBS:-}" ]] && flags+=(-j "$NX_JOBS")
-    [[ -n "${NX_CORES:-}" ]] && flags+=(--cores "$NX_CORES")
+    flags+=(-j "${NX_JOBS:-auto}")
+    flags+=(--cores "${NX_CORES:-0}")
     printf '%s\n' "${flags[@]}"
 }
 
@@ -376,7 +376,7 @@ ${YELLOW}Options:${NC}
 
 ${YELLOW}Environment Variables:${NC}
   FLAKE_DIR          Path to flake directory (default: ~/.config/nixos)
-  NX_DEFAULT_HOST    Default host name (default: toaster)
+  NX_DEFAULT_HOST    Default host name (default: current hostname)
   NX_JOBS            Parallel build jobs (default: nix.settings.max-jobs)
   NX_CORES           Cores per job (default: nix.settings.cores)
 

@@ -183,12 +183,15 @@ in
         IdentityFile = "~/.ssh/work/draxel_qestit/id_ed25519";
       };
 
-      # Default GitHub (fallback) — uses YubiKey FIDO key (id_ed25519_sk)
+      # Default GitHub (fallback) — FIDO key first, personal key as fallback
       "github.com" = {
         HostName = "github.com";
         User = "git";
         IdentitiesOnly = "yes";
-        IdentityFile = "~/.ssh/id_ed25519_sk";
+        IdentityFile = [
+          "~/.ssh/id_ed25519_sk"
+          "~/.ssh/personal/drakeaxelrod/id_ed25519"
+        ];
       };
 
       # Servers
