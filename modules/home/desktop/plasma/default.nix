@@ -319,7 +319,7 @@
                 position = "adaptive"; # adaptive, besideTime, belowTime
               };
               time = {
-                format = "24h";
+                format = "12h";
                 showSeconds = "never";
               };
               calendar = {
