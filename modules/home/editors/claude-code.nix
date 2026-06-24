@@ -105,11 +105,17 @@
           type = "github";
           url = "obra/superpowers-marketplace";
         }
+        {
+          name = "ecc";
+          type = "github";
+          url = "affaan-m/ecc";
+        }
       ];
 
       enabledPlugins = {
-        "context7@claude-plugins-official" = true;
-        "superpowers@claude-plugins-official" = true;
+        # "context7@claude-plugins-official" = true;
+        # "superpowers@superpowers-marketplace" = true;
+        "ecc@ecc" = true;
       };
     };
   };
