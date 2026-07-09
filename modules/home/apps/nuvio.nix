@@ -17,9 +17,13 @@ let
   nuvio = pkgs.appimageTools.wrapType2 {
     pname = "nuvio";
     inherit version;
-    src = pkgs.fetchurl {
-      url = "https://github.com/NuvioMedia/NuvioDesktop/releases/download/v${version}/Nuvio-${version}-x86_64.AppImage";
-      hash = "sha256-vpgVTrgYRmCJOVbw5zQkuw5Wsg0PCA+ZGP3ZauXK4KU=";
+    # AppImage not yet on a stable release URL — reference the local file.
+    # Requires --impure (already used in this flake).
+    # Update this path if the file moves, or switch to fetchurl once the
+    # correct upstream release URL is confirmed.
+    src = builtins.path {
+      path = /home/draxel/Downloads/Nuvio-0.2.0-x86_64.AppImage;
+      name = "Nuvio-${version}-x86_64.AppImage";
     };
     meta = with lib; {
       description = "Modern media hub with Stremio addon ecosystem support";
