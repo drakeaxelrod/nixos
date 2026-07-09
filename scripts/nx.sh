@@ -12,14 +12,12 @@ readonly SCRIPT_NAME="nx"
 readonly FLAKE_DIR="${FLAKE_DIR:-$HOME/.config/nixos}"
 readonly DEFAULT_HOST="${NX_DEFAULT_HOST:-$(hostname)}"
 
-# Default: all parallel jobs (-j auto) and all cores per job (--cores 0).
+# Parallelism flags passed to nixos-rebuild.
 # Override with NX_JOBS / NX_CORES env vars.
-build_flags() {
-    local flags=()
-    flags+=(-j "${NX_JOBS:-auto}")
-    flags+=(--cores "${NX_CORES:-0}")
-    printf '%s\n' "${flags[@]}"
-}
+nix_flags=(
+    "--max-jobs" "${NX_JOBS:-auto}"
+    "--cores"    "${NX_CORES:-0}"
+)
 
 # Colors for output (ANSI-C quoted so escape sequences are real ESC bytes,
 # which works in both `echo` and heredocs without needing `echo -e`)
@@ -73,7 +71,7 @@ get_current_host() {
 # Detect available hosts from flake
 get_available_hosts() {
     if [[ -f "$FLAKE_DIR/flake.nix" ]]; then
-        nix flake show --json 2>/dev/null | \
+        nix flake show --json --impure 2>/dev/null | \
             jq -r '.nixosConfigurations | keys[]' 2>/dev/null || echo "$DEFAULT_HOST"
     else
         echo "$DEFAULT_HOST"
@@ -113,13 +111,10 @@ cmd_switch() {
         find "$HOME" -maxdepth 3 -name "*.hm-bak" -delete 2>/dev/null || true
     fi
 
-    local flags
-    mapfile -t flags < <(build_flags)
-
     log_info "Switching to configuration: $host"
-    log_cmd "sudo nixos-rebuild switch --flake \".#$host\" ${flags[*]} $*"
+    log_cmd "sudo nixos-rebuild switch --flake \".#$host\" ${nix_flags[*]} $*"
 
-    sudo nixos-rebuild switch --flake ".#$host" "${flags[@]}" "$@"
+    sudo nixos-rebuild switch --flake ".#$host" "${nix_flags[@]}" "$@"
     log_success "System switched to $host configuration"
 }
 
@@ -130,13 +125,10 @@ cmd_boot() {
     ensure_flake_dir
     validate_host "$host"
 
-    local flags
-    mapfile -t flags < <(build_flags)
-
     log_info "Building boot configuration: $host"
-    log_cmd "sudo nixos-rebuild boot --flake \".#$host\" ${flags[*]} $*"
+    log_cmd "sudo nixos-rebuild boot --flake \".#$host\" ${nix_flags[*]} $*"
 
-    sudo nixos-rebuild boot --flake ".#$host" "${flags[@]}" "$@"
+    sudo nixos-rebuild boot --flake ".#$host" "${nix_flags[@]}" "$@"
     log_success "Boot configuration updated for $host (effective after reboot)"
 }
 
@@ -147,13 +139,10 @@ cmd_test() {
     ensure_flake_dir
     validate_host "$host"
 
-    local flags
-    mapfile -t flags < <(build_flags)
-
     log_info "Testing configuration: $host"
-    log_cmd "sudo nixos-rebuild test --flake \".#$host\" ${flags[*]} $*"
+    log_cmd "sudo nixos-rebuild test --flake \".#$host\" ${nix_flags[*]} $*"
 
-    sudo nixos-rebuild test --flake ".#$host" "${flags[@]}" "$@"
+    sudo nixos-rebuild test --flake ".#$host" "${nix_flags[@]}" "$@"
     log_success "Configuration tested (not added to boot menu)"
 }
 
