@@ -336,6 +336,7 @@
               # Applications
               apps = {
                 moonlight = "${inputs.self}/modules/home/apps/moonlight.nix";
+                nuvio = "${inputs.self}/modules/home/apps/nuvio.nix";
                 steam = "${inputs.self}/modules/home/apps/steam.nix";
                 stremio = "${inputs.self}/modules/home/apps/stremio.nix";
                 zenBrowser = "${inputs.self}/modules/home/apps/zen-browser.nix";
