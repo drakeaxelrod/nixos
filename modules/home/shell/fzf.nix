@@ -11,8 +11,8 @@
     defaultCommand = "fd --type f --strip-cwd-prefix --hidden --follow --exclude .git";
 
     # Widget commands
-    fileWidgetCommand = "fd --type f --strip-cwd-prefix --hidden --follow --exclude .git";
-    changeDirWidgetCommand = "fd --type d --strip-cwd-prefix --hidden --follow --exclude .git";
+    fileWidget.command = "fd --type f --strip-cwd-prefix --hidden --follow --exclude .git";
+    changeDirWidget.command = "fd --type d --strip-cwd-prefix --hidden --follow --exclude .git";
 
     # Trigger sequence for completion
     # Type ** and press Tab to activate
@@ -57,17 +57,17 @@
     ];
 
     # File widget options (Ctrl+T)
-    fileWidgetOptions = [
+    fileWidget.options = [
       "--preview 'bat --style=numbers,changes --color=always --line-range :500 {} 2>/dev/null || cat {}'"
     ];
 
     # Change directory widget options (Alt+C)
-    changeDirWidgetOptions = [
+    changeDirWidget.options = [
       "--preview 'lsd --tree --depth 2 --color=always {} 2>/dev/null || ls -la {}'"
     ];
 
     # History widget options (Ctrl+R)
-    historyWidgetOptions = [
+    historyWidget.options = [
       "--preview 'echo {}'"
       "--preview-window down:3:wrap"
     ];
