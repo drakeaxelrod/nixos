@@ -195,6 +195,22 @@
             });
           })
 
+          # patool 4.0.5 tests fail under Python 3.14: the bzip2/lzma/xz
+          # program handlers aren't discovered in the sandbox, and a MIME
+          # detection test regresses (x-tar vs x-bzip2). Pulled transitively
+          # by bottles. pythonPackagesExtensions applies to every python
+          # package set, so this catches whichever interpreter bottles uses.
+          # Skip the test suite — the library itself is fine.
+          (final: prev: {
+            pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
+              (pyFinal: pyPrev: {
+                patool = pyPrev.patool.overridePythonAttrs (old: {
+                  doCheck = false;
+                });
+              })
+            ];
+          })
+
           (final: prev:
             let
               certipyFix = pyFinal: pyPrev: {

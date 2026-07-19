@@ -123,6 +123,16 @@ in
   # AMD CPU and iGPU (Radeon 780M)
   modules.hardware.amd.enable = true;
 
+  # Disable AMD SME (Secure Memory Encryption / mem_encrypt=on).
+  # SME encrypts system RAM and forces DMA-incapable devices through bounce
+  # buffers; combined with the discrete NVIDIA GPU it is a documented cause of
+  # random hard freezes (whole-system lockups with no Xid, no MCE, nothing
+  # logged — matching the freezes seen here on 2026-07-18/19). SME provides no
+  # practical benefit on a single-user desktop and is NOT required for the
+  # VFIO gaming VM (that needs IOMMU, not SME). Re-enable only if running
+  # SEV-encrypted guests.
+  modules.hardware.amd.cpu.enableSME = false;
+
   # NVIDIA RTX 5070 Ti (discrete GPU)
   modules.hardware.nvidia = {
     enable = true;
@@ -160,6 +170,18 @@ in
   # Wacom tablet support (driver + KDE integration)
   modules.hardware.wacom.enable = true;
 
+  # Freeze diagnostics + auto-recovery.
+  # The 2026-07-18/19 hard freezes locked the whole system with nothing
+  # logged and required a manual power cycle. If SME (disabled above) wasn't
+  # the cause, these make the next lockup PANIC instead of hanging forever —
+  # which lets the NMI watchdog record a trace and auto-reboots after 10s so
+  # the machine recovers on its own. Harmless in normal operation.
+  boot.kernelParams = [ "panic=10" ];
+  boot.kernel.sysctl = {
+    "kernel.hardlockup_panic" = 1; # NMI watchdog panics on a hard CPU lockup
+    "kernel.softlockup_panic" = 1; # panic on a soft lockup too
+  };
+
   # System packages
   environment.systemPackages = with pkgs; [
     usbutils # lsusb and other USB utilities
@@ -177,6 +199,16 @@ in
   hardware.flipperzero.enable = true; # Flipper Zero udev rules
   services.pcscd.enable = true; # Smart card daemon (for YubiKey)
   services.earlyoom.enable = true; # OOM killer to prevent system freezes under heavy load
+
+  # zram compressed swap. This box had zero swap, so build memory spikes
+  # (e.g. parallel KDE/Qt compiles with --cores 0) got OOM-killed by earlyoom
+  # instead of paging out. zram gives ~50% of RAM as fast, compressed,
+  # RAM-backed swap (no disk wear, no btrfs/impermanence complications) to
+  # absorb those spikes.
+  zramSwap = {
+    enable = true;
+    memoryPercent = 50;
+  };
 
   # Flatpak with proper desktop integration
   modules.services.flatpak = {
