@@ -134,11 +134,11 @@ in
 
     # Enable U2F for selected PAM services
     security.pam.services = {
-      login.u2fAuth = cfg.services.login;
-      sudo.u2fAuth = cfg.services.sudo;
-      polkit-1.u2fAuth = cfg.services.polkit;
-      kde.u2fAuth = cfg.services.kde;
-      kde-fingerprint.u2fAuth = cfg.services.kde;
+      login.u2f.enable = cfg.services.login;
+      sudo.u2f.enable = cfg.services.sudo;
+      polkit-1.u2f.enable = cfg.services.polkit;
+      kde.u2f.enable = cfg.services.kde;
+      kde-fingerprint.u2f.enable = cfg.services.kde;
     };
 
     # SDDM's NixOS module hardcodes its PAM config via `text`, bypassing the

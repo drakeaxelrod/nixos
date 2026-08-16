@@ -383,7 +383,8 @@ in
     services = {
       login = true;
       sudo = true;
-      sddm = true;
+      sddm = true;   # login screen (FIDO key OR password)
+      kde = true;    # KDE lock screen / kscreenlocker (FIDO key OR password)
     };
     ssh = true; # Enable FIDO2 SSH keys
   };
