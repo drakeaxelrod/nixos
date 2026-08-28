@@ -120,6 +120,15 @@ in
     services.udev.packages = [ pkgs.libfido2 ]
       ++ lib.optionals cfg.yubikey [ pkgs.yubikey-personalization ];
 
+    # libfido2 udev rules grant access to the 'plugdev' group — ensure it exists
+    users.groups.plugdev = {};
+
+    # SDDM greeter runs as the sddm system user. It needs to open the FIDO HID
+    # device to issue challenges, but uaccess only covers the active logind session
+    # user (draxel), not the greeter process. Adding sddm to plugdev gives it
+    # the necessary device access at login time.
+    users.users.sddm.extraGroups = lib.optional cfg.services.sddm "plugdev";
+
     # PAM U2F configuration
     security.pam.u2f = {
       enable = true;
@@ -141,20 +150,17 @@ in
       kde-fingerprint.u2f.enable = cfg.services.kde;
     };
 
-    # SDDM's NixOS module hardcodes its PAM config via `text`, bypassing the
-    # rules system where u2fAuth is normally wired. Override to add pam_u2f
-    # directly before the login substack so FIDO2 keys work at the login screen.
-    # timeout=3: only wait 3s for key touch (SDDM can't show the prompt properly)
-    security.pam.services.sddm.text = lib.mkIf cfg.services.sddm (
-      let
-        u2fArgs = "authfile=${authfile} cue origin=${origin} appid=${origin} timeout=3";
-      in lib.mkForce ''
-        auth      ${cfg.control}  ${pkgs.pam_u2f}/lib/security/pam_u2f.so ${u2fArgs}
-        auth      substack      login
-        account   include       login
-        password  substack      login
-        session   include       login
-      ''
-    );
+    # The SDDM nixpkgs module sets sddm.text directly (plain assignment, priority 100),
+    # which overrides the PAM module's auto-generated text from rules (lib.mkDefault,
+    # priority 1000). u2fAuth on the sddm service would generate a valid rule but it
+    # would never appear in the PAM config file. Instead we use lib.mkForce (priority 50)
+    # to win over the SDDM module's text and inject pam_u2f before the login substack.
+    security.pam.services.sddm.text = lib.mkIf cfg.services.sddm (lib.mkForce ''
+      auth      ${cfg.control}   ${pkgs.pam_u2f}/lib/security/pam_u2f.so authfile=${authfile} cue origin=${origin} appid=${origin} timeout=3
+      auth      substack         login
+      account   include          login
+      password  substack         login
+      session   include          login
+    '');
   };
 }

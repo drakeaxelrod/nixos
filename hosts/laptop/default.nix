@@ -170,6 +170,7 @@ in
     # picocom # Minimal dumb-terminal emulation program
     yubikey-manager # YubiKey configuration tool
     proton-pass # Password manager CLI
+    protonvpn-gui # ProtonVPN client
     exfatprogs  # exFAT filesystem support
     ntfs3g      # NTFS read/write support
     # cryptsetup: Newer versions (2.3.0+) have experimental BitLocker support via sudo cryptsetup open --type=bitlk <device> <name>
@@ -322,6 +323,7 @@ in
       login = false;
       sudo = true;
       sddm = true;
+      kde = true;  # KDE screen locker (kscreenlocker uses the 'kde' PAM service)
     };
     ssh = true;  # Enable FIDO2 SSH keys
   };
