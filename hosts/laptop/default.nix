@@ -136,9 +136,15 @@ in
   # probe-rs / J-Link debug probe support (DWM3001CDK, embedded dev)
   users.groups.plugdev = {};
   users.users.draxel.extraGroups = [ "plugdev" "dialout" ];
+  # Install probe-rs udev rules (permissions for all supported probes)
+  services.udev.packages = [ pkgs.probe-rs-tools ];
   services.udev.extraRules = ''
-    # J-Link debug probes (SEGGER)
+    # J-Link debug probes (SEGGER) — set permissions
     SUBSYSTEM=="usb", ATTR{idVendor}=="1366", MODE="0666", TAG+="uaccess"
+    # Unbind cdc_acm from J-Link interfaces on plug so probe-rs (nusb) can
+    # claim them directly. nusb cannot auto-detach kernel drivers unlike libusb.
+    ACTION=="bind", SUBSYSTEM=="usb", DRIVER=="cdc_acm", ATTRS{idVendor}=="1366", \
+      RUN+="${pkgs.bash}/bin/bash -c 'echo %k > /sys/bus/usb/drivers/cdc_acm/unbind'"
     # AutoLock firmware USB-CDC (VID:PID 1209:0001)
     SUBSYSTEM=="usb", ATTR{idVendor}=="1209", ATTR{idProduct}=="0001", MODE="0666", TAG+="uaccess"
     SUBSYSTEM=="tty", ATTRS{idVendor}=="1209", ATTRS{idProduct}=="0001", MODE="0666", TAG+="uaccess"
