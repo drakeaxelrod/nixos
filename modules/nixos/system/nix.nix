@@ -12,7 +12,13 @@
       warn-dirty = false;
 
       # Build performance
-      max-jobs = "auto";  # Use all available cores
+      # NOTE: max-jobs="auto" (=nproc) combined with cores=0 (=nproc per job)
+      # lets Nix run up to nproc fully-parallel derivation builds at once.
+      # For big multi-core C++ packages (KDE/Qt: akonadi, plasma-nm, etc.)
+      # that oversubscribes RAM and earlyoom starts killing random cc1plus
+      # processes (and anything else running) mid-build. Cap concurrent
+      # derivation builds; each one still gets all cores via cores=0.
+      max-jobs = 2;
       cores = 0;          # Use all cores per job
 
       # Binary caches - official and community (via Cachix)

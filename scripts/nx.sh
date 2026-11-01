@@ -14,8 +14,14 @@ readonly DEFAULT_HOST="${NX_DEFAULT_HOST:-$(hostname)}"
 
 # Parallelism flags passed to nixos-rebuild.
 # Override with NX_JOBS / NX_CORES env vars.
+# max-jobs defaults to 2 (not "auto"): with cores=0 each job already uses
+# all cores, so max-jobs=auto (=nproc) lets nproc fully-parallel multi-core
+# C++ builds run at once (e.g. KDE/Qt packages), oversubscribing RAM enough
+# that earlyoom starts killing random processes mid-build (cc1plus and
+# anything else running). Capping concurrent derivation builds avoids that
+# while each build still gets full per-job parallelism.
 nix_flags=(
-    "--max-jobs" "${NX_JOBS:-auto}"
+    "--max-jobs" "${NX_JOBS:-2}"
     "--cores"    "${NX_CORES:-0}"
 )
 

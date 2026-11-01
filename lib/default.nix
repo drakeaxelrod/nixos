@@ -211,6 +211,17 @@
             ];
           })
 
+          # ltrace's testsuite exercises ptrace edge cases (clone/fork/exec
+          # tracing, signal delivery) that are sensitive to kernel/sandbox
+          # behavior and fail under the Nix build sandbox. Pulled in by
+          # modules/nixos/system/packages.nix. Skip the test suite — the
+          # built binary is fine.
+          (final: prev: {
+            ltrace = prev.ltrace.overrideAttrs (old: {
+              doCheck = false;
+            });
+          })
+
           (final: prev:
             let
               certipyFix = pyFinal: pyPrev: {

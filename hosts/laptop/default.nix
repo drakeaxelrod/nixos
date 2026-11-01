@@ -176,7 +176,7 @@ in
     # picocom # Minimal dumb-terminal emulation program
     yubikey-manager # YubiKey configuration tool
     proton-pass # Password manager CLI
-    protonvpn-gui # ProtonVPN client
+    proton-vpn # ProtonVPN client
     exfatprogs  # exFAT filesystem support
     ntfs3g      # NTFS read/write support
     # cryptsetup: Newer versions (2.3.0+) have experimental BitLocker support via sudo cryptsetup open --type=bitlk <device> <name>

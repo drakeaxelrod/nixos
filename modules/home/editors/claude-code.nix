@@ -15,11 +15,12 @@
     settings = {
       includeCoAuthoredBy = false;
 
+      # DISABLE_TELEMETRY and CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC are
+      # intentionally unset: either one makes /remote-control fail its
+      # eligibility check.
       env = {
-        DISABLE_TELEMETRY = "1";
         DISABLE_ERROR_REPORTING = "1";
         DISABLE_FEEDBACK_COMMAND = "1";
-        CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1";
       };
 
       cleanupPeriodDays = 7;

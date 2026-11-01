@@ -1,8 +1,9 @@
 # Wacom - tablet driver and configuration tools
 #
-# Enables the xf86-input-wacom driver and optional KDE integration.
+# Enables the xf86-input-wacom driver and libwacom device database.
 # Tablets are auto-detected via libwacom; configure pressure curves,
-# button mapping, and display mapping through KDE System Settings.
+# button mapping, and display mapping through KDE System Settings
+# (built into Plasma 6 under Drawing Tablet).
 #
 { config, lib, pkgs, ... }:
 
@@ -21,7 +22,8 @@ in
     environment.systemPackages = with pkgs; [
       libwacom        # Tablet device database and detection
       xf86_input_wacom  # CLI tools: xsetwacom, etc.
-      kdePackages.wacomtablet  # KDE Plasma tablet settings (kcm_wacomtablet)
+      # Plasma 6 Wayland configures tablets natively (System Settings > Drawing Tablet);
+      # kdePackages.wacomtablet was X11-only and removed from nixpkgs.
     ];
   };
 }

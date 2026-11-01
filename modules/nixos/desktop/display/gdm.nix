@@ -23,7 +23,6 @@
 
     services.displayManager.gdm = {
       enable = true;
-      wayland = config.modules.desktop.gdm.wayland;
     };
 
     # Enable XWayland if using Wayland

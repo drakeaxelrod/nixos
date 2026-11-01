@@ -29,5 +29,19 @@ in
       capSysAdmin = true;  # Required for KMS capture
       openFirewall = cfg.openFirewall;
     };
+
+    # Upstream's sunshine module still sets the obsolete avahi.publish.*
+    # options (via mkDefault), which triggers deprecation warnings. Null them
+    # out and set the equivalent new-style settings so Moonlight discovery
+    # keeps working. Remove once nixpkgs' sunshine module is updated.
+    services.avahi = {
+      publish.enable = null;
+      publish.userServices = null;
+      settings.publish = {
+        disable-publishing = false;
+        disable-user-service-publishing = false;
+        publish-addresses = true;
+      };
+    };
   };
 }
